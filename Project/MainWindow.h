@@ -151,7 +151,7 @@ namespace optimizerui {
   private: System::Windows::Forms::NumericUpDown^  threadsNumNumericUpDown;
   private: System::Windows::Forms::Label^  label16;
   private: System::Windows::Forms::MenuStrip^  menuStrip1;
-  private: System::Windows::Forms::ToolStripMenuItem^  ���������ToolStripMenuItem;
+  private: System::Windows::Forms::ToolStripMenuItem^  advSettingsToolStripMenuItem;
   private: System::Windows::Forms::Label^  lipConstLabel;
   private: System::Windows::Forms::Label^  label17;
   private: System::Windows::Forms::ToolStripMenuItem^  saveToolStripMenuItem;
@@ -230,7 +230,7 @@ private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
       this->saveOPToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->savePointsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->saveOPChartToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-      this->���������ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+      this->advSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->graphSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->TaskGeneratorSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
       this->algSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -772,7 +772,7 @@ private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
       //
       this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
         this->saveToolStripMenuItem,
-          this->���������ToolStripMenuItem, this->toolStripMenuItem1
+          this->advSettingsToolStripMenuItem, this->toolStripMenuItem1
       });
       this->menuStrip1->Location = System::Drawing::Point(0, 0);
       this->menuStrip1->Name = L"menuStrip1";
@@ -816,15 +816,15 @@ private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
       this->saveOPChartToolStripMenuItem->Text = L"Save operating characteristics graph";
       this->saveOPChartToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::saveOPChartToolStripMenuItem_Click);
       //
-      // ���������ToolStripMenuItem
+      // advSettingsToolStripMenuItem
       //
-      this->���������ToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+      this->advSettingsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
         this->graphSettingsToolStripMenuItem,
           this->TaskGeneratorSettingsToolStripMenuItem, this->algSettingsToolStripMenuItem
       });
-      this->���������ToolStripMenuItem->Name = L"���������ToolStripMenuItem";
-      this->���������ToolStripMenuItem->Size = System::Drawing::Size(116, 20);
-      this->���������ToolStripMenuItem->Text = L"Advanced settings";
+      this->advSettingsToolStripMenuItem->Name = L"advSettingsToolStripMenuItem";
+      this->advSettingsToolStripMenuItem->Size = System::Drawing::Size(116, 20);
+      this->advSettingsToolStripMenuItem->Text = L"Advanced settings";
       //
       // graphSettingsToolStripMenuItem
       //
