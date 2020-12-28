@@ -544,7 +544,7 @@ private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
       this->OneDimGraphButton->Name = L"OneDimGraphButton";
       this->OneDimGraphButton->Size = System::Drawing::Size(127, 23);
       this->OneDimGraphButton->TabIndex = 18;
-      this->OneDimGraphButton->Text = L"One dimentional graph";
+      this->OneDimGraphButton->Text = L"One dimensional graph";
       this->OneDimGraphButton->UseVisualStyleBackColor = true;
       this->OneDimGraphButton->Click += gcnew System::EventHandler(this, &MainWindow::OneDimGraphButton_Click);
       //

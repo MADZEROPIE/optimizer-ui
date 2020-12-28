@@ -50,6 +50,12 @@
     <ClInclude Include="TaskGeneratorSettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OneDimGraphWindow.resx">
@@ -75,8 +81,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="$this.Icon.ico">
+    <ResourceCompile Include="Resource.rc">
       <Filter>Resource Files</Filter>
-    </Image>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
