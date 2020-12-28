@@ -19,6 +19,7 @@ namespace optimizerui {
 		OneDimGraphWindow(array<float, 1>^ xRay, array<float, 1>^ yRay, String^ graphTitle, array<float, 2>^ searchSequence)
 		{
 			InitializeComponent();
+      this->mapChart->ChartAreas[0]->AxisX->LabelStyle->Format = "{0:0.00}";
 
 			int arraySize = xRay->GetLength(0);
 			double max = yRay[0], min = yRay[0];
