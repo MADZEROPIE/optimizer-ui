@@ -1124,7 +1124,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       f = new VAGRisFunctionWrapper();
 
       x_left = y_min = 0;
-      step_x = step_y = 1. / (n - 1);
+      step_x = step_y = 1.f / (n - 1);
       fpi_x = fpi_y = 1;
 
       taskName += "Grishagin function #" + task_num.ToString();
@@ -1149,13 +1149,12 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       auto leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
       auto rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
       problem->GetBounds(leftBound.get(), rightBound.get());
-      x_left = leftBound.get()[0];
-      y_min = leftBound.get()[1];
-      fpi_x = rightBound.get()[0] - x_left;
-      fpi_y = rightBound.get()[1] - y_min;
+      x_left = static_cast<float>(leftBound.get()[0]);
+      y_min = static_cast<float>(leftBound.get()[1]);
+      fpi_x = static_cast<float>(rightBound.get()[0]) - x_left;
+      fpi_y = static_cast<float>(rightBound.get()[1]) - y_min;
       step_x = fpi_x / (n - 1);
       step_y = fpi_y / (n - 1);
-      
 
       f = new CustomProblemWrapper(problem);
       taskName += "Custom problem";
@@ -1171,7 +1170,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         taskName += "GKLS Hard function #" + task_num.ToString();
       }
       x_left = y_min = -1;
-      step_x = step_y = 2. / (n - 1);
+      step_x = step_y = 2.f / (n - 1);
       fpi_x = fpi_y = 2;
     }
 
@@ -1280,46 +1279,75 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     int map_t = Convert::ToInt32(map_tightness->Value);
     int currentDimention = 2;
     map_type = MapTypeComboBox->SelectedIndex + 1;
-    VAGRisFunctionWrapper f;
-    GKLSFunctionWrapper g;
+    TProblemManager manager;
+    SharedVector leftBound, rightBound;
+    
+    FunctionWrapperCommon* f;
 
-    if (grishaginRadioButton->Checked == true)
+    if (grishaginRadioButton->Checked)
     {
       taskName = "Grishagin function # " + task_num.ToString();
-      f.SetFunctionNumber(task_num);
+      f = new VAGRisFunctionWrapper();
+      leftBound = SharedVector(new double[2], utils::array_deleter<double>());
+      rightBound = SharedVector(new double[2], utils::array_deleter<double>());
+      leftBound.get()[0] = leftBound.get()[1] = 0;
+      rightBound.get()[0] = rightBound.get()[1] = 1;
+    }
+    else if (customProblemRadioButton->Checked)
+    {
+      std::string libPath = msclr::interop::marshal_as<std::string>(mTaskGeneratorSettings.dllPath->ToString());
+      if (manager.LoadProblemLibrary(libPath) != TProblemManager::OK_)
+      {
+        MessageBox::Show("Failed to load custom problem");
+        return;
+      }
+      auto problem = manager.GetProblem();
+      if (problem->Initialize() != TProblemManager::OK_)
+      {
+        MessageBox::Show("Failed to initialize custom problem");
+        return;
+      }
+
+      problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
+      leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
+      rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
+      problem->GetBounds(leftBound.get(), rightBound.get());
+
+      taskName = "Custom function";
+      f = new CustomProblemWrapper(problem);
     }
     else
     {
-      if (gklsRadioButton2->Checked == true)
+      if (gklsRadioButton2->Checked)
       {
-        g.SetClassType(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
         taskName = "GKLS Simple function # " + task_num.ToString();
       }
-      else if (gklsHardRadioButton->Checked == true)
+      else if (gklsHardRadioButton->Checked)
       {
-        g.SetClassType(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
+        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
         taskName = "GKLS Hard function # " + task_num.ToString();
       }
       currentDimention = mTaskGeneratorSettings.GKLSDimention;
-      g.SetFunctionNumber(task_num);
+      leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
+      rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
+      for (int i = 0; i < currentDimention; i++)
+      {
+        leftBound.get()[i] = -1;
+        rightBound.get()[i] = 1;
+      }
     }
+    f->SetFunctionNumber(task_num);
 
     step = 1.0 / n;
+    auto transform = OptimizerSpaceTransformation(leftBound, rightBound, currentDimention);
 
     for (int i = 0; i <= n; i++)
     {
       xray[i] = (float)(i * step);
       mapd(xray[i], map_t, y, currentDimention, map_type);
-      if (grishaginRadioButton->Checked == true)
-      {
-        y[0] += 0.5; y[1] += 0.5;
-        yray[i] = (float)f.Calculate(y);
-      }
-      else
-      {
-        y[0] *= 2; y[1] *= 2;
-        yray[i] = (float)g.Calculate(y);
-      }
+      transform.Transform(y, y);
+      yray[i] = static_cast<float>(f->Calculate(y));
     }
 
     if (points != nullptr)
@@ -1339,6 +1367,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     mOneDimGraph = gcnew OneDimGraphWindow(xray, yray, taskName, searchSequence);
     mOneDimGraph->Show();
     delete[] y;
+    delete f;
   }
   private: System::Void saveOPToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
     if (series_count > 0)
