@@ -77,3 +77,28 @@ void GKLSFunctionWrapper::SetDimention(unsigned value)
 	mDimention = value;
 	mFunction.SetDimention(mDimention);
 }
+
+
+CustomProblemWrapper::CustomProblemWrapper() : mFunction(nullptr) {}
+CustomProblemWrapper::CustomProblemWrapper(IProblem* problem) : mFunction(problem) {}
+CustomProblemWrapper::~CustomProblemWrapper() {}
+
+void CustomProblemWrapper::SetFunctionNumber(int num)
+{
+
+}
+void CustomProblemWrapper::SetDimention(unsigned value) {}
+double CustomProblemWrapper::Calculate(const double* x)
+{
+	return mFunction->CalculateFunctionals(x, 0);
+}
+double CustomProblemWrapper::GetMinValue() const
+{
+	double val = NAN;
+	mFunction->GetOptimumValue(val);
+	return val;
+}
+void CustomProblemWrapper::GetMinPoint(double* x) const
+{
+	mFunction->GetOptimumPoint(x);
+}

@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VAGRISFunctions", "VAGRISFu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IndexAGS", "IndexAGS\IndexAGS.vcxproj", "{F71EC759-59F7-4FC8-B8AF-04F59D88BBF1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomProblem", "CustomProblem\CustomProblem.vcxproj", "{08D7C154-D6B7-4F13-B799-E6012BF588C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -50,6 +52,14 @@ Global
 		{F71EC759-59F7-4FC8-B8AF-04F59D88BBF1}.Release|Win32.ActiveCfg = Release|Win32
 		{F71EC759-59F7-4FC8-B8AF-04F59D88BBF1}.Release|Win32.Build.0 = Release|Win32
 		{F71EC759-59F7-4FC8-B8AF-04F59D88BBF1}.Release|x64.ActiveCfg = Release|Win32
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Debug|Win32.Build.0 = Debug|Win32
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Debug|x64.ActiveCfg = Debug|x64
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Debug|x64.Build.0 = Debug|x64
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Release|Win32.ActiveCfg = Release|Win32
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Release|Win32.Build.0 = Release|Win32
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Release|x64.ActiveCfg = Release|x64
+		{08D7C154-D6B7-4F13-B799-E6012BF588C9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

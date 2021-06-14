@@ -22,6 +22,7 @@ namespace optimizerui {
 			InitializeComponent();
 
 			gklsDimentionNumericUpDown->Value = settings.GKLSDimention;
+			dllPathTextBox->Text = settings.dllPath;
 
 			currentSettings = %settings;
 		}
@@ -29,6 +30,9 @@ namespace optimizerui {
 	public:
 	private: System::Windows::Forms::Label^  label1;
 	private: System::Windows::Forms::NumericUpDown^  gklsDimentionNumericUpDown;
+	private: System::Windows::Forms::GroupBox^ customGroupBox;
+	private: System::Windows::Forms::Label^ label2;
+	private: System::Windows::Forms::TextBox^ dllPathTextBox;
 
 	protected:
 		TaskGeneratorSettings ^currentSettings;
@@ -59,32 +63,36 @@ namespace optimizerui {
 			this->gklsGroupBox = (gcnew System::Windows::Forms::GroupBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->gklsDimentionNumericUpDown = (gcnew System::Windows::Forms::NumericUpDown());
+			this->customGroupBox = (gcnew System::Windows::Forms::GroupBox());
+			this->dllPathTextBox = (gcnew System::Windows::Forms::TextBox());
+			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->gklsGroupBox->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->gklsDimentionNumericUpDown))->BeginInit();
+			this->customGroupBox->SuspendLayout();
 			this->SuspendLayout();
-			//
+			// 
 			// gklsGroupBox
-			//
+			// 
 			this->gklsGroupBox->Controls->Add(this->label1);
 			this->gklsGroupBox->Controls->Add(this->gklsDimentionNumericUpDown);
 			this->gklsGroupBox->Location = System::Drawing::Point(12, 12);
 			this->gklsGroupBox->Name = L"gklsGroupBox";
-			this->gklsGroupBox->Size = System::Drawing::Size(332, 102);
+			this->gklsGroupBox->Size = System::Drawing::Size(332, 51);
 			this->gklsGroupBox->TabIndex = 0;
 			this->gklsGroupBox->TabStop = false;
 			this->gklsGroupBox->Text = L"GKLS generator";
-			//
+			// 
 			// label1
-			//
+			// 
 			this->label1->AutoSize = true;
 			this->label1->Location = System::Drawing::Point(6, 20);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(78, 13);
+			this->label1->Size = System::Drawing::Size(59, 13);
 			this->label1->TabIndex = 1;
 			this->label1->Text = L"Dimension:";
-			//
+			// 
 			// gklsDimentionNumericUpDown
-			//
+			// 
 			this->gklsDimentionNumericUpDown->Location = System::Drawing::Point(109, 18);
 			this->gklsDimentionNumericUpDown->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 6, 0, 0, 0 });
 			this->gklsDimentionNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
@@ -93,17 +101,46 @@ namespace optimizerui {
 			this->gklsDimentionNumericUpDown->TabIndex = 0;
 			this->gklsDimentionNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
 			this->gklsDimentionNumericUpDown->ValueChanged += gcnew System::EventHandler(this, &TaskGeneratorSettingsWindow::gklsDimentionNumericUpDown_ValueChanged);
-			//
+			// 
+			// customGroupBox
+			// 
+			this->customGroupBox->Controls->Add(this->dllPathTextBox);
+			this->customGroupBox->Controls->Add(this->label2);
+			this->customGroupBox->Location = System::Drawing::Point(12, 80);
+			this->customGroupBox->Name = L"customGroupBox";
+			this->customGroupBox->Size = System::Drawing::Size(332, 51);
+			this->customGroupBox->TabIndex = 2;
+			this->customGroupBox->TabStop = false;
+			this->customGroupBox->Text = L"Custom problem loader";
+			// 
+			// dllPathTextBox
+			// 
+			this->dllPathTextBox->Location = System::Drawing::Point(109, 19);
+			this->dllPathTextBox->Name = L"dllPathTextBox";
+			this->dllPathTextBox->Size = System::Drawing::Size(217, 20);
+			this->dllPathTextBox->TabIndex = 2;
+			this->dllPathTextBox->TextChanged += gcnew System::EventHandler(this, &TaskGeneratorSettingsWindow::dllPathTextBox_TextChanged);
+			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->Location = System::Drawing::Point(6, 20);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(54, 13);
+			this->label2->TabIndex = 1;
+			this->label2->Text = L"DLL path:";
+			// 
 			// TaskGeneratorSettingsWindow
-			//
+			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(353, 123);
+			this->ClientSize = System::Drawing::Size(353, 153);
+			this->Controls->Add(this->customGroupBox);
 			this->Controls->Add(this->gklsGroupBox);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->MaximizeBox = false;
-			this->MaximumSize = System::Drawing::Size(369, 162);
-			this->MinimumSize = System::Drawing::Size(369, 162);
+			this->MaximumSize = System::Drawing::Size(369, 192);
+			this->MinimumSize = System::Drawing::Size(369, 192);
 			this->Name = L"TaskGeneratorSettingsWindow";
 			this->ShowIcon = false;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterParent;
@@ -111,6 +148,8 @@ namespace optimizerui {
 			this->gklsGroupBox->ResumeLayout(false);
 			this->gklsGroupBox->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->gklsDimentionNumericUpDown))->EndInit();
+			this->customGroupBox->ResumeLayout(false);
+			this->customGroupBox->PerformLayout();
 			this->ResumeLayout(false);
 
 		}
@@ -121,5 +160,11 @@ namespace optimizerui {
 			currentSettings->GKLSDimention = Convert::ToUInt32(gklsDimentionNumericUpDown->Value);
 		}
 	}
-	};
+	private: System::Void dllPathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings)
+		{
+			currentSettings->dllPath = dllPathTextBox->Text;
+		}
+	}
+};
 }

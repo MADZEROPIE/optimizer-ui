@@ -4,6 +4,7 @@
 #include "OptimizerFunction.hpp"
 #include "VAGrisFunction.h"
 #include "GKLSFunction.h"
+#include "problem_interface.h"
 
 class FunctionWrapperCommon : public optimizercore::OptimizerFunction
 {
@@ -47,5 +48,21 @@ public:
 	double Calculate(const double *x) override;
 	double GetMinValue() const override;
 	void GetMinPoint(double *x) const override;
+};
+
+class CustomProblemWrapper : public FunctionWrapperCommon
+{
+private:
+	IProblem* mFunction;
+public:
+	CustomProblemWrapper();
+	CustomProblemWrapper(IProblem*);
+	virtual ~CustomProblemWrapper();
+
+	void SetFunctionNumber(int num) override;
+	void SetDimention(unsigned value);
+	double Calculate(const double* x) override;
+	double GetMinValue() const override;
+	void GetMinPoint(double* x) const override;
 };
 #endif

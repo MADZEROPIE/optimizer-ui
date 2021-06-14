@@ -27,7 +27,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -94,6 +94,8 @@
     <ClInclude Include="OptimizerSTLFunctionWrapper.hpp" />
     <ClInclude Include="OptimizerTask.hpp" />
     <ClInclude Include="OptimizerAlgorithmUnconstrained.hpp" />
+    <ClInclude Include="problem_interface.h" />
+    <ClInclude Include="problem_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreUtils.cpp" />
@@ -109,6 +111,7 @@
     <ClCompile Include="OptimizerSpaceTransformation.cpp" />
     <ClCompile Include="OptimizerSTLFunctionWrapper.cpp" />
     <ClCompile Include="OptimizerTask.cpp" />
+    <ClCompile Include="problem_manager.cpp" />
     <ClCompile Include="X_to_y.cpp" />
     <ClCompile Include="Y_to_x.cpp" />
   </ItemGroup>

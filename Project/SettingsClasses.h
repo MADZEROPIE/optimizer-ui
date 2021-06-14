@@ -2,6 +2,7 @@
 
 namespace optimizerui
 {
+	using namespace System;
 
 	ref class GraphSettings	{
 
@@ -59,6 +60,7 @@ namespace optimizerui
 	public:
 
 		unsigned GKLSDimention = 2;
+		String ^dllPath = L"CustomProblem.dll";
 
 		TaskGeneratorSettings()
 		{

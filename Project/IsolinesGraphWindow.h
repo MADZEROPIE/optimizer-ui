@@ -24,7 +24,7 @@ namespace optimizerui {
 			height -= crop;
 
 			Bitmap ^bmp = gcnew Bitmap(width, height, System::Drawing::Imaging::PixelFormat::Format24bppRgb);
-			Rectangle rect = Rectangle(0, 0, width, height);
+      System::Drawing::Rectangle rect = System::Drawing::Rectangle(0, 0, width, height);
 			BitmapData ^bitmapData = bmp->LockBits(rect, ImageLockMode::WriteOnly, bmp->PixelFormat);
 			IntPtr imgData = bitmapData->Scan0;
 			System::Runtime::InteropServices::Marshal::Copy(rawImage, 0, imgData, rawImage->Length - width*crop*3);
