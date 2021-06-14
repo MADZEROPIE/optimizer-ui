@@ -202,6 +202,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->drawIsolinesButton = (gcnew System::Windows::Forms::Button());
         this->solveTaskSerieBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+        this->customProblemRadioButton = (gcnew System::Windows::Forms::RadioButton());
         this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->gklsHardRadioButton = (gcnew System::Windows::Forms::RadioButton());
         this->gklsRadioButton2 = (gcnew System::Windows::Forms::RadioButton());
@@ -242,7 +243,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->saveFileDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
-        this->customProblemRadioButton = (gcnew System::Windows::Forms::RadioButton());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -399,7 +399,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // 
         this->map_tightness->Location = System::Drawing::Point(210, 71);
         this->map_tightness->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 20, 0, 0, 0 });
-        this->map_tightness->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 8, 0, 0, 0 });
+        this->map_tightness->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 3, 0, 0, 0 });
         this->map_tightness->Name = L"map_tightness";
         this->map_tightness->Size = System::Drawing::Size(47, 20);
         this->map_tightness->TabIndex = 11;
@@ -492,6 +492,16 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->groupBox2->TabIndex = 13;
         this->groupBox2->TabStop = false;
         this->groupBox2->Text = L"Problem";
+        // 
+        // customProblemRadioButton
+        // 
+        this->customProblemRadioButton->AutoSize = true;
+        this->customProblemRadioButton->Location = System::Drawing::Point(143, 158);
+        this->customProblemRadioButton->Name = L"customProblemRadioButton";
+        this->customProblemRadioButton->Size = System::Drawing::Size(60, 17);
+        this->customProblemRadioButton->TabIndex = 23;
+        this->customProblemRadioButton->Text = L"Custom";
+        this->customProblemRadioButton->UseVisualStyleBackColor = true;
         // 
         // stopCheckBox
         // 
@@ -875,16 +885,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // 
         this->saveOPImgDialog->DefaultExt = L"png";
         this->saveOPImgDialog->Filter = L"PNG|*.png";
-        // 
-        // customProblemRadioButton
-        // 
-        this->customProblemRadioButton->AutoSize = true;
-        this->customProblemRadioButton->Location = System::Drawing::Point(143, 158);
-        this->customProblemRadioButton->Name = L"customProblemRadioButton";
-        this->customProblemRadioButton->Size = System::Drawing::Size(60, 17);
-        this->customProblemRadioButton->TabIndex = 23;
-        this->customProblemRadioButton->Text = L"Custom";
-        this->customProblemRadioButton->UseVisualStyleBackColor = true;
         // 
         // MainWindow
         // 
