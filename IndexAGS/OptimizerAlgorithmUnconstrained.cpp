@@ -226,10 +226,10 @@ OptimizerResult OptimizerAlgorithmUnconstrained::StartOptimization(
 	mOptimumEvaluation.val = mTargetFunction->Calculate(y);
 	mSearchInformationStorage.insert(mOptimumEvaluation);
 
-	if (stopType == StopCriterionType::Precision)
+	if (stopType == StopCriterionType::Precision || iterationsCount == mMaxNumberOfIterations)
 		mOptimumEvaluation = *std::min_element(mSearchInformationStorage.begin(),
 			mSearchInformationStorage.cend(),
-			[](OptimizerTrialPoint p1, OptimizerTrialPoint p2)
+			[](const OptimizerTrialPoint& p1, const OptimizerTrialPoint& p2)
 		{
 			return p1.val < p2.val;
 		});

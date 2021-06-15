@@ -303,6 +303,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // groupBox1
         // 
         this->groupBox1->Controls->Add(this->isLocalCheckBox);
+        this->groupBox1->Controls->Add(this->stopCheckBox);
         this->groupBox1->Controls->Add(this->threadsNumNumericUpDown);
         this->groupBox1->Controls->Add(this->label16);
         this->groupBox1->Controls->Add(this->MapTypeComboBox);
@@ -474,7 +475,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // groupBox2
         // 
         this->groupBox2->Controls->Add(this->customProblemRadioButton);
-        this->groupBox2->Controls->Add(this->stopCheckBox);
         this->groupBox2->Controls->Add(this->gklsHardRadioButton);
         this->groupBox2->Controls->Add(this->gklsRadioButton2);
         this->groupBox2->Controls->Add(this->grishaginRadioButton);
@@ -506,7 +506,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // stopCheckBox
         // 
         this->stopCheckBox->AutoSize = true;
-        this->stopCheckBox->Location = System::Drawing::Point(9, 154);
+        this->stopCheckBox->Location = System::Drawing::Point(140, 173);
         this->stopCheckBox->Name = L"stopCheckBox";
         this->stopCheckBox->Size = System::Drawing::Size(109, 17);
         this->stopCheckBox->TabIndex = 22;
@@ -1536,7 +1536,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
 
     delete[] y;
-    delete targetFunction;
   }
 
   private: System::Void solveSingleTaskBackgroundWorker_RunWorkerCompleted(System::Object^  sender, System::ComponentModel::RunWorkerCompletedEventArgs^  e) {
