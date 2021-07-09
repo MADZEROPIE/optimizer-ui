@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="problem.h" />
+    <ClInclude Include="problem_interface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="problem.cpp" />

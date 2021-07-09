@@ -18,6 +18,9 @@
     <ClInclude Include="problem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="problem_interface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="problem.cpp">

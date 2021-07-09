@@ -56,21 +56,27 @@ namespace optimizerui {
       ExperimentsLog = gcnew String("");
       MapTypeComboBox->SelectedIndex = 0;
       saveFileDialog->InitialDirectory = System::IO::Directory::GetCurrentDirectory();
-      saveFileDialog->Filter = "CSV file|*.csv";
+      saveFileDialog->Filter = "CSV file|*.csv|All files|*.*";
+
     }
 
   protected:
     ~MainWindow()
     {
-      if (components)
-      {
+      if (components != nullptr) {
         delete components;
+        components = nullptr;
       }
-      if (currentSequence)
-        delete currentSequence;
-      delete mCurrentAlgParams->r;
-      delete mCurrentAlgParams->reserves;
-      delete mCurrentAlgParams;
+      if (currentSequence!= nullptr) {
+          delete currentSequence;
+          currentSequence = nullptr;
+      }
+      if (mCurrentAlgParams != nullptr) {
+          delete mCurrentAlgParams->r;
+          delete mCurrentAlgParams->reserves;
+          delete mCurrentAlgParams;
+          mCurrentAlgParams = nullptr;
+      }
     }
   private: System::Windows::Forms::DataVisualization::Charting::Chart^  chart1;
   private: System::Windows::Forms::Button^  solveSerieButton;
@@ -936,6 +942,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       else
         ExperimentsLog += "Algorithm: global\n";
       ExperimentsLog += "Threads number: " + threadsNumNumericUpDown->Value.ToString() + "\n";
+      readAlgorithmParameters();
       solveTaskSerieBackgroundWorker->RunWorkerAsync();
       solveSerieButton->Enabled = false;
       solveSingleTaskButton->Enabled = false;
@@ -948,7 +955,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     series_count = 0;
   }
   private: System::Void solveTaskSerieBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
-    readAlgorithmParameters();
+    //readAlgorithmParameters();
 
     int currentDimention = 2;
     FunctionWrapperCommon *targetFunction;
@@ -1043,8 +1050,9 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     delete[] y;
   }
   private: System::Void backgroundWorker1_ProgressChanged(System::Object^  sender, System::ComponentModel::ProgressChangedEventArgs^  e) {
-    progressBar1->Value = e->ProgressPercentage;
+      progressBar1->Value = e->ProgressPercentage;
   }
+
   private: System::Void backgroundWorker1_RunWorkerCompleted(System::Object^  sender, System::ComponentModel::RunWorkerCompletedEventArgs^  e) {
     series_count++;
     String ^s_name = gcnew String(series_count.ToString() + ": E=" + prec_text->Text + " R=" + reliability_coeff->Value.ToString("F1") + " M=" + map_tightness->Value.ToString("F0"));
@@ -1096,11 +1104,11 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
   }
 
   private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (!solveSingleTaskBackgroundWorker->IsBusy)
-    {
-      solveSingleTaskBackgroundWorker->RunWorkerAsync();
-      solveSingleTaskButton->Enabled = false;
-      solveSerieButton->Enabled = false;
+    if (!solveSingleTaskBackgroundWorker->IsBusy) {
+        readAlgorithmParameters();  // If parameters are read by a worker, exception throws.
+        solveSingleTaskBackgroundWorker->RunWorkerAsync();
+        solveSingleTaskButton->Enabled = false;
+        solveSerieButton->Enabled = false;
     }
   }
 
@@ -1441,7 +1449,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     delete[] tmpPoint;
   }
   private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
-    readAlgorithmParameters();
+    //readAlgorithmParameters();
     int currentDimention = 2;
     FunctionWrapperCommon *targetFunction;
     SharedVector leftBound, rightBound;
@@ -1526,7 +1534,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     err_val = expResult.GetSolution().GetOptimumValue() - err_val;
     err_xy = utils::NormNDimMax(x, y, currentDimention);
 
-    it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString();
+    it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
     task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
     task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
     error_val->Text = err_val.ToString("F6");
