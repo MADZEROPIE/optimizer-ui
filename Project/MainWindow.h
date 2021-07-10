@@ -38,8 +38,7 @@ namespace optimizerui {
   public ref class MainWindow : public System::Windows::Forms::Form
   {
   public:
-    MainWindow(void)
-    {
+    MainWindow(void) {
       mErrorValueString = gcnew String(" ");
       InitializeComponent();
 
@@ -62,8 +61,7 @@ namespace optimizerui {
     }
 
   protected:
-    ~MainWindow()
-    {
+    ~MainWindow() {
       if (components != nullptr) {
         delete components;
         components = nullptr;
@@ -82,15 +80,12 @@ namespace optimizerui {
   private: System::Windows::Forms::DataVisualization::Charting::Chart^  chart1;
   private: System::Windows::Forms::Button^  solveSerieButton;
 
-
-
   private: System::Windows::Forms::Label^  label1;
   private: System::Windows::Forms::Label^  label2;
   private: System::Windows::Forms::GroupBox^  groupBox1;
   private: System::Windows::Forms::NumericUpDown^  map_tightness;
 
   private: System::Windows::Forms::NumericUpDown^  reliability_coeff;
-
 
   private: System::Windows::Forms::Label^  label3;
   private: System::Windows::Forms::TextBox^  prec_text;
@@ -122,7 +117,6 @@ namespace optimizerui {
   private: System::Windows::Forms::Label^  label6;
   private: System::Windows::Forms::Button^  solveSingleTaskButton;
 
-
   private: System::Windows::Forms::NumericUpDown^  task_number;
 
   private: System::Windows::Forms::GroupBox^  groupBox3;
@@ -148,11 +142,7 @@ namespace optimizerui {
 
   private: System::Windows::Forms::Label^  label13;
 
-
-
   private: System::Windows::Forms::RadioButton^  gklsHardRadioButton;
-
-
 
   private: System::Windows::Forms::CheckBox^  stopCheckBox;
   private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel1;
@@ -440,9 +430,9 @@ private:
         this->label3->AutoSize = true;
         this->label3->Location = System::Drawing::Point(6, 73);
         this->label3->Name = L"label3";
-        this->label3->Size = System::Drawing::Size(97, 13);
+        this->label3->Size = System::Drawing::Size(88, 13);
         this->label3->TabIndex = 8;
-        this->label3->Text = L"Evolvent tightness:";
+        this->label3->Text = L"Evolvent density:";
         // 
         // label4
         // 
@@ -929,6 +919,7 @@ private:
 
     }
 #pragma endregion
+
   private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
     if (solveTaskSerieBackgroundWorker->IsBusy != true)
     {
@@ -951,6 +942,7 @@ private:
       solveSingleTaskButton->Enabled = false;
     }
   }
+
   private: System::Void clear_button_Click(System::Object^  sender, System::EventArgs^  e) {
 
     chart1->Series->Clear();
@@ -1117,8 +1109,7 @@ private:
   }
 
 
-  private: void DrawIsolines(int task_num, OptimizerSearchSequence* points)
-  {
+  private: void DrawIsolines(int task_num, OptimizerSearchSequence* points) {
     int n = 200, i, j, width = 800, height = 1100;
     float  fpi_x = 1, fpi_y = 1, step_x, step_y, zlev, x_left, y_min;
     double arg[2];
@@ -1126,7 +1117,7 @@ private:
 
     array<float, 1>^ xray = gcnew array<float, 1>(n);
     array<float, 1>^ yray = gcnew array<float, 1>(n);
-    array<float, 2>^  zmat = gcnew array<float, 2>(n, n);
+    array<float, 2>^ zmat = gcnew array<float, 2>(n, n);
 
     FunctionWrapperCommon *f;
     TProblemManager manager;
@@ -1172,8 +1163,7 @@ private:
       f = new CustomProblemWrapper(problem);
       taskName += "Custom problem";
     }
-    else
-    {
+    else {
       if (gklsRadioButton2->Checked) {
         f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
         taskName += "GKLS Simple function #" + task_num.ToString();
@@ -1237,14 +1227,12 @@ private:
       dislin::contur(xray, n, yray, n, zmat, zlev);
     }
 
-    if (points != nullptr)
-    {
+    if (points != nullptr) {
       dislin::color("white");
       double y[2];
       dislin::hsymbl(15);
       int size = points->GetSize();
-      for (int i = 0; i < size; i++)
-      {
+      for (int i = 0; i < size; i++) {
         points->GetPoint(i, y);
         dislin::rlsymb(21, (float)(y[0]), (float)(y[1]));
       }
@@ -1281,8 +1269,7 @@ private:
     DrawOneDimGraph(task_num, nullptr);
   }
 
-  private: System::Void DrawOneDimGraph(int task_num, OptimizerSearchSequence* points)
-  {
+  private: System::Void DrawOneDimGraph(int task_num, OptimizerSearchSequence* points) {
     int n = 2000;
     double fpi = 1, step, *y = new double[mTaskGeneratorSettings.GKLSDimention];
     array<float, 1>^ xray = gcnew array<float, 1>(n + 1);
@@ -1382,11 +1369,10 @@ private:
     delete[] y;
     delete f;
   }
+
   private: System::Void saveOPToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (series_count > 0)
-    {
-      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-      {
+    if (series_count > 0) {
+      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
         String^ outputString;
         int t_count = 0;
         for (int i = 10; i < max_it_count + 20; i += 10) {
@@ -1399,28 +1385,31 @@ private:
         System::IO::File::WriteAllText(saveFileDialog->FileName, outputString);
       }
     }
-    else
-      MessageBox::Show("No operating characteristic to save", "Error",
-        MessageBoxButtons::OK, MessageBoxIcon::Information);
+    else {
+        MessageBox::Show("No operating characteristic to save", "Error",
+            MessageBoxButtons::OK, MessageBoxIcon::Information);
+    }
   }
+
   private: System::Void savePointsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (currentSequence != nullptr)
-    {
-      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-      {
+    if (currentSequence != nullptr) {
+      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
         Thread^ fileWriteThread = gcnew Thread(gcnew ThreadStart(this, &MainWindow::savePoints));
         fileWriteThread->IsBackground = true;
         fileWriteThread->Start();
       }
     }
-    else
-      MessageBox::Show("No data to save", "Error",
-        MessageBoxButtons::OK, MessageBoxIcon::Information);
+    else {
+        MessageBox::Show("No data to save", "Error",
+            MessageBoxButtons::OK, MessageBoxIcon::Information);
+    }
   }
+
   private: System::Void graphSettingsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
     GraphSettingsWindow ^settings = gcnew GraphSettingsWindow(mGraphSettings);
     settings->ShowDialog();
   }
+
   private: System::Void algSettingsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
     AlgorithmSettingsWindow ^settings = gcnew AlgorithmSettingsWindow(mAlgorithmSettings);
     settings->ShowDialog();
@@ -1430,8 +1419,8 @@ private:
     TaskGeneratorSettingsWindow ^settings = gcnew TaskGeneratorSettingsWindow(mTaskGeneratorSettings);
     settings->ShowDialog();
   }
-  private: System::Void savePoints()
-  {
+
+  private: System::Void savePoints() {
     String^ outputString;
 
     int seqSize = currentSequence->GetSize();
@@ -1587,8 +1576,7 @@ private:
     solveSerieButton->Enabled = true;
   }
 
-  private: System::Void readAlgorithmParameters()
-  {
+  private: System::Void readAlgorithmParameters() {
     mCurrentAlgParams->eps = Convert::ToDouble(prec_text->Text, nfi);
     *mCurrentAlgParams->r = Convert::ToDouble(reliability_coeff->Value);
     *mCurrentAlgParams->reserves = 0;
@@ -1610,6 +1598,7 @@ private:
     mCurrentAlgParams->localVerification = mAlgorithmSettings.localVerification;
     mCurrentAlgParams->localTuningMode = static_cast<LocalTuningMode>(mAlgorithmSettings.localAdaptationMode);
   }
+
   private: System::Void saveOPChartToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
     if (saveOPImgDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
     {
