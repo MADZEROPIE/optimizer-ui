@@ -33,6 +33,8 @@ namespace optimizerui {
   using namespace System::Globalization;
   using namespace System::Threading;
 
+  delegate System::Void setResultsDelegate(System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^);
+
   public ref class MainWindow : public System::Windows::Forms::Form
   {
   public:
@@ -57,7 +59,6 @@ namespace optimizerui {
       MapTypeComboBox->SelectedIndex = 0;
       saveFileDialog->InitialDirectory = System::IO::Directory::GetCurrentDirectory();
       saveFileDialog->Filter = "CSV file|*.csv|All files|*.*";
-
     }
 
   protected:
@@ -173,10 +174,12 @@ namespace optimizerui {
   private: System::Windows::Forms::SaveFileDialog^  saveFileDialog;
   private: System::Windows::Forms::ToolStripMenuItem^  algSettingsToolStripMenuItem;
   private: System::Windows::Forms::CheckBox^  isLocalCheckBox;
-  private: System::ComponentModel::BackgroundWorker^  solveSingleTaskBackgroundWorker;
-private: System::Windows::Forms::ToolStripMenuItem^  saveOPChartToolStripMenuItem;
-private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
-private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
+public: System::ComponentModel::BackgroundWorker^ solveSingleTaskBackgroundWorker;
+private:
+
+  private: System::Windows::Forms::ToolStripMenuItem^  saveOPChartToolStripMenuItem;
+  private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
+  private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
 
   private:
     System::ComponentModel::Container ^components;
@@ -192,6 +195,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->label2 = (gcnew System::Windows::Forms::Label());
         this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
         this->isLocalCheckBox = (gcnew System::Windows::Forms::CheckBox());
+        this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->threadsNumNumericUpDown = (gcnew System::Windows::Forms::NumericUpDown());
         this->label16 = (gcnew System::Windows::Forms::Label());
         this->MapTypeComboBox = (gcnew System::Windows::Forms::ComboBox());
@@ -209,7 +213,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->solveTaskSerieBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
         this->customProblemRadioButton = (gcnew System::Windows::Forms::RadioButton());
-        this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->gklsHardRadioButton = (gcnew System::Windows::Forms::RadioButton());
         this->gklsRadioButton2 = (gcnew System::Windows::Forms::RadioButton());
         this->grishaginRadioButton = (gcnew System::Windows::Forms::RadioButton());
@@ -338,6 +341,16 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->isLocalCheckBox->TabIndex = 24;
         this->isLocalCheckBox->Text = L"Local tuned algorithm";
         this->isLocalCheckBox->UseVisualStyleBackColor = true;
+        // 
+        // stopCheckBox
+        // 
+        this->stopCheckBox->AutoSize = true;
+        this->stopCheckBox->Location = System::Drawing::Point(140, 173);
+        this->stopCheckBox->Name = L"stopCheckBox";
+        this->stopCheckBox->Size = System::Drawing::Size(109, 17);
+        this->stopCheckBox->TabIndex = 22;
+        this->stopCheckBox->Text = L"Stop by accuracy";
+        this->stopCheckBox->UseVisualStyleBackColor = true;
         // 
         // threadsNumNumericUpDown
         // 
@@ -508,16 +521,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->customProblemRadioButton->TabIndex = 23;
         this->customProblemRadioButton->Text = L"Custom";
         this->customProblemRadioButton->UseVisualStyleBackColor = true;
-        // 
-        // stopCheckBox
-        // 
-        this->stopCheckBox->AutoSize = true;
-        this->stopCheckBox->Location = System::Drawing::Point(140, 173);
-        this->stopCheckBox->Name = L"stopCheckBox";
-        this->stopCheckBox->Size = System::Drawing::Size(109, 17);
-        this->stopCheckBox->TabIndex = 22;
-        this->stopCheckBox->Text = L"Stop by accuracy";
-        this->stopCheckBox->UseVisualStyleBackColor = true;
         // 
         // gklsHardRadioButton
         // 
@@ -1049,6 +1052,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     max_it_count = max_count;
     delete[] y;
   }
+
   private: System::Void backgroundWorker1_ProgressChanged(System::Object^  sender, System::ComponentModel::ProgressChangedEventArgs^  e) {
       progressBar1->Value = e->ProgressPercentage;
   }
@@ -1111,6 +1115,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         solveSerieButton->Enabled = false;
     }
   }
+
 
   private: void DrawIsolines(int task_num, OptimizerSearchSequence* points)
   {
@@ -1448,6 +1453,8 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     System::IO::File::WriteAllText(saveFileDialog->FileName, outputString);
     delete[] tmpPoint;
   }
+
+
   private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
     //readAlgorithmParameters();
     int currentDimention = 2;
@@ -1534,17 +1541,37 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     err_val = expResult.GetSolution().GetOptimumValue() - err_val;
     err_xy = utils::NormNDimMax(x, y, currentDimention);
 
-    it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
-    task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
-    task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
-    error_val->Text = err_val.ToString("F6");
-    error_xy->Text = err_xy.ToString("F6");
-    mErrorValueString = err_xy.ToString("F6");
-    //lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
-    lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
 
+    //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
+    //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+    //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
+    //this->error_val->Text = err_val.ToString("F6");
+    //this->error_xy->Text = err_xy.ToString("F6");
+    //this->mErrorValueString = err_xy.ToString("F6");
+    ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+    //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+    setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
+    Invoke(setResultsDel, 
+        gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
+        "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+        expResult.GetSolution().GetOptimumValue().ToString("F6"),
+        err_val.ToString("F6"),
+        err_xy.ToString("F6"),
+        err_xy.ToString("F6"),
+        ags.GetLipschitzConst().ToString("F5") });
     delete[] y;
   }
+  private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7) {
+      this->it_count_lbl->Text = s1;
+      this->task_answ_lbl->Text = s2;
+      this->task_val_lbl->Text = s3;
+      this->error_val->Text = s4;
+      this->error_xy->Text = s5;
+      this->mErrorValueString = s6;
+      this->lipConstLabel->Text = s7;
+  }
+
+
 
   private: System::Void solveSingleTaskBackgroundWorker_RunWorkerCompleted(System::Object^  sender, System::ComponentModel::RunWorkerCompletedEventArgs^  e) {
     solveSingleTaskButton->Enabled = true;
