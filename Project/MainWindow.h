@@ -989,7 +989,7 @@ private:
       rightBound.get()[0] = rightBound.get()[1] = 1;
       targetFunction = new VAGRisFunctionWrapper();
     }
-    else if (customProblemRadioButton->Checked) {
+    else if (customProblemRadioButton->Checked) {  // ???
       return;
     }
 

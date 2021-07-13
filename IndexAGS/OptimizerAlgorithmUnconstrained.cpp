@@ -147,6 +147,7 @@ bool OptimizerAlgorithmUnconstrained::InsertNewTrials(int trailsNumber)
 	return storageInsertionError;
 }
 
+// AGS
 OptimizerResult OptimizerAlgorithmUnconstrained::StartOptimization(
 	const double* a, StopCriterionType stopType)
 {
@@ -248,6 +249,7 @@ OptimizerResult OptimizerAlgorithmUnconstrained::StartOptimization(
 	else
 		return OptimizerResult(solution);
 }
+
 OptimizerSolution OptimizerAlgorithmUnconstrained::DoLocalVerification(OptimizerSolution startSolution)
 {
 	OptimizerFunctionPtr *functions = new OptimizerFunctionPtr[1];

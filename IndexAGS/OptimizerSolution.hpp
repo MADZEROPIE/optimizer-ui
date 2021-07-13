@@ -5,36 +5,36 @@
 
 namespace optimizercore
 {
-	class EXPORT_API OptimizerSolution final
-	{
-	private:
+    class EXPORT_API OptimizerSolution final
+    {
+    private:
 
-		int mIteratinsCount;
-		unsigned mDimention;
-		double mOptimumValue;
-		double mOneDimOptimumPoint;
-		SharedVector mOptimumPoint;
+        int mIteratinsCount;
+        unsigned mDimention;
+        double mOptimumValue;
+        double mOneDimOptimumPoint;
+        SharedVector mOptimumPoint;
 
-		bool mIsInitialized;
+        bool mIsInitialized;
 
-	public:
-		OptimizerSolution();
-		OptimizerSolution(
-			int iterationsCount,
-			double optimumValue,
-			double oneDimOptimumPoint,
-			unsigned dimention,
-			SharedVector optimumPoint);
-		~OptimizerSolution() = default;
+    public:
+        OptimizerSolution();
+        OptimizerSolution(
+            int iterationsCount,
+            double optimumValue,
+            double oneDimOptimumPoint,
+            unsigned dimention,
+            SharedVector optimumPoint);
+        ~OptimizerSolution() = default;
 
-		int GetIterationsCount() const;
-		double GetOneDimOptimumPoint() const;
-		double GetOptimumValue() const;
-		SharedVector GetOptimumPoint() const;
+        int GetIterationsCount() const;
+        double GetOneDimOptimumPoint() const;
+        double GetOptimumValue() const;
+        SharedVector GetOptimumPoint() const;
 
-	private:
-		void CheckIsInitialized() const;
+    private:
+        void CheckIsInitialized() const;
 
-	};
+    };
 }
 #endif
