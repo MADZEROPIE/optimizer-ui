@@ -78,7 +78,7 @@ namespace optimizerui {
       }
     }
   private: System::Windows::Forms::DataVisualization::Charting::Chart^  chart1;
-  private: System::Windows::Forms::Button^  solveSerieButton;
+  private: System::Windows::Forms::Button^  solveSeriesButton;
 
   private: System::Windows::Forms::Label^  label1;
   private: System::Windows::Forms::Label^  label2;
@@ -170,6 +170,8 @@ private:
   private: System::Windows::Forms::ToolStripMenuItem^  saveOPChartToolStripMenuItem;
   private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
   private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
+private: System::Windows::Forms::ToolStripMenuItem^ russianToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
 
   private:
     System::ComponentModel::Container ^components;
@@ -180,7 +182,7 @@ private:
         System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
         System::Windows::Forms::DataVisualization::Charting::Title^ title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
         this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
-        this->solveSerieButton = (gcnew System::Windows::Forms::Button());
+        this->solveSeriesButton = (gcnew System::Windows::Forms::Button());
         this->label1 = (gcnew System::Windows::Forms::Label());
         this->label2 = (gcnew System::Windows::Forms::Label());
         this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
@@ -239,6 +241,8 @@ private:
         this->TaskGeneratorSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->algSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+        this->russianToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+        this->englishToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->saveFileDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
@@ -271,15 +275,15 @@ private:
         title1->Text = L"Operating characteristics";
         this->chart1->Titles->Add(title1);
         // 
-        // solveSerieButton
+        // solveSeriesButton
         // 
-        this->solveSerieButton->Location = System::Drawing::Point(9, 117);
-        this->solveSerieButton->Name = L"solveSerieButton";
-        this->solveSerieButton->Size = System::Drawing::Size(127, 23);
-        this->solveSerieButton->TabIndex = 1;
-        this->solveSerieButton->Text = L"Solve class";
-        this->solveSerieButton->UseVisualStyleBackColor = true;
-        this->solveSerieButton->Click += gcnew System::EventHandler(this, &MainWindow::button1_Click);
+        this->solveSeriesButton->Location = System::Drawing::Point(9, 117);
+        this->solveSeriesButton->Name = L"solveSerieButton";
+        this->solveSeriesButton->Size = System::Drawing::Size(127, 23);
+        this->solveSeriesButton->TabIndex = 1;
+        this->solveSeriesButton->Text = L"Solve class";
+        this->solveSeriesButton->UseVisualStyleBackColor = true;
+        this->solveSeriesButton->Click += gcnew System::EventHandler(this, &MainWindow::button1_Click);
         // 
         // label1
         // 
@@ -494,7 +498,7 @@ private:
         this->groupBox2->Controls->Add(this->task_number);
         this->groupBox2->Controls->Add(this->drawIsolinesButton);
         this->groupBox2->Controls->Add(this->label6);
-        this->groupBox2->Controls->Add(this->solveSerieButton);
+        this->groupBox2->Controls->Add(this->solveSeriesButton);
         this->groupBox2->Location = System::Drawing::Point(0, 209);
         this->groupBox2->Name = L"groupBox2";
         this->groupBox2->Size = System::Drawing::Size(275, 177);
@@ -867,8 +871,26 @@ private:
         // 
         // toolStripMenuItem1
         // 
+        this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+            this->russianToolStripMenuItem,
+                this->englishToolStripMenuItem
+        });
         this->toolStripMenuItem1->Name = L"toolStripMenuItem1";
         this->toolStripMenuItem1->Size = System::Drawing::Size(12, 20);
+        // 
+        // russianToolStripMenuItem
+        // 
+        this->russianToolStripMenuItem->Name = L"russianToolStripMenuItem";
+        this->russianToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+        this->russianToolStripMenuItem->Text = L"Russian";
+        this->russianToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::russianToolStripMenuItem_Click);
+        // 
+        // englishToolStripMenuItem
+        // 
+        this->englishToolStripMenuItem->Name = L"englishToolStripMenuItem";
+        this->englishToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+        this->englishToolStripMenuItem->Text = L"English";
+        this->englishToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::englishToolStripMenuItem_Click);
         // 
         // saveFileDialog
         // 
@@ -938,7 +960,7 @@ private:
       ExperimentsLog += "Threads number: " + threadsNumNumericUpDown->Value.ToString() + "\n";
       readAlgorithmParameters();
       solveTaskSerieBackgroundWorker->RunWorkerAsync();
-      solveSerieButton->Enabled = false;
+      solveSeriesButton->Enabled = false;
       solveSingleTaskButton->Enabled = false;
     }
   }
@@ -1090,7 +1112,7 @@ private:
       chart1->Series[s_name]->Points->AddXY(i, t_count / 100.0);
       t_count = 0;
     }
-    solveSerieButton->Enabled = true;
+    solveSeriesButton->Enabled = true;
     solveSingleTaskButton->Enabled = true;
   }
 
@@ -1104,7 +1126,7 @@ private:
         readAlgorithmParameters();  // If parameters are read by a worker, exception throws.
         solveSingleTaskBackgroundWorker->RunWorkerAsync();
         solveSingleTaskButton->Enabled = false;
-        solveSerieButton->Enabled = false;
+        solveSeriesButton->Enabled = false;
     }
   }
 
@@ -1573,7 +1595,7 @@ private:
       if (currentDimention == 2)
         DrawIsolines(mCurrentTaskNumber, currentSequence);
     }
-    solveSerieButton->Enabled = true;
+    solveSeriesButton->Enabled = true;
   }
 
   private: System::Void readAlgorithmParameters() {
@@ -1596,14 +1618,94 @@ private:
       mCurrentAlgParams->algDimention = mTaskGeneratorSettings.GKLSDimention;
     mCurrentTaskNumber = Convert::ToInt32(task_number->Value);
     mCurrentAlgParams->localVerification = mAlgorithmSettings.localVerification;
+    // Hmm... But if I'm about to add nested scheme as a part of this menu...
     mCurrentAlgParams->localTuningMode = static_cast<LocalTuningMode>(mAlgorithmSettings.localAdaptationMode);
   }
 
   private: System::Void saveOPChartToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (saveOPImgDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-    {
+    if (saveOPImgDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
       chart1->SaveImage(saveOPImgDialog->FileName, ChartImageFormat::Png);
     }
   }
+
+    // Localization
+private: System::Void russianToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    this->groupBox1->Text = L"Параметры алгоритма";
+    this->label1->Text = L"Параметр надёжности:";
+    this->label2->Text = L"Точность:";
+    this->label3->Text = L"Плотность развертки:";
+    this->label5->Text = L"Максимальное число итераций:";
+    this->label11->Text = L"Тип развёртки:";
+    this->label16->Text = L"Число потоков:";
+
+    this->isLocalCheckBox->Text = L"Локальная ???"; // ??? 
+    this->stopCheckBox->Text = L"Остановка по точности";
+
+    this->groupBox2->Text = L"Задача";
+    this->label6->Text = L"Индекс задачи";
+    this->solveSingleTaskButton->Text = L"Решить";
+    this->graph_checkBox->Text = L"Показывать точки испытаний на изолиниях"; // Не путать с изоклинами
+
+    this->drawIsolinesButton->Text = L"Показать изолинии";
+    this->OneDimGraphButton->Text = L"Одномерный график";
+    this->solveSeriesButton->Text = L"Решить класс";
+
+
+    this->label13->Text = L"Класс задач";
+    this->grishaginRadioButton->Text = L"Функции Гришагина";
+    this->gklsRadioButton2->Text = L"GKLS Простой"; // ???
+    this->gklsHardRadioButton->Text = L"GKLS Сложный"; // ???
+    this->customProblemRadioButton->Text = L"Свои функции"; // ???
+
+    this->groupBox3->Text = L"Результаты";
+    this->label7->Text = L"Координаты";
+    this->label8->Text = L"Значение";
+    this->label9->Text = L"Число итераций";
+    this->label10->Text = L"Отклонение значения";
+    this->label12->Text = L"Отклонение координат";
+    this->label17->Text = L"Константа Гёльдера";
+
+    this->label4->Text = L"Прогресс";
+    this->ShowLogButton->Text = L"Показать лог"; // ???
+    this->clear_button->Text = L"Отчистить график"; // ???
+}
+private: System::Void englishToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    this->groupBox1->Text = L"Parameters of algorithm";
+    this->label1->Text = L"Reliability coefficient:";
+    this->label2->Text = L"Accuracy:";
+    this->label3->Text = L"Evolvent density:";
+    this->label5->Text = L"Maximal number of iterations:";
+    this->label11->Text = L"Evolvent type:";
+    this->label16->Text = L"Threads number:";
+    this->stopCheckBox->Text = L"Stop by accuracy";
+    this->isLocalCheckBox->Text = L"Local tuning algorithm";
+
+    this->groupBox2->Text = L"Problem";
+    this->label6->Text = L"Problem index";
+    this->solveSingleTaskButton->Text = L"Solve";
+    this->graph_checkBox->Text = L"Show trial points on isolines";
+
+    this->drawIsolinesButton->Text = L"Show isolines";
+    this->OneDimGraphButton->Text = L"One dimensional graph";
+    this->solveSeriesButton->Text = L"Solve class";
+
+    this->label13->Text = L"Problem class";
+    this->grishaginRadioButton->Text = L"Grishagin functions";
+    this->gklsRadioButton2->Text = L"GKLS Simple"; // ???
+    this->gklsHardRadioButton->Text = L"GKLS Hard"; // ???
+    this->customProblemRadioButton->Text = L"Custom"; // ???
+
+    this->groupBox3->Text = L"Results";
+    this->label7->Text = L"Coordinates";
+    this->label8->Text = L"Value";
+    this->label9->Text = L"Iterations performed";
+    this->label10->Text = L"Error by value";
+    this->label12->Text = L"Error by coordinates";
+    this->label17->Text = L"Holder constant";
+
+    this->label4->Text = L"Progress";
+    this->ShowLogButton->Text = L"Show log";
+    this->clear_button->Text = L"Clear graph";
+}
 };
 }
