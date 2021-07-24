@@ -882,7 +882,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // 
         this->russianToolStripMenuItem->Name = L"russianToolStripMenuItem";
         this->russianToolStripMenuItem->Size = System::Drawing::Size(180, 22);
-        this->russianToolStripMenuItem->Text = L"Russian";
+        this->russianToolStripMenuItem->Text = L"Русский";
         this->russianToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::russianToolStripMenuItem_Click);
         // 
         // englishToolStripMenuItem
@@ -1668,6 +1668,16 @@ private: System::Void russianToolStripMenuItem_Click(System::Object^ sender, Sys
     this->label4->Text = L"Прогресс";
     this->ShowLogButton->Text = L"Показать лог"; // ???
     this->clear_button->Text = L"Отчистить график"; // ???
+
+    this->saveToolStripMenuItem->Text = L"Сохранить";
+    this->saveOPToolStripMenuItem->Text = L"Операционные характеристики";
+    this->savePointsToolStripMenuItem->Text = L"Точки испытаний";
+    this->saveOPChartToolStripMenuItem->Text = L"Сохранить график операционных характеристик";
+
+    this->advSettingsToolStripMenuItem->Text = L"Расширенные настройки";
+    this->graphSettingsToolStripMenuItem->Text = L"Настройки графика";
+    this->TaskGeneratorSettingsToolStripMenuItem->Text = L"Настройки генератора задач";
+    this->algSettingsToolStripMenuItem->Text = L"Настройки алгоритма";
 }
 private: System::Void englishToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
     this->groupBox1->Text = L"Parameters of algorithm";
@@ -1706,6 +1716,15 @@ private: System::Void englishToolStripMenuItem_Click(System::Object^ sender, Sys
     this->label4->Text = L"Progress";
     this->ShowLogButton->Text = L"Show log";
     this->clear_button->Text = L"Clear graph";
+
+
+    this->saveOPToolStripMenuItem->Text = L"Operating characteristic";
+    this->savePointsToolStripMenuItem->Text = L"Trial points";
+    this->saveOPChartToolStripMenuItem->Text = L"Save operating characteristics graph";
+    this->advSettingsToolStripMenuItem->Text = L"Advanced settings";
+    this->graphSettingsToolStripMenuItem->Text = L"Graph settings";
+    this->TaskGeneratorSettingsToolStripMenuItem->Text = L"Problem generator settings";
+    this->algSettingsToolStripMenuItem->Text = L"Algorithm settings";
 }
 };
 }
