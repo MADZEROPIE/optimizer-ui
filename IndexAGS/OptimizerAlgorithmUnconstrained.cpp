@@ -109,14 +109,14 @@ void OptimizerAlgorithmUnconstrained::InitializeInformationStorage()
     mSearchInformationStorage.emplace(1.0, mTargetFunction->Calculate(mNextPoints[0]), 0);
 }
 
-bool OptimizerAlgorithmUnconstrained::InsertNewTrials(int trailsNumber)
+bool OptimizerAlgorithmUnconstrained::InsertNewTrials(int trialsNumber)
 {
     bool storageInsertionError;
     if (mMapType == 3)
     {
         int preimagesNumber = 0;
         double preimages[32];
-        for (int i = 0; i < trailsNumber; i++)
+        for (int i = 0; i < trialsNumber; i++)
         {
             invmad(mMapTightness, preimages, 32,
                 &preimagesNumber, mNextPoints[i], mMethodDimention, 4);
@@ -134,7 +134,7 @@ bool OptimizerAlgorithmUnconstrained::InsertNewTrials(int trailsNumber)
         }
     }
     else
-        for (int i = 0; i < trailsNumber; i++)
+        for (int i = 0; i < trialsNumber; i++)
         {
             auto insertionResult =
                 mSearchInformationStorage.insert(mNextTrialsPoints[i]);
@@ -303,7 +303,7 @@ OptimizerAlgorithmUnconstrained::~OptimizerAlgorithmUnconstrained()
         utils::DeleteMatrix(mNextPoints, mNumberOfThreads);
     if (mNextTrialsPoints)
         delete[] mNextTrialsPoints;
-    if (mIsAlgorithmMemoryAllocated)
+    if (mIsAlgorithmMemoryAllocated) // ???
     {
     }
 }
@@ -378,21 +378,21 @@ int OptimizerAlgorithmUnconstrained::UpdateRanks(bool isLocal)
         if (dx == 0)
             return 1;
 
-        if (mLocalTuningMode != LocalTuningMode::None)	{
+        if (mLocalTuningMode != LocalTuningMode::None) {
             std::set<OptimizerTrialPoint>::iterator rightRightIt = rightIt;
 
-            if (j > 0 && j < storageSize - 2)	{
+            if (j > 0 && j < storageSize - 2) {
                 ++rightRightIt;
 
                 std::swap(localMConsts[0], localMConsts[1]);
                 std::swap(localMConsts[1], localMConsts[2]);
 
-                localMConsts[2] = fabs(rightRightIt->val - rightIt->val) 
+                localMConsts[2] = fabs(rightRightIt->val - rightIt->val)
                     / pow(rightRightIt->x - rightIt->x, 1.0 / mMethodDimention);
 
                 mu1 = fmax(fmax(localMConsts[0], localMConsts[1]), localMConsts[2]);
             }
-            else if (j == 0)	{
+            else if (j == 0) {
                 ++rightRightIt;
 
                 localMConsts[1] = fabs(rightIt->val - leftIt->val) / dx;
@@ -403,21 +403,23 @@ int OptimizerAlgorithmUnconstrained::UpdateRanks(bool isLocal)
             else
                 mu1 = fmax(localMConsts[1], localMConsts[2]);
 
-            double mu2 = mGlobalM*dx / mMaxIntervalNorm;
+            double mu2 = mGlobalM * dx / mMaxIntervalNorm;
 
-      if (mLocalTuningMode == LocalTuningMode::Maximum) {
-        localM = fmax(localMConsts[1], fmax(0.5 * (mu1 + mu2), 0.001));
-      }
-      else// LocalTuningMode::Adaptive
+            if (mLocalTuningMode == LocalTuningMode::Maximum) {
+                localM = fmax(localMConsts[1], fmax(0.5 * (mu1 + mu2), 0.001));
+            }
+            else {
+                // LocalTuningMode::Adaptive
 
-        //localM = fmax(mu1*(1 - dx / mMaxIntervalNorm) + mu2, 0.01);
+            //localM = fmax(mu1*(1 - dx / mMaxIntervalNorm) + mu2, 0.01);
 
-        localM = fmax(localMConsts[1], fmax(mu1 / r + ( r - 1)*mu2 / r, 0.001));
-            //localM = fmax(mu1*mMConvolution + (1 - mMConvolution)*mu2, 0.01);
-            //localM = fmax(mu1 / r + (1 - 1 / r)*mGlobalM, 0.01);
-            //if (mu1 < 0 || mu2 < 0)
-            //	throw - 1;
-            //printf(" %e  %e ||", mu1, mu2);
+                localM = fmax(localMConsts[1], fmax(mu1 / r + (r - 1) * mu2 / r, 0.001));
+                //localM = fmax(mu1*mMConvolution + (1 - mMConvolution)*mu2, 0.01);
+                //localM = fmax(mu1 / r + (1 - 1 / r)*mGlobalM, 0.01);
+                //if (mu1 < 0 || mu2 < 0)
+                //	throw - 1;
+                //printf(" %e  %e ||", mu1, mu2);
+            }
         }
 
         curr_rank = dx + Pow2((rightIt->val - leftIt->val) / (r * localM)) / dx
@@ -440,6 +442,6 @@ int OptimizerAlgorithmUnconstrained::UpdateRanks(bool isLocal)
     }
     return 0;
 }
-void OptimizerAlgorithmUnconstrained::AllocMem()
+void OptimizerAlgorithmUnconstrained::AllocMem() // ???
 {
 }

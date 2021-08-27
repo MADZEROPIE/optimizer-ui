@@ -1,5 +1,4 @@
-#ifndef OPTIMIZER_ALGORITHM_UNCONSTRAINED_HPP
-#define OPTIMIZER_ALGORITHM_UNCONSTRAINED_HPP
+#pragma once
 
 #include "OptimizerCoreGlobal.hpp"
 #include "OptimizerTask.hpp"
@@ -14,8 +13,8 @@
 
 namespace optimizercore
 {
-	
-	class EXPORT_API OptimizerAlgorithmUnconstrained final
+
+	class EXPORT_API OptimizerAlgorithmNested final
 	{
 
 	private:
@@ -29,35 +28,35 @@ namespace optimizercore
 		int mNumberOfThreads;
 		int mLocalStartIterationNumber;
 		int mMaxNumberOfIterations;
-		int mMapTightness;
+
 		int mMethodDimention;
-		int mAlpha;
-		int mLocalMixParameter;
-		int mMapType;
+		//int mAlpha; //???
+		//int mLocalMixParameter;
+		//int mMapType;
 
-		OptimizerSpaceTransformation mSpaceTransform;
-		OptimizerFunction *mTargetFunction;
-		OptimizerFunctionPtr mTargetFunctionSmartPtr;
+		//OptimizerSpaceTransformation mSpaceTransform;
+		OptimizerFunction* mTargetFunction;
+		//OptimizerFunctionPtr mTargetFunctionSmartPtr;
 
-		OptimaizerInterval *mIntervalsForTrials;
-		std::set<OptimizerTrialPoint> mSearchInformationStorage;
-		OptimizerTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
+		OptimaizerInterval* mIntervalsForTrials;
+        std::set<OptimizerNestedTrialPoint> mSearchInformationStorage;
+        OptimizerNestedTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
 
 		LocalTuningMode mLocalTuningMode;
 
 		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
-		double **mNextPoints;
+		double** mNextPoints;
 
 		void AllocMem();
 		void InitializeInformationStorage();
-		void UpdateGlobalM(std::set<OptimizerTrialPoint>::iterator&);
+		void UpdateGlobalM(std::set<OptimizerNestedTrialPoint>::iterator&);
 		int UpdateRanks(bool isLocal);
 		bool InsertNewTrials(int trialsNumber);
 		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
 
 	public:
-		OptimizerAlgorithmUnconstrained();
-		~OptimizerAlgorithmUnconstrained();
+		OptimizerAlgorithmNested();
+		~OptimizerAlgorithmNested();
 
 		void SetTask(OptimizerFunctionPtr function,
 			OptimizerSpaceTransformation spaceTransform);
@@ -68,8 +67,7 @@ namespace optimizercore
 			StopCriterionType stopType);
 
 		double GetLipschitzConst() const;
-		OptimizerSearchSequence GetSearchSequence() const;
+		OptimazerNestedSearchSequence GetSearchSequence() const;
 
 	};
 }
-#endif 

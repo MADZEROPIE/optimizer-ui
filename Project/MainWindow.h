@@ -105,7 +105,7 @@ namespace optimizerui {
     GraphSettings mGraphSettings;
     AlgorithmSettings mAlgorithmSettings;
     TaskGeneratorSettings mTaskGeneratorSettings;
-    OptimizerSearchSequence* currentSequence;
+    ISearchSequence* currentSequence;
     OneDimGraphWindow^ mOneDimGraph;
     IsolinesGraphWindow^ mIsolinesGraph;
     OptimizerParameters *mCurrentAlgParams;
@@ -172,6 +172,7 @@ private:
   private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
 private: System::Windows::Forms::ToolStripMenuItem^ russianToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
+private: System::Windows::Forms::CheckBox^ checkBox1;
 
   private:
     System::ComponentModel::Container ^components;
@@ -246,6 +247,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->saveFileDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
+        this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -268,7 +270,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->chart1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->chart1->Location = System::Drawing::Point(0, 24);
         this->chart1->Name = L"chart1";
-        this->chart1->Size = System::Drawing::Size(485, 591);
+        this->chart1->Size = System::Drawing::Size(485, 624);
         this->chart1->TabIndex = 0;
         this->chart1->Text = L"chart1";
         title1->Name = L"Title1";
@@ -278,7 +280,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // solveSeriesButton
         // 
         this->solveSeriesButton->Location = System::Drawing::Point(9, 117);
-        this->solveSeriesButton->Name = L"solveSerieButton";
+        this->solveSeriesButton->Name = L"solveSeriesButton";
         this->solveSeriesButton->Size = System::Drawing::Size(127, 23);
         this->solveSeriesButton->TabIndex = 1;
         this->solveSeriesButton->Text = L"Solve class";
@@ -305,6 +307,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // 
         // groupBox1
         // 
+        this->groupBox1->Controls->Add(this->checkBox1);
         this->groupBox1->Controls->Add(this->isLocalCheckBox);
         this->groupBox1->Controls->Add(this->stopCheckBox);
         this->groupBox1->Controls->Add(this->threadsNumNumericUpDown);
@@ -321,7 +324,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->groupBox1->Controls->Add(this->label2);
         this->groupBox1->Location = System::Drawing::Point(3, 3);
         this->groupBox1->Name = L"groupBox1";
-        this->groupBox1->Size = System::Drawing::Size(275, 200);
+        this->groupBox1->Size = System::Drawing::Size(275, 224);
         this->groupBox1->TabIndex = 7;
         this->groupBox1->TabStop = false;
         this->groupBox1->Text = L"Parameters of algorithm";
@@ -442,7 +445,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // 
         this->label4->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
         this->label4->AutoSize = true;
-        this->label4->Location = System::Drawing::Point(3, 561);
+        this->label4->Location = System::Drawing::Point(3, 594);
         this->label4->Name = L"label4";
         this->label4->Size = System::Drawing::Size(51, 13);
         this->label4->TabIndex = 8;
@@ -451,7 +454,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // progressBar1
         // 
         this->progressBar1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->progressBar1->Location = System::Drawing::Point(76, 563);
+        this->progressBar1->Location = System::Drawing::Point(76, 596);
         this->progressBar1->Name = L"progressBar1";
         this->progressBar1->Size = System::Drawing::Size(193, 11);
         this->progressBar1->TabIndex = 10;
@@ -459,7 +462,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // clear_button
         // 
         this->clear_button->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->clear_button->Location = System::Drawing::Point(129, 589);
+        this->clear_button->Location = System::Drawing::Point(129, 622);
         this->clear_button->Name = L"clear_button";
         this->clear_button->Size = System::Drawing::Size(127, 23);
         this->clear_button->TabIndex = 11;
@@ -499,7 +502,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->groupBox2->Controls->Add(this->drawIsolinesButton);
         this->groupBox2->Controls->Add(this->label6);
         this->groupBox2->Controls->Add(this->solveSeriesButton);
-        this->groupBox2->Location = System::Drawing::Point(0, 209);
+        this->groupBox2->Location = System::Drawing::Point(3, 233);
         this->groupBox2->Name = L"groupBox2";
         this->groupBox2->Size = System::Drawing::Size(275, 177);
         this->groupBox2->TabIndex = 13;
@@ -619,7 +622,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->groupBox3->Controls->Add(this->task_answ_lbl);
         this->groupBox3->Controls->Add(this->label8);
         this->groupBox3->Controls->Add(this->label7);
-        this->groupBox3->Location = System::Drawing::Point(0, 392);
+        this->groupBox3->Location = System::Drawing::Point(2, 416);
         this->groupBox3->Name = L"groupBox3";
         this->groupBox3->Size = System::Drawing::Size(276, 162);
         this->groupBox3->TabIndex = 14;
@@ -737,7 +740,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // ShowLogButton
         // 
         this->ShowLogButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->ShowLogButton->Location = System::Drawing::Point(2, 589);
+        this->ShowLogButton->Location = System::Drawing::Point(2, 622);
         this->ShowLogButton->Name = L"ShowLogButton";
         this->ShowLogButton->Size = System::Drawing::Size(121, 23);
         this->ShowLogButton->TabIndex = 18;
@@ -759,7 +762,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->tableLayoutPanel1->Name = L"tableLayoutPanel1";
         this->tableLayoutPanel1->RowCount = 1;
         this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Percent, 100)));
-        this->tableLayoutPanel1->Size = System::Drawing::Size(781, 621);
+        this->tableLayoutPanel1->Size = System::Drawing::Size(781, 654);
         this->tableLayoutPanel1->TabIndex = 19;
         // 
         // panel1
@@ -774,7 +777,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->panel1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->panel1->Location = System::Drawing::Point(3, 3);
         this->panel1->Name = L"panel1";
-        this->panel1->Size = System::Drawing::Size(284, 615);
+        this->panel1->Size = System::Drawing::Size(284, 648);
         this->panel1->TabIndex = 0;
         // 
         // panel2
@@ -784,7 +787,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->panel2->Dock = System::Windows::Forms::DockStyle::Fill;
         this->panel2->Location = System::Drawing::Point(293, 3);
         this->panel2->Name = L"panel2";
-        this->panel2->Size = System::Drawing::Size(485, 615);
+        this->panel2->Size = System::Drawing::Size(485, 648);
         this->panel2->TabIndex = 1;
         // 
         // menuStrip1
@@ -881,14 +884,14 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         // russianToolStripMenuItem
         // 
         this->russianToolStripMenuItem->Name = L"russianToolStripMenuItem";
-        this->russianToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+        this->russianToolStripMenuItem->Size = System::Drawing::Size(119, 22);
         this->russianToolStripMenuItem->Text = L"Русский";
         this->russianToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::russianToolStripMenuItem_Click);
         // 
         // englishToolStripMenuItem
         // 
         this->englishToolStripMenuItem->Name = L"englishToolStripMenuItem";
-        this->englishToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+        this->englishToolStripMenuItem->Size = System::Drawing::Size(119, 22);
         this->englishToolStripMenuItem->Text = L"English";
         this->englishToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::englishToolStripMenuItem_Click);
         // 
@@ -907,11 +910,21 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
         this->saveOPImgDialog->DefaultExt = L"png";
         this->saveOPImgDialog->Filter = L"PNG|*.png";
         // 
+        // checkBox1
+        // 
+        this->checkBox1->AutoSize = true;
+        this->checkBox1->Location = System::Drawing::Point(6, 196);
+        this->checkBox1->Name = L"checkBox1";
+        this->checkBox1->Size = System::Drawing::Size(100, 17);
+        this->checkBox1->TabIndex = 25;
+        this->checkBox1->Text = L"Nested scheme";
+        this->checkBox1->UseVisualStyleBackColor = true;
+        // 
         // MainWindow
         // 
         this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
         this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-        this->ClientSize = System::Drawing::Size(781, 621);
+        this->ClientSize = System::Drawing::Size(781, 654);
         this->Controls->Add(this->tableLayoutPanel1);
         this->MinimumSize = System::Drawing::Size(797, 660);
         this->Name = L"MainWindow";
@@ -1131,7 +1144,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
   }
 
 
-  private: void DrawIsolines(int task_num, OptimizerSearchSequence* points) {
+  private: void DrawIsolines(int task_num, ISearchSequence* points) {
     int n = 200, i, j, width = 800, height = 1100;
     float  fpi_x = 1, fpi_y = 1, step_x, step_y, zlev, x_left, y_min;
     double arg[2];
@@ -1274,7 +1287,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
     dislin::rpixls(rawImage, 0, 0, width, height);
     dislin::disfin();
 
-    if (points != 0 && !mGraphSettings.isGraphAppearsInNewWindow && mIsolinesGraph)
+    if (points != nullptr && !mGraphSettings.isGraphAppearsInNewWindow && mIsolinesGraph)
       mIsolinesGraph->Close();
 
     mIsolinesGraph = gcnew IsolinesGraphWindow(rawImage, width, height);
@@ -1291,7 +1304,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
     DrawOneDimGraph(task_num, nullptr);
   }
 
-  private: System::Void DrawOneDimGraph(int task_num, OptimizerSearchSequence* points) {
+  private: System::Void DrawOneDimGraph(int task_num, ISearchSequence* points) {
     int n = 2000;
     double fpi = 1, step, *y = new double[mTaskGeneratorSettings.GKLSDimention];
     array<float, 1>^ xray = gcnew array<float, 1>(n + 1);
@@ -1448,10 +1461,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
     int seqSize = currentSequence->GetSize();
     int seqDim = currentSequence->GetDimention();
     double *tmpPoint = new double[seqDim];
-    OptimizerSearchSequence tmpSequence(*currentSequence);
-
     for (int i = 0; i < seqSize; i++) {
-      tmpSequence.GetPoint(i, tmpPoint);
+        currentSequence->GetPoint(i, tmpPoint);
       for (int j = 0; j < seqDim; j++)
       {
         outputString += tmpPoint[j].ToString("F8");

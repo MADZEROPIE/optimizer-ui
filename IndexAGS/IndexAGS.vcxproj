@@ -81,13 +81,13 @@
     <ClInclude Include="CoreUtils.hpp" />
     <ClInclude Include="HookeJeevesLocalMethod.hpp" />
     <ClInclude Include="LocalMethodCommon.hpp" />
+    <ClInclude Include="OptimazerAlgorithmNested.hpp" />
     <ClInclude Include="OptimizerDataStructures.hpp" />
     <ClInclude Include="OptimizerFunction.hpp" />
     <ClInclude Include="OptimizerAlgorithm.hpp" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="OptimizerCoreGlobal.hpp" />
     <ClInclude Include="OptimizerResult.hpp" />
-    <ClInclude Include="OptimizerSearchInformationStorage.hpp" />
     <ClInclude Include="OptimizerSearchSequence.hpp" />
     <ClInclude Include="OptimizerSolution.hpp" />
     <ClInclude Include="OptimizerSpaceTransformation.hpp" />
@@ -100,12 +100,12 @@
   <ItemGroup>
     <ClCompile Include="CoreUtils.cpp" />
     <ClCompile Include="HookeJeevesLocalMethod.cpp" />
+    <ClCompile Include="OptimazerAlgorithmNested.cpp" />
     <ClCompile Include="OptimizerAlgorithmUnconstrained.cpp" />
     <ClCompile Include="OptimizerDataStructures.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OptimizerAlgorithm.cpp" />
     <ClCompile Include="OptimizerResult.cpp" />
-    <ClCompile Include="OptimizerSearchInformationStorage.cpp" />
     <ClCompile Include="OptimizerSearchSequence.cpp" />
     <ClCompile Include="OptimizerSolution.cpp" />
     <ClCompile Include="OptimizerSpaceTransformation.cpp" />

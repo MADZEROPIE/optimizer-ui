@@ -54,7 +54,7 @@ namespace optimizercore	{
 		void InitializeInformationStorages();
 		void UpdateLipConsts(IndxSet* set, const OptimizerTrialPoint& value);
 		int UpdateRanks(bool isLocal);
-		bool InsertNewTrials(int trailsNumber);
+		bool InsertNewTrials(int trialsNumber);
 		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
 
 	public:

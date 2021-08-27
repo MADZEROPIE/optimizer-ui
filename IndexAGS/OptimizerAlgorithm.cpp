@@ -127,14 +127,14 @@ void OptimizerAlgorithm::InitializeInformationStorages()
 	mSearchInformationStorage.emplace(1.0, 0.0, -1);
 }
 
-bool OptimizerAlgorithm::InsertNewTrials(int trailsNumber)
+bool OptimizerAlgorithm::InsertNewTrials(int trialsNumber)
 {
 	bool storageInsertionError;
 	if (mMapType == 3)
 	{
 		int preimagesNumber = 0;
 		double preimages[32];
-		for (int i = 0; i < trailsNumber; i++)
+		for (int i = 0; i < trialsNumber; i++)
 		{
 			invmad(mMapTightness, preimages, 32,
 				&preimagesNumber, mNextPoints[i], mMethodDimention, 4);
@@ -149,7 +149,7 @@ bool OptimizerAlgorithm::InsertNewTrials(int trailsNumber)
 		}
 	}
 	else
-		for (int i = 0; i < trailsNumber; i++)
+		for (int i = 0; i < trialsNumber; i++)
 		{
 			storageInsertionError =
 				mSearchInformationStorage.insert(mNextTrialsPoints[i]).second;
