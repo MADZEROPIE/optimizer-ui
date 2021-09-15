@@ -30,15 +30,17 @@ namespace optimizercore
 		int mMaxNumberOfIterations;
 
 		int mMethodDimention;
-		//int mAlpha; //???
-		//int mLocalMixParameter;
-		//int mMapType;
 
-		//OptimizerSpaceTransformation mSpaceTransform;
+		int mAlpha; //???
+		int mLocalMixParameter;
+
+		int mMapType;
+		int mMapTightness;
+
+		OptimizerSpaceTransformation mSpaceTransform;
 		OptimizerFunction* mTargetFunction;
-		//OptimizerFunctionPtr mTargetFunctionSmartPtr;
+		OptimizerFunctionPtr mTargetFunctionSmartPtr;
 
-		OptimaizerInterval* mIntervalsForTrials;
         std::set<OptimizerNestedTrialPoint> mSearchInformationStorage;
         OptimizerNestedTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
 
