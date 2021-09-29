@@ -17,6 +17,7 @@
 
 #include <msclr/marshal_cppstd.h>
 #include <string>
+#include <OptimazerAlgorithmNested.hpp>
 
 using namespace optimizercore;
 
@@ -187,6 +188,7 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->label1 = (gcnew System::Windows::Forms::Label());
         this->label2 = (gcnew System::Windows::Forms::Label());
         this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+        this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
         this->isLocalCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->threadsNumNumericUpDown = (gcnew System::Windows::Forms::NumericUpDown());
@@ -247,7 +249,6 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->saveFileDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
-        this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -328,6 +329,18 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->groupBox1->TabIndex = 7;
         this->groupBox1->TabStop = false;
         this->groupBox1->Text = L"Parameters of algorithm";
+        // 
+        // checkBox1
+        // 
+        this->checkBox1->AutoSize = true;
+        this->checkBox1->Checked = true;
+        this->checkBox1->CheckState = System::Windows::Forms::CheckState::Checked;
+        this->checkBox1->Location = System::Drawing::Point(6, 196);
+        this->checkBox1->Name = L"checkBox1";
+        this->checkBox1->Size = System::Drawing::Size(100, 17);
+        this->checkBox1->TabIndex = 25;
+        this->checkBox1->Text = L"Nested scheme";
+        this->checkBox1->UseVisualStyleBackColor = true;
         // 
         // isLocalCheckBox
         // 
@@ -910,16 +923,6 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->saveOPImgDialog->DefaultExt = L"png";
         this->saveOPImgDialog->Filter = L"PNG|*.png";
         // 
-        // checkBox1
-        // 
-        this->checkBox1->AutoSize = true;
-        this->checkBox1->Location = System::Drawing::Point(6, 196);
-        this->checkBox1->Name = L"checkBox1";
-        this->checkBox1->Size = System::Drawing::Size(100, 17);
-        this->checkBox1->TabIndex = 25;
-        this->checkBox1->Text = L"Nested scheme";
-        this->checkBox1->UseVisualStyleBackColor = true;
-        // 
         // MainWindow
         // 
         this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -1033,42 +1036,83 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
     optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
       utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
 
+
+
     //OptimizerAlgorithm ags;
-    OptimizerAlgorithmUnconstrained ags;
-    ags.SetParameters(*mCurrentAlgParams);
-    ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+
     //agp.SetTask(task);
 
     double *x, *y = new double[mTaskGeneratorSettings.GKLSDimention];
     double meanIterationsCount = 0;
     int err_count = 0, max_count = 0;
     Stopwatch s_watch;
-    s_watch.Start();
-    for (int i = 1; i <= 100; i++)
-    {
-      targetFunction->SetFunctionNumber(i);
-      targetFunction->GetMinPoint(y);
 
-      auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
-      auto taskSolution = expResult.GetSolution();
-      x = taskSolution.GetOptimumPoint().get();
+    if (checkBox1->Checked) {
+        OptimizerAlgorithmUnconstrained ags;
+        ags.SetParameters(*mCurrentAlgParams);
+        ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
 
-      if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
-        meanIterationsCount += taskSolution.GetIterationsCount();
-        mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
-      }
-      else {
-        err_count++;
-        error_numbers += i.ToString() + ", ";
-        mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
-      }
 
-      if (max_count < taskSolution.GetIterationsCount())
-        max_count = taskSolution.GetIterationsCount();
+        s_watch.Start();
+        for (int i = 1; i <= 100; i++)
+        {
+            targetFunction->SetFunctionNumber(i);
+            targetFunction->GetMinPoint(y);
 
-      solveTaskSerieBackgroundWorker->ReportProgress(i);
+            auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+            auto taskSolution = expResult.GetSolution();
+            x = taskSolution.GetOptimumPoint().get();
+
+            if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
+                meanIterationsCount += taskSolution.GetIterationsCount();
+                mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
+            }
+            else {
+                err_count++;
+                error_numbers += i.ToString() + ", ";
+                mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
+            }
+
+            if (max_count < taskSolution.GetIterationsCount())
+                max_count = taskSolution.GetIterationsCount();
+
+            solveTaskSerieBackgroundWorker->ReportProgress(i);
+        }
+        s_watch.Stop();
     }
-    s_watch.Stop();
+    else {
+        OptimizerAlgorithmNested ags;
+        ags.SetParameters(*mCurrentAlgParams);
+        ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+
+
+        s_watch.Start();
+        for (int i = 1; i <= 100; i++)
+        {
+            targetFunction->SetFunctionNumber(i);
+            targetFunction->GetMinPoint(y);
+
+            auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+            auto taskSolution = expResult.GetSolution();
+            x = taskSolution.GetOptimumPoint().get();
+
+            if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
+                meanIterationsCount += taskSolution.GetIterationsCount();
+                mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
+            }
+            else {
+                err_count++;
+                error_numbers += i.ToString() + ", ";
+                mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
+            }
+
+            if (max_count < taskSolution.GetIterationsCount())
+                max_count = taskSolution.GetIterationsCount();
+
+            solveTaskSerieBackgroundWorker->ReportProgress(i);
+        }
+        s_watch.Stop();
+    }
     if (err_count>0)
       error_numbers = error_numbers->Remove(error_numbers->LastIndexOf(","));
     ExperimentsLog += "E=" + prec_text->Text + " R=" + reliability_coeff->Value.ToString("F1") + " M=" + map_tightness->Value.ToString("F0");
@@ -1477,111 +1521,151 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
   }
 
 
-  private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
-    //readAlgorithmParameters();
-    int currentDimention = 2;
-    FunctionWrapperCommon *targetFunction;
-    SharedVector leftBound, rightBound;
-    TProblemManager manager;
-    IProblem* problem = nullptr;
+  private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e) {
+      //readAlgorithmParameters();
+      int currentDimention = 2;
+      FunctionWrapperCommon* targetFunction;
+      SharedVector leftBound, rightBound;
+      TProblemManager manager;
+      IProblem* problem = nullptr;
 
-    if (grishaginRadioButton->Checked)
-    {
-      leftBound = SharedVector(new double[2], utils::array_deleter<double>());
-      rightBound = SharedVector(new double[2], utils::array_deleter<double>());
-      leftBound.get()[0] = leftBound.get()[1] = 0;
-      rightBound.get()[0] = rightBound.get()[1] = 1;
-
-      targetFunction = new VAGRisFunctionWrapper();
-    }
-    else if (customProblemRadioButton->Checked)
-    {
-      std::string libPath = msclr::interop::marshal_as<std::string>(mTaskGeneratorSettings.dllPath->ToString());
-      if (manager.LoadProblemLibrary(libPath) != TProblemManager::OK_)
+      if (grishaginRadioButton->Checked)
       {
-        MessageBox::Show("Failed to load custom problem");
-        return;
+          leftBound = SharedVector(new double[2], utils::array_deleter<double>());
+          rightBound = SharedVector(new double[2], utils::array_deleter<double>());
+          leftBound.get()[0] = leftBound.get()[1] = 0;
+          rightBound.get()[0] = rightBound.get()[1] = 1;
+
+          targetFunction = new VAGRisFunctionWrapper();
       }
-      problem = manager.GetProblem();
-      if (problem->Initialize() != TProblemManager::OK_)
+      else if (customProblemRadioButton->Checked)
       {
-        MessageBox::Show("Failed to initialize custom problem");
-        return;
+          std::string libPath = msclr::interop::marshal_as<std::string>(mTaskGeneratorSettings.dllPath->ToString());
+          if (manager.LoadProblemLibrary(libPath) != TProblemManager::OK_)
+          {
+              MessageBox::Show("Failed to load custom problem");
+              return;
+          }
+          problem = manager.GetProblem();
+          if (problem->Initialize() != TProblemManager::OK_)
+          {
+              MessageBox::Show("Failed to initialize custom problem");
+              return;
+          }
+
+          problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
+          currentDimention = problem->GetDimension();
+
+          leftBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+          rightBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+
+          problem->GetBounds(leftBound.get(), rightBound.get());
+
+          targetFunction = new CustomProblemWrapper(problem);
+      }
+      else
+      {
+          currentDimention = mTaskGeneratorSettings.GKLSDimention;
+          leftBound = SharedVector(new double[currentDimention],
+              utils::array_deleter<double>());
+          rightBound = SharedVector(new double[currentDimention],
+              utils::array_deleter<double>());
+
+          for (int i = 0; i < currentDimention; i++) {
+              leftBound.get()[i] = -1;
+              rightBound.get()[i] = 1;
+          }
+
+          if (gklsRadioButton2->Checked == true)
+              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+          else if (gklsHardRadioButton->Checked == true)
+              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
       }
 
-      problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
-      currentDimention = problem->GetDimension();
+      double* x, err_val, err_xy, * y = new double[currentDimention];
 
-      leftBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
-      rightBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+      targetFunction->SetFunctionNumber(mCurrentTaskNumber);
+      targetFunction->GetMinPoint(y);
+      err_val = targetFunction->Calculate(y);
 
-      problem->GetBounds(leftBound.get(), rightBound.get());
+      OptimizerFunctionPtr* taskFunctions = new OptimizerFunctionPtr[1];
+      taskFunctions[0] = OptimizerFunctionPtr(targetFunction);
+      optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
+          utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
+      OptimizerResult expResult;
+      if (!checkBox1->Checked) {
+          OptimizerAlgorithmUnconstrained ags;
+          ags.SetParameters(*mCurrentAlgParams);
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
 
-      targetFunction = new CustomProblemWrapper(problem);
-    }
-    else
-    {
-      currentDimention = mTaskGeneratorSettings.GKLSDimention;
-      leftBound = SharedVector(new double[currentDimention],
-        utils::array_deleter<double>());
-      rightBound = SharedVector(new double[currentDimention],
-        utils::array_deleter<double>());
+          expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+          if (currentSequence != nullptr)
+              delete currentSequence;
+          currentSequence = new auto(ags.GetSearchSequence());
+          x = expResult.GetSolution().GetOptimumPoint().get();
 
-      for (int i = 0; i < currentDimention; i++) {
-        leftBound.get()[i] = -1;
-        rightBound.get()[i] = 1;
+          err_val = expResult.GetSolution().GetOptimumValue() - err_val;
+          err_xy = utils::NormNDimMax(x, y, currentDimention);
+
+
+          //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
+          //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+          //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+          setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
+          Invoke(setResultsDel,
+              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
+              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+              expResult.GetSolution().GetOptimumValue().ToString("F6"),
+              err_val.ToString("F6"),
+              err_xy.ToString("F6"),
+              err_xy.ToString("F6"),
+              ags.GetLipschitzConst().ToString("F5") });
+          delete[] y;
       }
+      else {
+          OptimizerAlgorithmNested ags;
+          ags.SetParameters(*mCurrentAlgParams);
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
 
-      if (gklsRadioButton2->Checked == true)
-        targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
-      else if (gklsHardRadioButton->Checked == true)
-        targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
-    }
+          expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+          if (currentSequence != nullptr)
+              delete currentSequence;
+          currentSequence = new auto(ags.GetSearchSequence());
+          x = expResult.GetSolution().GetOptimumPoint().get();
 
-    double* x, err_val, err_xy, * y = new double[currentDimention];
-
-    targetFunction->SetFunctionNumber(mCurrentTaskNumber);
-    targetFunction->GetMinPoint(y);
-    err_val = targetFunction->Calculate(y);
-
-    OptimizerFunctionPtr* taskFunctions = new OptimizerFunctionPtr[1];
-    taskFunctions[0] = OptimizerFunctionPtr(targetFunction);
-    optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
-      utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
-
-    OptimizerAlgorithmUnconstrained ags;
-    ags.SetParameters(*mCurrentAlgParams);
-    ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
-
-    auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
-    if (currentSequence != nullptr)
-      delete currentSequence;
-    currentSequence = new auto(ags.GetSearchSequence());
-
-    x = expResult.GetSolution().GetOptimumPoint().get();
-
-    err_val = expResult.GetSolution().GetOptimumValue() - err_val;
-    err_xy = utils::NormNDimMax(x, y, currentDimention);
+          err_val = expResult.GetSolution().GetOptimumValue() - err_val;
+          err_xy = utils::NormNDimMax(x, y, currentDimention);
 
 
-    //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
-    //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
-    //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
-    //this->error_val->Text = err_val.ToString("F6");
-    //this->error_xy->Text = err_xy.ToString("F6");
-    //this->mErrorValueString = err_xy.ToString("F6");
-    ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
-    //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
-    setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
-    Invoke(setResultsDel, 
-        gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
-        "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
-        expResult.GetSolution().GetOptimumValue().ToString("F6"),
-        err_val.ToString("F6"),
-        err_xy.ToString("F6"),
-        err_xy.ToString("F6"),
-        ags.GetLipschitzConst().ToString("F5") });
-    delete[] y;
+          //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
+          //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+          //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+          setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
+          Invoke(setResultsDel,
+              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
+              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+              expResult.GetSolution().GetOptimumValue().ToString("F6"),
+              err_val.ToString("F6"),
+              err_xy.ToString("F6"),
+              err_xy.ToString("F6"),
+              ags.GetLipschitzConst().ToString("F5") });
+          delete[] y;
+      
+      }
+  
+
+
+
   }
   private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7) {
       this->it_count_lbl->Text = s1;

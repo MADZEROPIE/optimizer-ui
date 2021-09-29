@@ -185,7 +185,7 @@ OptimizerResult OptimizerAlgorithmUnconstrained::StartOptimization(
         if (iterationsCount >= mLocalStartIterationNumber)	{
             if (iterationsCount % (12 - mLocalMixParameter) == 0
                 && mLocalMixParameter > 0)
-                ranksUpdateErrCode = UpdateRanks(mLocalMixType);
+                ranksUpdateErrCode = UpdateRanks(mLocalMixType);  // Alex: Is there any point to store ranksUpdateErrCode and don't do anything with it?
             else
                 ranksUpdateErrCode = UpdateRanks(!mLocalMixType);
         }

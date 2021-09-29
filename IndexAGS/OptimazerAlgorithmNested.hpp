@@ -28,6 +28,7 @@ namespace optimizercore
 		int mNumberOfThreads;
 		int mLocalStartIterationNumber;
 		int mMaxNumberOfIterations;
+		size_t mGlobalIterationsNumber = 0;
 
 		int mMethodDimention;
 
@@ -41,20 +42,24 @@ namespace optimizercore
 		OptimizerFunction* mTargetFunction;
 		OptimizerFunctionPtr mTargetFunctionSmartPtr;
 
+		OptimaizerNestedInterval* mIntervalsForTrials;
         std::set<OptimizerNestedTrialPoint> mSearchInformationStorage;
         OptimizerNestedTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
 
 		LocalTuningMode mLocalTuningMode;
+
+		double* leftDomainBound, *rightDomainBound;
 
 		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
 		double** mNextPoints;
 
 		void AllocMem();
 		void InitializeInformationStorage();
-		void UpdateGlobalM(std::set<OptimizerNestedTrialPoint>::iterator&);
-		int UpdateRanks(bool isLocal);
-		bool InsertNewTrials(int trialsNumber);
+		void UpdateGlobalM(std::set<OptimizerNestedTrialPoint>::iterator&, const std::set<OptimizerNestedTrialPoint>& localStorage);
+		int UpdateRanks(const std::set<OptimizerNestedTrialPoint>& localStorage, bool isLocal);
+		bool InsertNewTrials(int trialsNumber, std::set<OptimizerNestedTrialPoint>& localStorage);
 		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
+		void IndexOprimization(int index, int thread_id);
 
 	public:
 		OptimizerAlgorithmNested();
