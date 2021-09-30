@@ -25,7 +25,8 @@ namespace optimizercore
             double oneDimOptimumPoint,
             unsigned dimention,
             SharedVector optimumPoint);
-        ~OptimizerSolution() = default;
+        OptimizerSolution(const OptimizerSolution& sol) = default;
+        ~OptimizerSolution() {}
 
         int GetIterationsCount() const;
         double GetOneDimOptimumPoint() const;

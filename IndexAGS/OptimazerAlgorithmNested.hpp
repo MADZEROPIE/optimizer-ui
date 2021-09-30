@@ -8,13 +8,14 @@
 #include "OptimizerSolution.hpp"
 #include "OptimizerResult.hpp"
 #include "OptimizerSearchSequence.hpp"
+#include "OptimizerAlgorithmUnconstrained.hpp"
 
 #include <set>
 
 namespace optimizercore
 {
 
-	class EXPORT_API OptimizerAlgorithmNested final
+	class EXPORT_API OptimizerAlgorithmNested final : public IOptimazerAlgorithm
 	{
 
 	private:

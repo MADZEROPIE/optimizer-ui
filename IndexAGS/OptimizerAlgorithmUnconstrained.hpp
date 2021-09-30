@@ -14,8 +14,18 @@
 
 namespace optimizercore
 {
+	class IOptimazerAlgorithm {
+	public:
+		virtual void SetTask(OptimizerFunctionPtr function,
+			OptimizerSpaceTransformation spaceTransform) = 0;
+		virtual void SetThreadsNum(int num)=0;
+		virtual void SetParameters(OptimizerParameters params)=0;
+
+		virtual OptimizerResult StartOptimization(const double* xOpt,
+			StopCriterionType stopType) = 0;
+	};
 	
-	class EXPORT_API OptimizerAlgorithmUnconstrained final
+	class EXPORT_API OptimizerAlgorithmUnconstrained final: public IOptimazerAlgorithm
 	{
 
 	private:

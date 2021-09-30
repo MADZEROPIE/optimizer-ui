@@ -959,7 +959,8 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
 #pragma endregion
 
   private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (solveTaskSerieBackgroundWorker->IsBusy != true)
+    readAlgorithmParameters();
+    if (!solveTaskSerieBackgroundWorker->IsBusy)
     {
       map_type = MapTypeComboBox->SelectedIndex + 1;
       ExperimentsLog += "Evolvent: " + MapTypeComboBox->SelectedItem;
@@ -974,7 +975,6 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
       else
         ExperimentsLog += "Algorithm: global\n";
       ExperimentsLog += "Threads number: " + threadsNumNumericUpDown->Value.ToString() + "\n";
-      readAlgorithmParameters();
       solveTaskSerieBackgroundWorker->RunWorkerAsync();
       solveSeriesButton->Enabled = false;
       solveSingleTaskButton->Enabled = false;
@@ -989,7 +989,6 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
   }
   private: System::Void solveTaskSerieBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
     //readAlgorithmParameters();
-
     int currentDimention = 2;
     FunctionWrapperCommon *targetFunction;
     SharedVector leftBound, rightBound;
@@ -1046,73 +1045,45 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
     double meanIterationsCount = 0;
     int err_count = 0, max_count = 0;
     Stopwatch s_watch;
-
+    IOptimazerAlgorithm* ags;
     if (checkBox1->Checked) {
-        OptimizerAlgorithmUnconstrained ags;
-        ags.SetParameters(*mCurrentAlgParams);
-        ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
-
-
-        s_watch.Start();
-        for (int i = 1; i <= 100; i++)
-        {
-            targetFunction->SetFunctionNumber(i);
-            targetFunction->GetMinPoint(y);
-
-            auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
-            auto taskSolution = expResult.GetSolution();
-            x = taskSolution.GetOptimumPoint().get();
-
-            if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
-                meanIterationsCount += taskSolution.GetIterationsCount();
-                mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
-            }
-            else {
-                err_count++;
-                error_numbers += i.ToString() + ", ";
-                mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
-            }
-
-            if (max_count < taskSolution.GetIterationsCount())
-                max_count = taskSolution.GetIterationsCount();
-
-            solveTaskSerieBackgroundWorker->ReportProgress(i);
-        }
-        s_watch.Stop();
+         ags= new OptimizerAlgorithmNested();
     }
     else {
-        OptimizerAlgorithmNested ags;
-        ags.SetParameters(*mCurrentAlgParams);
-        ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
-
-
-        s_watch.Start();
-        for (int i = 1; i <= 100; i++)
-        {
-            targetFunction->SetFunctionNumber(i);
-            targetFunction->GetMinPoint(y);
-
-            auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
-            auto taskSolution = expResult.GetSolution();
-            x = taskSolution.GetOptimumPoint().get();
-
-            if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
-                meanIterationsCount += taskSolution.GetIterationsCount();
-                mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
-            }
-            else {
-                err_count++;
-                error_numbers += i.ToString() + ", ";
-                mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
-            }
-
-            if (max_count < taskSolution.GetIterationsCount())
-                max_count = taskSolution.GetIterationsCount();
-
-            solveTaskSerieBackgroundWorker->ReportProgress(i);
-        }
-        s_watch.Stop();
+        ags = new OptimizerAlgorithmUnconstrained();
     }
+    ags->SetParameters(*mCurrentAlgParams);
+    ags->SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+
+
+    s_watch.Start();
+    for (int i = 1; i <= 100; i++)
+    {
+        targetFunction->SetFunctionNumber(i);
+        targetFunction->GetMinPoint(y);
+
+        auto expResult = ags->StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+        auto taskSolution = expResult.GetSolution();
+        x = taskSolution.GetOptimumPoint().get();
+
+        if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
+            meanIterationsCount += taskSolution.GetIterationsCount();
+            mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
+        }
+        else {
+            err_count++;
+            error_numbers += i.ToString() + ", ";
+            mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
+        }
+
+        if (max_count < taskSolution.GetIterationsCount())
+            max_count = taskSolution.GetIterationsCount();
+
+        solveTaskSerieBackgroundWorker->ReportProgress(i);
+    }
+    s_watch.Stop();
+    
+    
     if (err_count>0)
       error_numbers = error_numbers->Remove(error_numbers->LastIndexOf(","));
     ExperimentsLog += "E=" + prec_text->Text + " R=" + reliability_coeff->Value.ToString("F1") + " M=" + map_tightness->Value.ToString("F0");
