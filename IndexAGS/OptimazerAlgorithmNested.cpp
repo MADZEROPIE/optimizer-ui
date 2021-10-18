@@ -322,24 +322,22 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
     // Preparation
 
     for (int i = 0; i < mMethodDimention; ++i)
-        mNextPoints[0][i] = mSpaceTransform.GetLeftDomainBound().get()[i];
+        mNextTrialsPoints[0].x[i] = mSpaceTransform.GetLeftDomainBound().get()[i];
     IndexOprimization(1, 0);
     std::vector<double> tmp(mMethodDimention);
-    for (int i = 0; i < mMethodDimention; ++i)
-        tmp[i] = mNextPoints[0][i];
-    localStorage.emplace(OptimizerNestedTrialPoint(tmp, mTargetFunction->Calculate(mNextPoints[0])));
+    localStorage.insert(mNextTrialsPoints[0]);
 
     for (int i = 0; i < mMethodDimention; ++i)
-        mNextPoints[0][i] = mSpaceTransform.GetRightDomainBound().get()[i];
+        mNextTrialsPoints[0].x[i] = mSpaceTransform.GetRightDomainBound().get()[i];
     IndexOprimization(1, 0);
-    for (int i = 0; i < mMethodDimention; ++i)
-        tmp[i] = mNextPoints[0][i];
-    localStorage.emplace(OptimizerNestedTrialPoint(tmp, mTargetFunction->Calculate(mNextPoints[0])));
+    localStorage.insert(mNextTrialsPoints[0]);
 
 
 
     for (int i = 1; i <= mNumberOfThreads; ++i) {
-        mNextPoints[i-1][0] = mSpaceTransform.GetLeftDomainBound().get()[0] + i * (mSpaceTransform.GetRightDomainBound().get()[0] - mSpaceTransform.GetLeftDomainBound().get()[0]) / (mNumberOfThreads+1);
+        mNextTrialsPoints[i-1].x[0] = mSpaceTransform.GetLeftDomainBound().get()[0] + 
+            i * (mSpaceTransform.GetRightDomainBound().get()[0] 
+                - mSpaceTransform.GetLeftDomainBound().get()[0]) / (mNumberOfThreads+1);
     }
     while (mGlobalIterationsNumber < mMaxNumberOfIterations && !stop) {
         iterationsCount++;
@@ -347,11 +345,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
 //#pragma omp parallel for num_threads(mNumberOfThreads)
         for (int i = 0; i < mNumberOfThreads; i++) {
             IndexOprimization(1, i);
-            mNextTrialsPoints[i].val = mTargetFunction->Calculate(mNextPoints[i]);
 //#pragma omp critical
-            for (int k = 0; k < mMethodDimention; ++k) {
-                mNextTrialsPoints[i].x[k] = mNextPoints[i][k];
-            }
             if (mNextTrialsPoints[i].val < mZ)
                 mZ = mNextTrialsPoints[i].val;
         }
@@ -373,13 +367,12 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
         for (int i = 0; i < mNumberOfThreads && !stop; i++) {
             OptimizerNestedTrialPoint left = mIntervalsForTrials[i].left;
             OptimizerNestedTrialPoint right = mIntervalsForTrials[i].right;
-
-            mNextPoints[i][0] = mNextTrialsPoints[i].x[0] = (left.x[0] + right.x[0]) / 2
+            mNextTrialsPoints[i].x[0] = (left.x[0] + right.x[0]) / 2
                 - sgn(right.val - left.val) * (fabs(right.val - left.val)
                     / mIntervalsForTrials[i].localM) / (2 * r);
 
             if (stopType == StopCriterionType::OptimalPoint) {
-                if (fabs(mNextPoints[i][0] - xOpt[0]) < eps) {
+                if (fabs(mNextTrialsPoints[i].x[0] - xOpt[0]) < eps) {
                     stop = true;
                     mOptimumEvaluation = mNextTrialsPoints[i];
                 }
@@ -393,10 +386,10 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
         }
     }
     if (mGlobalIterationsNumber < mMaxNumberOfIterations) {
-        mNextPoints[0][0] = mOptimumEvaluation.x[0];
+        mNextTrialsPoints[0].x[0] = mOptimumEvaluation.x[0];
         IndexOprimization(1, 0);
-        mOptimumEvaluation.val = mTargetFunction->Calculate(mNextPoints[0]);
-        mSearchInformationStorage.insert(mOptimumEvaluation);
+        mOptimumEvaluation.val = mNextTrialsPoints[0].val;
+        mSearchInformationStorage.insert(mNextTrialsPoints[0]);
     }
     for (auto& el : localStorage)
         mSearchInformationStorage.emplace(el);
@@ -459,7 +452,7 @@ void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int t
             if (R_tmp > R) { t = i; R = R_tmp; }
         }
 
-        lb[index] = mNextPoints[thread_id][index] = (localStorage[t].x[index] + localStorage[t + 1].x[index]) / 2
+        lb[index] = mNextTrialsPoints[thread_id].x[index] = (localStorage[t].x[index] + localStorage[t + 1].x[index]) / 2
             - (localStorage[t + 1].val - localStorage[t].val) / (2 * m);
         IndexOprimization(index + 1, thread_id);
         
@@ -470,12 +463,10 @@ void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int t
     for (int i = 0; i < localStorage.size(); ++i) {
         if (localStorage[i].val < min.val) {
             min = localStorage[i];
-            for (int j = index; j < mMethodDimention; ++j)
-                mNextTrialsPoints[thread_id].x[index] = mNextPoints[thread_id][index] = localStorage[i].x[j];
         }
         mSearchInformationStorage.emplace(localStorage[i]);
     }
-
+    mNextTrialsPoints[thread_id] = min;
    
     
 }
