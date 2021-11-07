@@ -340,15 +340,25 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
     while (mGlobalIterationsNumber < mMaxNumberOfIterations && !stop) {
         iterationsCount++;
 
-#pragma omp parallel for num_threads(mNumberOfThreads)
+        #pragma omp parallel for num_threads(mNumberOfThreads)
         for (int i = 0; i < mNumberOfThreads; i++) {
             IndexOprimization(1, i);
-#pragma omp critical
+
+            #pragma omp critical
             if (mNextTrialsPoints[i].val < mZ)
                 mZ = mNextTrialsPoints[i].val;
+            if (stopType == StopCriterionType::OptimalPoint) {
+                if (NormNDimMax(mNextTrialsPoints[i].x.data(), xOpt, mMethodDimention) < eps) {
+                    stop = true;
+                    mOptimumEvaluation = mNextTrialsPoints[i];
+                }
+            }
         }
 
         if (!InsertNewTrials(mNumberOfThreads, localStorage))
+            break;
+
+        if (stop)
             break;
 
         if (iterationsCount >= mLocalStartIterationNumber) {
@@ -369,14 +379,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
                 - sgn(right.val - left.val) * (fabs(right.val - left.val)
                     / mIntervalsForTrials[i].localM) / (2 * r);
             
-            if (stopType == StopCriterionType::OptimalPoint) {
-                IndexOprimization(1, i);
-                if (NormNDimMax(mNextTrialsPoints[i].x.data(),xOpt,mMethodDimention) < eps) {
-                    stop = true;
-                    mOptimumEvaluation = mNextTrialsPoints[i];
-                }
-            }
-            else {
+            if (stopType != StopCriterionType::OptimalPoint) {
                 if (fabs(right.x[0] - left.x[0]) < eps) {
                     stop = true;
                     mOptimumEvaluation = mNextTrialsPoints[i];
@@ -415,7 +418,10 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
 void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int thread_id)
 {
     if (index >= mMethodDimention) {
-        ++mGlobalIterationsNumber;
+        #pragma omp critical
+        {
+            ++mGlobalIterationsNumber; 
+        }
         mNextTrialsPoints[thread_id].val = mTargetFunction->Calculate(mNextTrialsPoints[thread_id].x.data());
         return;
     }
@@ -462,6 +468,7 @@ void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int t
         localStorage.insert(localStorage.begin() + t + 1, mNextTrialsPoints[thread_id]);
 
     }
+    #pragma omp critical
     auto min = localStorage[t + 1];
     for (int i = 0; i < localStorage.size(); ++i) {
         if (localStorage[i].val < min.val) {
