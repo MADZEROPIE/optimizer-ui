@@ -17,6 +17,7 @@
 
 #include <msclr/marshal_cppstd.h>
 #include <string>
+#include <OptimazerAlgorithmNested.hpp>
 
 using namespace optimizercore;
 
@@ -33,11 +34,12 @@ namespace optimizerui {
   using namespace System::Globalization;
   using namespace System::Threading;
 
+  delegate System::Void setResultsDelegate(System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^);
+
   public ref class MainWindow : public System::Windows::Forms::Form
   {
   public:
-    MainWindow(void)
-    {
+    MainWindow(void) {
       mErrorValueString = gcnew String(" ");
       InitializeComponent();
 
@@ -57,12 +59,10 @@ namespace optimizerui {
       MapTypeComboBox->SelectedIndex = 0;
       saveFileDialog->InitialDirectory = System::IO::Directory::GetCurrentDirectory();
       saveFileDialog->Filter = "CSV file|*.csv|All files|*.*";
-
     }
 
   protected:
-    ~MainWindow()
-    {
+    ~MainWindow() {
       if (components != nullptr) {
         delete components;
         components = nullptr;
@@ -79,9 +79,7 @@ namespace optimizerui {
       }
     }
   private: System::Windows::Forms::DataVisualization::Charting::Chart^  chart1;
-  private: System::Windows::Forms::Button^  solveSerieButton;
-
-
+  private: System::Windows::Forms::Button^  solveSeriesButton;
 
   private: System::Windows::Forms::Label^  label1;
   private: System::Windows::Forms::Label^  label2;
@@ -89,7 +87,6 @@ namespace optimizerui {
   private: System::Windows::Forms::NumericUpDown^  map_tightness;
 
   private: System::Windows::Forms::NumericUpDown^  reliability_coeff;
-
 
   private: System::Windows::Forms::Label^  label3;
   private: System::Windows::Forms::TextBox^  prec_text;
@@ -109,7 +106,7 @@ namespace optimizerui {
     GraphSettings mGraphSettings;
     AlgorithmSettings mAlgorithmSettings;
     TaskGeneratorSettings mTaskGeneratorSettings;
-    OptimizerSearchSequence* currentSequence;
+    ISearchSequence* currentSequence;
     OneDimGraphWindow^ mOneDimGraph;
     IsolinesGraphWindow^ mIsolinesGraph;
     OptimizerParameters *mCurrentAlgParams;
@@ -120,7 +117,6 @@ namespace optimizerui {
   private: System::Windows::Forms::GroupBox^  groupBox2;
   private: System::Windows::Forms::Label^  label6;
   private: System::Windows::Forms::Button^  solveSingleTaskButton;
-
 
   private: System::Windows::Forms::NumericUpDown^  task_number;
 
@@ -147,11 +143,7 @@ namespace optimizerui {
 
   private: System::Windows::Forms::Label^  label13;
 
-
-
   private: System::Windows::Forms::RadioButton^  gklsHardRadioButton;
-
-
 
   private: System::Windows::Forms::CheckBox^  stopCheckBox;
   private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel1;
@@ -173,10 +165,15 @@ namespace optimizerui {
   private: System::Windows::Forms::SaveFileDialog^  saveFileDialog;
   private: System::Windows::Forms::ToolStripMenuItem^  algSettingsToolStripMenuItem;
   private: System::Windows::Forms::CheckBox^  isLocalCheckBox;
-  private: System::ComponentModel::BackgroundWorker^  solveSingleTaskBackgroundWorker;
-private: System::Windows::Forms::ToolStripMenuItem^  saveOPChartToolStripMenuItem;
-private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
-private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
+public: System::ComponentModel::BackgroundWorker^ solveSingleTaskBackgroundWorker;
+private:
+
+  private: System::Windows::Forms::ToolStripMenuItem^  saveOPChartToolStripMenuItem;
+  private: System::Windows::Forms::SaveFileDialog^  saveOPImgDialog;
+  private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
+private: System::Windows::Forms::ToolStripMenuItem^ russianToolStripMenuItem;
+private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
+private: System::Windows::Forms::CheckBox^ checkBox1;
 
   private:
     System::ComponentModel::Container ^components;
@@ -187,11 +184,13 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
         System::Windows::Forms::DataVisualization::Charting::Title^ title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
         this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
-        this->solveSerieButton = (gcnew System::Windows::Forms::Button());
+        this->solveSeriesButton = (gcnew System::Windows::Forms::Button());
         this->label1 = (gcnew System::Windows::Forms::Label());
         this->label2 = (gcnew System::Windows::Forms::Label());
         this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+        this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
         this->isLocalCheckBox = (gcnew System::Windows::Forms::CheckBox());
+        this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->threadsNumNumericUpDown = (gcnew System::Windows::Forms::NumericUpDown());
         this->label16 = (gcnew System::Windows::Forms::Label());
         this->MapTypeComboBox = (gcnew System::Windows::Forms::ComboBox());
@@ -209,7 +208,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->solveTaskSerieBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
         this->customProblemRadioButton = (gcnew System::Windows::Forms::RadioButton());
-        this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->gklsHardRadioButton = (gcnew System::Windows::Forms::RadioButton());
         this->gklsRadioButton2 = (gcnew System::Windows::Forms::RadioButton());
         this->grishaginRadioButton = (gcnew System::Windows::Forms::RadioButton());
@@ -246,6 +244,8 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->TaskGeneratorSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->algSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+        this->russianToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+        this->englishToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->saveFileDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
@@ -271,22 +271,22 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->chart1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->chart1->Location = System::Drawing::Point(0, 24);
         this->chart1->Name = L"chart1";
-        this->chart1->Size = System::Drawing::Size(485, 591);
+        this->chart1->Size = System::Drawing::Size(485, 624);
         this->chart1->TabIndex = 0;
         this->chart1->Text = L"chart1";
         title1->Name = L"Title1";
         title1->Text = L"Operating characteristics";
         this->chart1->Titles->Add(title1);
         // 
-        // solveSerieButton
+        // solveSeriesButton
         // 
-        this->solveSerieButton->Location = System::Drawing::Point(9, 117);
-        this->solveSerieButton->Name = L"solveSerieButton";
-        this->solveSerieButton->Size = System::Drawing::Size(127, 23);
-        this->solveSerieButton->TabIndex = 1;
-        this->solveSerieButton->Text = L"Solve class";
-        this->solveSerieButton->UseVisualStyleBackColor = true;
-        this->solveSerieButton->Click += gcnew System::EventHandler(this, &MainWindow::button1_Click);
+        this->solveSeriesButton->Location = System::Drawing::Point(9, 117);
+        this->solveSeriesButton->Name = L"solveSeriesButton";
+        this->solveSeriesButton->Size = System::Drawing::Size(127, 23);
+        this->solveSeriesButton->TabIndex = 1;
+        this->solveSeriesButton->Text = L"Solve class";
+        this->solveSeriesButton->UseVisualStyleBackColor = true;
+        this->solveSeriesButton->Click += gcnew System::EventHandler(this, &MainWindow::button1_Click);
         // 
         // label1
         // 
@@ -308,6 +308,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // 
         // groupBox1
         // 
+        this->groupBox1->Controls->Add(this->checkBox1);
         this->groupBox1->Controls->Add(this->isLocalCheckBox);
         this->groupBox1->Controls->Add(this->stopCheckBox);
         this->groupBox1->Controls->Add(this->threadsNumNumericUpDown);
@@ -324,10 +325,22 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->groupBox1->Controls->Add(this->label2);
         this->groupBox1->Location = System::Drawing::Point(3, 3);
         this->groupBox1->Name = L"groupBox1";
-        this->groupBox1->Size = System::Drawing::Size(275, 200);
+        this->groupBox1->Size = System::Drawing::Size(275, 224);
         this->groupBox1->TabIndex = 7;
         this->groupBox1->TabStop = false;
         this->groupBox1->Text = L"Parameters of algorithm";
+        // 
+        // checkBox1
+        // 
+        this->checkBox1->AutoSize = true;
+        this->checkBox1->Checked = true;
+        this->checkBox1->CheckState = System::Windows::Forms::CheckState::Checked;
+        this->checkBox1->Location = System::Drawing::Point(6, 196);
+        this->checkBox1->Name = L"checkBox1";
+        this->checkBox1->Size = System::Drawing::Size(100, 17);
+        this->checkBox1->TabIndex = 25;
+        this->checkBox1->Text = L"Nested scheme";
+        this->checkBox1->UseVisualStyleBackColor = true;
         // 
         // isLocalCheckBox
         // 
@@ -338,6 +351,16 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->isLocalCheckBox->TabIndex = 24;
         this->isLocalCheckBox->Text = L"Local tuned algorithm";
         this->isLocalCheckBox->UseVisualStyleBackColor = true;
+        // 
+        // stopCheckBox
+        // 
+        this->stopCheckBox->AutoSize = true;
+        this->stopCheckBox->Location = System::Drawing::Point(140, 173);
+        this->stopCheckBox->Name = L"stopCheckBox";
+        this->stopCheckBox->Size = System::Drawing::Size(109, 17);
+        this->stopCheckBox->TabIndex = 22;
+        this->stopCheckBox->Text = L"Stop by accuracy";
+        this->stopCheckBox->UseVisualStyleBackColor = true;
         // 
         // threadsNumNumericUpDown
         // 
@@ -427,15 +450,15 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->label3->AutoSize = true;
         this->label3->Location = System::Drawing::Point(6, 73);
         this->label3->Name = L"label3";
-        this->label3->Size = System::Drawing::Size(97, 13);
+        this->label3->Size = System::Drawing::Size(88, 13);
         this->label3->TabIndex = 8;
-        this->label3->Text = L"Evolvent tightness:";
+        this->label3->Text = L"Evolvent density:";
         // 
         // label4
         // 
         this->label4->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
         this->label4->AutoSize = true;
-        this->label4->Location = System::Drawing::Point(3, 561);
+        this->label4->Location = System::Drawing::Point(3, 594);
         this->label4->Name = L"label4";
         this->label4->Size = System::Drawing::Size(51, 13);
         this->label4->TabIndex = 8;
@@ -444,7 +467,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // progressBar1
         // 
         this->progressBar1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->progressBar1->Location = System::Drawing::Point(76, 563);
+        this->progressBar1->Location = System::Drawing::Point(76, 596);
         this->progressBar1->Name = L"progressBar1";
         this->progressBar1->Size = System::Drawing::Size(193, 11);
         this->progressBar1->TabIndex = 10;
@@ -452,7 +475,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // clear_button
         // 
         this->clear_button->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->clear_button->Location = System::Drawing::Point(129, 589);
+        this->clear_button->Location = System::Drawing::Point(129, 622);
         this->clear_button->Name = L"clear_button";
         this->clear_button->Size = System::Drawing::Size(127, 23);
         this->clear_button->TabIndex = 11;
@@ -491,8 +514,8 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->groupBox2->Controls->Add(this->task_number);
         this->groupBox2->Controls->Add(this->drawIsolinesButton);
         this->groupBox2->Controls->Add(this->label6);
-        this->groupBox2->Controls->Add(this->solveSerieButton);
-        this->groupBox2->Location = System::Drawing::Point(0, 209);
+        this->groupBox2->Controls->Add(this->solveSeriesButton);
+        this->groupBox2->Location = System::Drawing::Point(3, 233);
         this->groupBox2->Name = L"groupBox2";
         this->groupBox2->Size = System::Drawing::Size(275, 177);
         this->groupBox2->TabIndex = 13;
@@ -508,16 +531,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->customProblemRadioButton->TabIndex = 23;
         this->customProblemRadioButton->Text = L"Custom";
         this->customProblemRadioButton->UseVisualStyleBackColor = true;
-        // 
-        // stopCheckBox
-        // 
-        this->stopCheckBox->AutoSize = true;
-        this->stopCheckBox->Location = System::Drawing::Point(140, 173);
-        this->stopCheckBox->Name = L"stopCheckBox";
-        this->stopCheckBox->Size = System::Drawing::Size(109, 17);
-        this->stopCheckBox->TabIndex = 22;
-        this->stopCheckBox->Text = L"Stop by accuracy";
-        this->stopCheckBox->UseVisualStyleBackColor = true;
         // 
         // gklsHardRadioButton
         // 
@@ -622,7 +635,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->groupBox3->Controls->Add(this->task_answ_lbl);
         this->groupBox3->Controls->Add(this->label8);
         this->groupBox3->Controls->Add(this->label7);
-        this->groupBox3->Location = System::Drawing::Point(0, 392);
+        this->groupBox3->Location = System::Drawing::Point(2, 416);
         this->groupBox3->Name = L"groupBox3";
         this->groupBox3->Size = System::Drawing::Size(276, 162);
         this->groupBox3->TabIndex = 14;
@@ -740,7 +753,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // ShowLogButton
         // 
         this->ShowLogButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->ShowLogButton->Location = System::Drawing::Point(2, 589);
+        this->ShowLogButton->Location = System::Drawing::Point(2, 622);
         this->ShowLogButton->Name = L"ShowLogButton";
         this->ShowLogButton->Size = System::Drawing::Size(121, 23);
         this->ShowLogButton->TabIndex = 18;
@@ -762,7 +775,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->tableLayoutPanel1->Name = L"tableLayoutPanel1";
         this->tableLayoutPanel1->RowCount = 1;
         this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Percent, 100)));
-        this->tableLayoutPanel1->Size = System::Drawing::Size(781, 621);
+        this->tableLayoutPanel1->Size = System::Drawing::Size(781, 654);
         this->tableLayoutPanel1->TabIndex = 19;
         // 
         // panel1
@@ -777,7 +790,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->panel1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->panel1->Location = System::Drawing::Point(3, 3);
         this->panel1->Name = L"panel1";
-        this->panel1->Size = System::Drawing::Size(284, 615);
+        this->panel1->Size = System::Drawing::Size(284, 648);
         this->panel1->TabIndex = 0;
         // 
         // panel2
@@ -787,7 +800,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         this->panel2->Dock = System::Windows::Forms::DockStyle::Fill;
         this->panel2->Location = System::Drawing::Point(293, 3);
         this->panel2->Name = L"panel2";
-        this->panel2->Size = System::Drawing::Size(485, 615);
+        this->panel2->Size = System::Drawing::Size(485, 648);
         this->panel2->TabIndex = 1;
         // 
         // menuStrip1
@@ -874,8 +887,26 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // 
         // toolStripMenuItem1
         // 
+        this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+            this->russianToolStripMenuItem,
+                this->englishToolStripMenuItem
+        });
         this->toolStripMenuItem1->Name = L"toolStripMenuItem1";
         this->toolStripMenuItem1->Size = System::Drawing::Size(12, 20);
+        // 
+        // russianToolStripMenuItem
+        // 
+        this->russianToolStripMenuItem->Name = L"russianToolStripMenuItem";
+        this->russianToolStripMenuItem->Size = System::Drawing::Size(119, 22);
+        this->russianToolStripMenuItem->Text = L"Русский";
+        this->russianToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::russianToolStripMenuItem_Click);
+        // 
+        // englishToolStripMenuItem
+        // 
+        this->englishToolStripMenuItem->Name = L"englishToolStripMenuItem";
+        this->englishToolStripMenuItem->Size = System::Drawing::Size(119, 22);
+        this->englishToolStripMenuItem->Text = L"English";
+        this->englishToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::englishToolStripMenuItem_Click);
         // 
         // saveFileDialog
         // 
@@ -896,7 +927,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         // 
         this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
         this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-        this->ClientSize = System::Drawing::Size(781, 621);
+        this->ClientSize = System::Drawing::Size(781, 654);
         this->Controls->Add(this->tableLayoutPanel1);
         this->MinimumSize = System::Drawing::Size(797, 660);
         this->Name = L"MainWindow";
@@ -926,8 +957,10 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
 
     }
 #pragma endregion
+
   private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (solveTaskSerieBackgroundWorker->IsBusy != true)
+    readAlgorithmParameters();
+    if (!solveTaskSerieBackgroundWorker->IsBusy)
     {
       map_type = MapTypeComboBox->SelectedIndex + 1;
       ExperimentsLog += "Evolvent: " + MapTypeComboBox->SelectedItem;
@@ -942,12 +975,12 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       else
         ExperimentsLog += "Algorithm: global\n";
       ExperimentsLog += "Threads number: " + threadsNumNumericUpDown->Value.ToString() + "\n";
-      readAlgorithmParameters();
       solveTaskSerieBackgroundWorker->RunWorkerAsync();
-      solveSerieButton->Enabled = false;
+      solveSeriesButton->Enabled = false;
       solveSingleTaskButton->Enabled = false;
     }
   }
+
   private: System::Void clear_button_Click(System::Object^  sender, System::EventArgs^  e) {
 
     chart1->Series->Clear();
@@ -956,7 +989,6 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
   }
   private: System::Void solveTaskSerieBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
     //readAlgorithmParameters();
-
     int currentDimention = 2;
     FunctionWrapperCommon *targetFunction;
     SharedVector leftBound, rightBound;
@@ -994,7 +1026,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       rightBound.get()[0] = rightBound.get()[1] = 1;
       targetFunction = new VAGRisFunctionWrapper();
     }
-    else if (customProblemRadioButton->Checked) {
+    else if (customProblemRadioButton->Checked) {  // ???
       return;
     }
 
@@ -1003,42 +1035,55 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
       utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
 
+
+
     //OptimizerAlgorithm ags;
-    OptimizerAlgorithmUnconstrained ags;
-    ags.SetParameters(*mCurrentAlgParams);
-    ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+
     //agp.SetTask(task);
 
     double *x, *y = new double[mTaskGeneratorSettings.GKLSDimention];
     double meanIterationsCount = 0;
     int err_count = 0, max_count = 0;
     Stopwatch s_watch;
+    IOptimazerAlgorithm* ags;
+    if (checkBox1->Checked) {
+         ags= new OptimizerAlgorithmNested();
+    }
+    else {
+        ags = new OptimizerAlgorithmUnconstrained();
+    }
+    ags->SetParameters(*mCurrentAlgParams);
+    ags->SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+
+
     s_watch.Start();
     for (int i = 1; i <= 100; i++)
     {
-      targetFunction->SetFunctionNumber(i);
-      targetFunction->GetMinPoint(y);
+        targetFunction->SetFunctionNumber(i);
+        targetFunction->GetMinPoint(y);
 
-      auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
-      auto taskSolution = expResult.GetSolution();
-      x = taskSolution.GetOptimumPoint().get();
+        auto expResult = ags->StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+        auto taskSolution = expResult.GetSolution();
+        x = taskSolution.GetOptimumPoint().get();
 
-      if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
-        meanIterationsCount += taskSolution.GetIterationsCount();
-        mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
-      }
-      else {
-        err_count++;
-        error_numbers += i.ToString() + ", ";
-        mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
-      }
+        if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
+            meanIterationsCount += taskSolution.GetIterationsCount();
+            mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
+        }
+        else {
+            err_count++;
+            error_numbers += i.ToString() + ", ";
+            mOperationCharacteristicData[i - 1] = mCurrentAlgParams->maxIterationsNumber * 2;
+        }
 
-      if (max_count < taskSolution.GetIterationsCount())
-        max_count = taskSolution.GetIterationsCount();
+        if (max_count < taskSolution.GetIterationsCount())
+            max_count = taskSolution.GetIterationsCount();
 
-      solveTaskSerieBackgroundWorker->ReportProgress(i);
+        solveTaskSerieBackgroundWorker->ReportProgress(i);
     }
     s_watch.Stop();
+    
+    
     if (err_count>0)
       error_numbers = error_numbers->Remove(error_numbers->LastIndexOf(","));
     ExperimentsLog += "E=" + prec_text->Text + " R=" + reliability_coeff->Value.ToString("F1") + " M=" + map_tightness->Value.ToString("F0");
@@ -1049,6 +1094,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     max_it_count = max_count;
     delete[] y;
   }
+
   private: System::Void backgroundWorker1_ProgressChanged(System::Object^  sender, System::ComponentModel::ProgressChangedEventArgs^  e) {
       progressBar1->Value = e->ProgressPercentage;
   }
@@ -1094,7 +1140,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       chart1->Series[s_name]->Points->AddXY(i, t_count / 100.0);
       t_count = 0;
     }
-    solveSerieButton->Enabled = true;
+    solveSeriesButton->Enabled = true;
     solveSingleTaskButton->Enabled = true;
   }
 
@@ -1108,12 +1154,12 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         readAlgorithmParameters();  // If parameters are read by a worker, exception throws.
         solveSingleTaskBackgroundWorker->RunWorkerAsync();
         solveSingleTaskButton->Enabled = false;
-        solveSerieButton->Enabled = false;
+        solveSeriesButton->Enabled = false;
     }
   }
 
-  private: void DrawIsolines(int task_num, OptimizerSearchSequence* points)
-  {
+
+  private: void DrawIsolines(int task_num, ISearchSequence* points) {
     int n = 200, i, j, width = 800, height = 1100;
     float  fpi_x = 1, fpi_y = 1, step_x, step_y, zlev, x_left, y_min;
     double arg[2];
@@ -1121,7 +1167,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
 
     array<float, 1>^ xray = gcnew array<float, 1>(n);
     array<float, 1>^ yray = gcnew array<float, 1>(n);
-    array<float, 2>^  zmat = gcnew array<float, 2>(n, n);
+    array<float, 2>^ zmat = gcnew array<float, 2>(n, n);
 
     FunctionWrapperCommon *f;
     TProblemManager manager;
@@ -1167,8 +1213,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       f = new CustomProblemWrapper(problem);
       taskName += "Custom problem";
     }
-    else
-    {
+    else {
       if (gklsRadioButton2->Checked) {
         f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
         taskName += "GKLS Simple function #" + task_num.ToString();
@@ -1232,14 +1277,12 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       dislin::contur(xray, n, yray, n, zmat, zlev);
     }
 
-    if (points != nullptr)
-    {
+    if (points != nullptr) {
       dislin::color("white");
       double y[2];
       dislin::hsymbl(15);
       int size = points->GetSize();
-      for (int i = 0; i < size; i++)
-      {
+      for (int i = 0; i < size; i++) {
         points->GetPoint(i, y);
         dislin::rlsymb(21, (float)(y[0]), (float)(y[1]));
       }
@@ -1259,7 +1302,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     dislin::rpixls(rawImage, 0, 0, width, height);
     dislin::disfin();
 
-    if (points != 0 && !mGraphSettings.isGraphAppearsInNewWindow && mIsolinesGraph)
+    if (points != nullptr && !mGraphSettings.isGraphAppearsInNewWindow && mIsolinesGraph)
       mIsolinesGraph->Close();
 
     mIsolinesGraph = gcnew IsolinesGraphWindow(rawImage, width, height);
@@ -1276,8 +1319,7 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     DrawOneDimGraph(task_num, nullptr);
   }
 
-  private: System::Void DrawOneDimGraph(int task_num, OptimizerSearchSequence* points)
-  {
+  private: System::Void DrawOneDimGraph(int task_num, ISearchSequence* points) {
     int n = 2000;
     double fpi = 1, step, *y = new double[mTaskGeneratorSettings.GKLSDimention];
     array<float, 1>^ xray = gcnew array<float, 1>(n + 1);
@@ -1377,11 +1419,10 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     delete[] y;
     delete f;
   }
+
   private: System::Void saveOPToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (series_count > 0)
-    {
-      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-      {
+    if (series_count > 0) {
+      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
         String^ outputString;
         int t_count = 0;
         for (int i = 10; i < max_it_count + 20; i += 10) {
@@ -1394,28 +1435,31 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
         System::IO::File::WriteAllText(saveFileDialog->FileName, outputString);
       }
     }
-    else
-      MessageBox::Show("No operating characteristic to save", "Error",
-        MessageBoxButtons::OK, MessageBoxIcon::Information);
+    else {
+        MessageBox::Show("No operating characteristic to save", "Error",
+            MessageBoxButtons::OK, MessageBoxIcon::Information);
+    }
   }
+
   private: System::Void savePointsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (currentSequence != nullptr)
-    {
-      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-      {
+    if (currentSequence != nullptr) {
+      if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
         Thread^ fileWriteThread = gcnew Thread(gcnew ThreadStart(this, &MainWindow::savePoints));
         fileWriteThread->IsBackground = true;
         fileWriteThread->Start();
       }
     }
-    else
-      MessageBox::Show("No data to save", "Error",
-        MessageBoxButtons::OK, MessageBoxIcon::Information);
+    else {
+        MessageBox::Show("No data to save", "Error",
+            MessageBoxButtons::OK, MessageBoxIcon::Information);
+    }
   }
+
   private: System::Void graphSettingsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
     GraphSettingsWindow ^settings = gcnew GraphSettingsWindow(mGraphSettings);
     settings->ShowDialog();
   }
+
   private: System::Void algSettingsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
     AlgorithmSettingsWindow ^settings = gcnew AlgorithmSettingsWindow(mAlgorithmSettings);
     settings->ShowDialog();
@@ -1425,17 +1469,15 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     TaskGeneratorSettingsWindow ^settings = gcnew TaskGeneratorSettingsWindow(mTaskGeneratorSettings);
     settings->ShowDialog();
   }
-  private: System::Void savePoints()
-  {
+
+  private: System::Void savePoints() {
     String^ outputString;
 
     int seqSize = currentSequence->GetSize();
     int seqDim = currentSequence->GetDimention();
     double *tmpPoint = new double[seqDim];
-    OptimizerSearchSequence tmpSequence(*currentSequence);
-
     for (int i = 0; i < seqSize; i++) {
-      tmpSequence.GetPoint(i, tmpPoint);
+        currentSequence->GetPoint(i, tmpPoint);
       for (int j = 0; j < seqDim; j++)
       {
         outputString += tmpPoint[j].ToString("F8");
@@ -1448,103 +1490,165 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
     System::IO::File::WriteAllText(saveFileDialog->FileName, outputString);
     delete[] tmpPoint;
   }
-  private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
-    //readAlgorithmParameters();
-    int currentDimention = 2;
-    FunctionWrapperCommon *targetFunction;
-    SharedVector leftBound, rightBound;
-    TProblemManager manager;
-    IProblem* problem = nullptr;
 
-    if (grishaginRadioButton->Checked)
-    {
-      leftBound = SharedVector(new double[2], utils::array_deleter<double>());
-      rightBound = SharedVector(new double[2], utils::array_deleter<double>());
-      leftBound.get()[0] = leftBound.get()[1] = 0;
-      rightBound.get()[0] = rightBound.get()[1] = 1;
 
-      targetFunction = new VAGRisFunctionWrapper();
-    }
-    else if (customProblemRadioButton->Checked)
-    {
-      std::string libPath = msclr::interop::marshal_as<std::string>(mTaskGeneratorSettings.dllPath->ToString());
-      if (manager.LoadProblemLibrary(libPath) != TProblemManager::OK_)
+  private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e) {
+      //readAlgorithmParameters();
+      int currentDimention = 2;
+      FunctionWrapperCommon* targetFunction;
+      SharedVector leftBound, rightBound;
+      TProblemManager manager;
+      IProblem* problem = nullptr;
+
+      if (grishaginRadioButton->Checked)
       {
-        MessageBox::Show("Failed to load custom problem");
-        return;
+          leftBound = SharedVector(new double[2], utils::array_deleter<double>());
+          rightBound = SharedVector(new double[2], utils::array_deleter<double>());
+          leftBound.get()[0] = leftBound.get()[1] = 0;
+          rightBound.get()[0] = rightBound.get()[1] = 1;
+
+          targetFunction = new VAGRisFunctionWrapper();
       }
-      problem = manager.GetProblem();
-      if (problem->Initialize() != TProblemManager::OK_)
+      else if (customProblemRadioButton->Checked)
       {
-        MessageBox::Show("Failed to initialize custom problem");
-        return;
+          std::string libPath = msclr::interop::marshal_as<std::string>(mTaskGeneratorSettings.dllPath->ToString());
+          if (manager.LoadProblemLibrary(libPath) != TProblemManager::OK_)
+          {
+              MessageBox::Show("Failed to load custom problem");
+              return;
+          }
+          problem = manager.GetProblem();
+          if (problem->Initialize() != TProblemManager::OK_)
+          {
+              MessageBox::Show("Failed to initialize custom problem");
+              return;
+          }
+
+          problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
+          currentDimention = problem->GetDimension();
+
+          leftBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+          rightBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+
+          problem->GetBounds(leftBound.get(), rightBound.get());
+
+          targetFunction = new CustomProblemWrapper(problem);
+      }
+      else
+      {
+          currentDimention = mTaskGeneratorSettings.GKLSDimention;
+          leftBound = SharedVector(new double[currentDimention],
+              utils::array_deleter<double>());
+          rightBound = SharedVector(new double[currentDimention],
+              utils::array_deleter<double>());
+
+          for (int i = 0; i < currentDimention; i++) {
+              leftBound.get()[i] = -1;
+              rightBound.get()[i] = 1;
+          }
+
+          if (gklsRadioButton2->Checked == true)
+              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+          else if (gklsHardRadioButton->Checked == true)
+              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
       }
 
-      problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
-      currentDimention = problem->GetDimension();
+      double* x, err_val, err_xy, * y = new double[currentDimention];
 
-      leftBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
-      rightBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+      targetFunction->SetFunctionNumber(mCurrentTaskNumber);
+      targetFunction->GetMinPoint(y);
+      err_val = targetFunction->Calculate(y);
 
-      problem->GetBounds(leftBound.get(), rightBound.get());
+      OptimizerFunctionPtr* taskFunctions = new OptimizerFunctionPtr[1];
+      taskFunctions[0] = OptimizerFunctionPtr(targetFunction);
+      optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
+          utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
+      OptimizerResult expResult;
+      if (!checkBox1->Checked) {
+          OptimizerAlgorithmUnconstrained ags;
+          ags.SetParameters(*mCurrentAlgParams);
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
 
-      targetFunction = new CustomProblemWrapper(problem);
-    }
-    else
-    {
-      currentDimention = mTaskGeneratorSettings.GKLSDimention;
-      leftBound = SharedVector(new double[currentDimention],
-        utils::array_deleter<double>());
-      rightBound = SharedVector(new double[currentDimention],
-        utils::array_deleter<double>());
+          expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+          if (currentSequence != nullptr)
+              delete currentSequence;
+          currentSequence = new auto(ags.GetSearchSequence());
+          x = expResult.GetSolution().GetOptimumPoint().get();
 
-      for (int i = 0; i < currentDimention; i++) {
-        leftBound.get()[i] = -1;
-        rightBound.get()[i] = 1;
+          err_val = expResult.GetSolution().GetOptimumValue() - err_val;
+          err_xy = utils::NormNDimMax(x, y, currentDimention);
+
+
+          //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
+          //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+          //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+          setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
+          Invoke(setResultsDel,
+              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
+              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+              expResult.GetSolution().GetOptimumValue().ToString("F6"),
+              err_val.ToString("F6"),
+              err_xy.ToString("F6"),
+              err_xy.ToString("F6"),
+              ags.GetLipschitzConst().ToString("F5") });
+          delete[] y;
       }
+      else {
+          OptimizerAlgorithmNested ags;
+          ags.SetParameters(*mCurrentAlgParams);
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
 
-      if (gklsRadioButton2->Checked == true)
-        targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
-      else if (gklsHardRadioButton->Checked == true)
-        targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
-    }
+          expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+          if (currentSequence != nullptr)
+              delete currentSequence;
+          currentSequence = new auto(ags.GetSearchSequence());
+          x = expResult.GetSolution().GetOptimumPoint().get();
 
-    double* x, err_val, err_xy, * y = new double[currentDimention];
+          err_val = expResult.GetSolution().GetOptimumValue() - err_val;
+          err_xy = utils::NormNDimMax(x, y, currentDimention);
 
-    targetFunction->SetFunctionNumber(mCurrentTaskNumber);
-    targetFunction->GetMinPoint(y);
-    err_val = targetFunction->Calculate(y);
 
-    OptimizerFunctionPtr* taskFunctions = new OptimizerFunctionPtr[1];
-    taskFunctions[0] = OptimizerFunctionPtr(targetFunction);
-    optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
-      utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
+          //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
+          //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+          //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+          setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
+          Invoke(setResultsDel,
+              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
+              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+              expResult.GetSolution().GetOptimumValue().ToString("F6"),
+              err_val.ToString("F6"),
+              err_xy.ToString("F6"),
+              err_xy.ToString("F6"),
+              ags.GetLipschitzConst().ToString("F5") });
+          delete[] y;
+      
+      }
+  
 
-    OptimizerAlgorithmUnconstrained ags;
-    ags.SetParameters(*mCurrentAlgParams);
-    ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
 
-    auto expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
-    if (currentSequence != nullptr)
-      delete currentSequence;
-    currentSequence = new auto(ags.GetSearchSequence());
 
-    x = expResult.GetSolution().GetOptimumPoint().get();
-
-    err_val = expResult.GetSolution().GetOptimumValue() - err_val;
-    err_xy = utils::NormNDimMax(x, y, currentDimention);
-
-    it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
-    task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
-    task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
-    error_val->Text = err_val.ToString("F6");
-    error_xy->Text = err_xy.ToString("F6");
-    mErrorValueString = err_xy.ToString("F6");
-    //lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
-    lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
-
-    delete[] y;
   }
+  private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7) {
+      this->it_count_lbl->Text = s1;
+      this->task_answ_lbl->Text = s2;
+      this->task_val_lbl->Text = s3;
+      this->error_val->Text = s4;
+      this->error_xy->Text = s5;
+      this->mErrorValueString = s6;
+      this->lipConstLabel->Text = s7;
+  }
+
+
 
   private: System::Void solveSingleTaskBackgroundWorker_RunWorkerCompleted(System::Object^  sender, System::ComponentModel::RunWorkerCompletedEventArgs^  e) {
     solveSingleTaskButton->Enabled = true;
@@ -1557,11 +1661,10 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       if (currentDimention == 2)
         DrawIsolines(mCurrentTaskNumber, currentSequence);
     }
-    solveSerieButton->Enabled = true;
+    solveSeriesButton->Enabled = true;
   }
 
-  private: System::Void readAlgorithmParameters()
-  {
+  private: System::Void readAlgorithmParameters() {
     mCurrentAlgParams->eps = Convert::ToDouble(prec_text->Text, nfi);
     *mCurrentAlgParams->r = Convert::ToDouble(reliability_coeff->Value);
     *mCurrentAlgParams->reserves = 0;
@@ -1581,13 +1684,113 @@ private: System::Windows::Forms::RadioButton^ customProblemRadioButton;
       mCurrentAlgParams->algDimention = mTaskGeneratorSettings.GKLSDimention;
     mCurrentTaskNumber = Convert::ToInt32(task_number->Value);
     mCurrentAlgParams->localVerification = mAlgorithmSettings.localVerification;
+    // Hmm... But if I'm about to add nested scheme as a part of this menu...
     mCurrentAlgParams->localTuningMode = static_cast<LocalTuningMode>(mAlgorithmSettings.localAdaptationMode);
   }
+
   private: System::Void saveOPChartToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-    if (saveOPImgDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-    {
+    if (saveOPImgDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
       chart1->SaveImage(saveOPImgDialog->FileName, ChartImageFormat::Png);
     }
   }
+
+    // Localization
+private: System::Void russianToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    this->groupBox1->Text = L"Параметры алгоритма";
+    this->label1->Text = L"Параметр надёжности:";
+    this->label2->Text = L"Точность:";
+    this->label3->Text = L"Плотность развертки:";
+    this->label5->Text = L"Максимальное число итераций:";
+    this->label11->Text = L"Тип развёртки:";
+    this->label16->Text = L"Число потоков:";
+
+    this->isLocalCheckBox->Text = L"Локальная ???"; // ??? 
+    this->stopCheckBox->Text = L"Остановка по точности";
+
+    this->groupBox2->Text = L"Задача";
+    this->label6->Text = L"Индекс задачи";
+    this->solveSingleTaskButton->Text = L"Решить";
+    this->graph_checkBox->Text = L"Показывать точки испытаний на изолиниях"; // Не путать с изоклинами
+
+    this->drawIsolinesButton->Text = L"Показать изолинии";
+    this->OneDimGraphButton->Text = L"Одномерный график";
+    this->solveSeriesButton->Text = L"Решить класс";
+
+
+    this->label13->Text = L"Класс задач";
+    this->grishaginRadioButton->Text = L"Функции Гришагина";
+    this->gklsRadioButton2->Text = L"GKLS Простой"; // ???
+    this->gklsHardRadioButton->Text = L"GKLS Сложный"; // ???
+    this->customProblemRadioButton->Text = L"Свои функции"; // ???
+
+    this->groupBox3->Text = L"Результаты";
+    this->label7->Text = L"Координаты";
+    this->label8->Text = L"Значение";
+    this->label9->Text = L"Число итераций";
+    this->label10->Text = L"Отклонение значения";
+    this->label12->Text = L"Отклонение координат";
+    this->label17->Text = L"Константа Гёльдера";
+
+    this->label4->Text = L"Прогресс";
+    this->ShowLogButton->Text = L"Показать лог"; // ???
+    this->clear_button->Text = L"Отчистить график"; // ???
+
+    this->saveToolStripMenuItem->Text = L"Сохранить";
+    this->saveOPToolStripMenuItem->Text = L"Операционные характеристики";
+    this->savePointsToolStripMenuItem->Text = L"Точки испытаний";
+    this->saveOPChartToolStripMenuItem->Text = L"Сохранить график операционных характеристик";
+
+    this->advSettingsToolStripMenuItem->Text = L"Расширенные настройки";
+    this->graphSettingsToolStripMenuItem->Text = L"Настройки графика";
+    this->TaskGeneratorSettingsToolStripMenuItem->Text = L"Настройки генератора задач";
+    this->algSettingsToolStripMenuItem->Text = L"Настройки алгоритма";
+}
+private: System::Void englishToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    this->groupBox1->Text = L"Parameters of algorithm";
+    this->label1->Text = L"Reliability coefficient:";
+    this->label2->Text = L"Accuracy:";
+    this->label3->Text = L"Evolvent density:";
+    this->label5->Text = L"Maximal number of iterations:";
+    this->label11->Text = L"Evolvent type:";
+    this->label16->Text = L"Threads number:";
+    this->stopCheckBox->Text = L"Stop by accuracy";
+    this->isLocalCheckBox->Text = L"Local tuning algorithm";
+
+    this->groupBox2->Text = L"Problem";
+    this->label6->Text = L"Problem index";
+    this->solveSingleTaskButton->Text = L"Solve";
+    this->graph_checkBox->Text = L"Show trial points on isolines";
+
+    this->drawIsolinesButton->Text = L"Show isolines";
+    this->OneDimGraphButton->Text = L"One dimensional graph";
+    this->solveSeriesButton->Text = L"Solve class";
+
+    this->label13->Text = L"Problem class";
+    this->grishaginRadioButton->Text = L"Grishagin functions";
+    this->gklsRadioButton2->Text = L"GKLS Simple"; // ???
+    this->gklsHardRadioButton->Text = L"GKLS Hard"; // ???
+    this->customProblemRadioButton->Text = L"Custom"; // ???
+
+    this->groupBox3->Text = L"Results";
+    this->label7->Text = L"Coordinates";
+    this->label8->Text = L"Value";
+    this->label9->Text = L"Iterations performed";
+    this->label10->Text = L"Error by value";
+    this->label12->Text = L"Error by coordinates";
+    this->label17->Text = L"Holder constant";
+
+    this->label4->Text = L"Progress";
+    this->ShowLogButton->Text = L"Show log";
+    this->clear_button->Text = L"Clear graph";
+
+
+    this->saveOPToolStripMenuItem->Text = L"Operating characteristic";
+    this->savePointsToolStripMenuItem->Text = L"Trial points";
+    this->saveOPChartToolStripMenuItem->Text = L"Save operating characteristics graph";
+    this->advSettingsToolStripMenuItem->Text = L"Advanced settings";
+    this->graphSettingsToolStripMenuItem->Text = L"Graph settings";
+    this->TaskGeneratorSettingsToolStripMenuItem->Text = L"Problem generator settings";
+    this->algSettingsToolStripMenuItem->Text = L"Algorithm settings";
+}
 };
 }

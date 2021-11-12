@@ -2,6 +2,7 @@
 #define OPTIMIZER_DATA_STRUCTURES_HPP
 
 #include "Map.h"
+#include <vector>
 
 namespace optimizercore	{
 
@@ -136,6 +137,49 @@ namespace optimizercore	{
 
 	};
 
+	// Nested
+
+	struct OptimizerNestedTrialPoint { // Unconstrained
+        std::vector<double> x;
+        double val;
+
+        OptimizerNestedTrialPoint() {}
+        OptimizerNestedTrialPoint(const std::vector<double>& _x, double _val) {
+
+			x = _x;
+			val = _val;
+        }
+    };
+
+    inline bool operator<(const OptimizerNestedTrialPoint& t1,
+                          const OptimizerNestedTrialPoint& t2) {
+		int size = t1.x.size();
+		if (size != t2.x.size())
+			throw "Comprasion OptimizerNestedTrialPoint with different dimentions";
+		for (int i = 0; i < size; ++i) {
+			if (t1.x[i] != t2.x[i]) return t1.x[i] < t2.x[i];
+		}
+        return false;
+    }
+
+
+	struct OptimaizerNestedInterval
+	{
+		OptimizerNestedTrialPoint left, right;
+		double rank, localM;
+
+		OptimaizerNestedInterval()
+		{}
+
+		OptimaizerNestedInterval(OptimizerNestedTrialPoint _left,
+			OptimizerNestedTrialPoint _right, double _rank, double _localM)
+		{
+			left = _left;
+			right = _right;
+			rank = _rank;
+			localM = _localM;
+		}
+	};
 }
 
 #endif

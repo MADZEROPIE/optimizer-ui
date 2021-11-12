@@ -1,5 +1,4 @@
-#ifndef OPTIMIZER_ALGORITHM_UNCONSTRAINED_HPP
-#define OPTIMIZER_ALGORITHM_UNCONSTRAINED_HPP
+#pragma once
 
 #include "OptimizerCoreGlobal.hpp"
 #include "OptimizerTask.hpp"
@@ -9,23 +8,14 @@
 #include "OptimizerSolution.hpp"
 #include "OptimizerResult.hpp"
 #include "OptimizerSearchSequence.hpp"
+#include "OptimizerAlgorithmUnconstrained.hpp"
 
 #include <set>
 
 namespace optimizercore
 {
-	class IOptimazerAlgorithm {
-	public:
-		virtual void SetTask(OptimizerFunctionPtr function,
-			OptimizerSpaceTransformation spaceTransform) = 0;
-		virtual void SetThreadsNum(int num)=0;
-		virtual void SetParameters(OptimizerParameters params)=0;
 
-		virtual OptimizerResult StartOptimization(const double* xOpt,
-			StopCriterionType stopType) = 0;
-	};
-	
-	class EXPORT_API OptimizerAlgorithmUnconstrained final: public IOptimazerAlgorithm
+	class EXPORT_API OptimizerAlgorithmNested final : public IOptimazerAlgorithm
 	{
 
 	private:
@@ -39,35 +29,42 @@ namespace optimizercore
 		int mNumberOfThreads;
 		int mLocalStartIterationNumber;
 		int mMaxNumberOfIterations;
-		int mMapTightness;
+		size_t mGlobalIterationsNumber = 0;
+
 		int mMethodDimention;
-		int mAlpha;
+
+		int mAlpha; //???
 		int mLocalMixParameter;
+
 		int mMapType;
+		int mMapTightness;
 
 		OptimizerSpaceTransformation mSpaceTransform;
-		OptimizerFunction *mTargetFunction;
+		OptimizerFunction* mTargetFunction;
 		OptimizerFunctionPtr mTargetFunctionSmartPtr;
 
-		OptimaizerInterval *mIntervalsForTrials;
-		std::set<OptimizerTrialPoint> mSearchInformationStorage;
-		OptimizerTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
+		OptimaizerNestedInterval* mIntervalsForTrials;
+        std::set<OptimizerNestedTrialPoint> mSearchInformationStorage;
+        OptimizerNestedTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
 
 		LocalTuningMode mLocalTuningMode;
 
+		double* leftDomainBound, *rightDomainBound;
+
 		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
-		double **mNextPoints;
+		double** mNextPoints;
 
 		void AllocMem();
 		void InitializeInformationStorage();
-		void UpdateGlobalM(std::set<OptimizerTrialPoint>::iterator&);
-		int UpdateRanks(bool isLocal);
-		bool InsertNewTrials(int trialsNumber);
+		void UpdateGlobalM(std::set<OptimizerNestedTrialPoint>::iterator&, const std::set<OptimizerNestedTrialPoint>& localStorage);
+		int UpdateRanks(const std::set<OptimizerNestedTrialPoint>& localStorage, bool isLocal);
+		bool InsertNewTrials(int trialsNumber, std::set<OptimizerNestedTrialPoint>& localStorage);
 		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
+		void IndexOprimization(int index, int thread_id);
 
 	public:
-		OptimizerAlgorithmUnconstrained();
-		~OptimizerAlgorithmUnconstrained();
+		OptimizerAlgorithmNested();
+		~OptimizerAlgorithmNested();
 
 		void SetTask(OptimizerFunctionPtr function,
 			OptimizerSpaceTransformation spaceTransform);
@@ -78,8 +75,7 @@ namespace optimizercore
 			StopCriterionType stopType);
 
 		double GetLipschitzConst() const;
-		OptimizerSearchSequence GetSearchSequence() const;
+		OptimazerNestedSearchSequence GetSearchSequence() const;
 
 	};
 }
-#endif 

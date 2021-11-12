@@ -8,9 +8,8 @@ OptimizerResult::OptimizerResult()
 }
 OptimizerResult::~OptimizerResult()
 {}
-OptimizerResult::OptimizerResult(const OptimizerSolution& Solution)
+OptimizerResult::OptimizerResult(const OptimizerSolution& Solution): mSolution (Solution)
 {
-	mSolution = Solution;
 	mIsInitialized = true;
 }
 OptimizerSolution OptimizerResult::GetSolution() const
