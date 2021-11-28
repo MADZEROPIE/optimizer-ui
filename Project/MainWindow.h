@@ -59,6 +59,8 @@ namespace optimizerui {
       MapTypeComboBox->SelectedIndex = 0;
       saveFileDialog->InitialDirectory = System::IO::Directory::GetCurrentDirectory();
       saveFileDialog->Filter = "CSV file|*.csv|All files|*.*";
+
+      openProblemDialog->Filter = "DLL file|*.dll|All files|*.*";
     }
 
   protected:
@@ -174,6 +176,9 @@ private:
 private: System::Windows::Forms::ToolStripMenuItem^ russianToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
 private: System::Windows::Forms::CheckBox^ checkBox1;
+private: System::Windows::Forms::Button^ Choose_but;
+private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
+
 
   private:
     System::ComponentModel::Container ^components;
@@ -207,6 +212,7 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->drawIsolinesButton = (gcnew System::Windows::Forms::Button());
         this->solveTaskSerieBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+        this->Choose_but = (gcnew System::Windows::Forms::Button());
         this->customProblemRadioButton = (gcnew System::Windows::Forms::RadioButton());
         this->gklsHardRadioButton = (gcnew System::Windows::Forms::RadioButton());
         this->gklsRadioButton2 = (gcnew System::Windows::Forms::RadioButton());
@@ -249,6 +255,7 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->saveFileDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
+        this->openProblemDialog = (gcnew System::Windows::Forms::OpenFileDialog());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -503,6 +510,7 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         // 
         // groupBox2
         // 
+        this->groupBox2->Controls->Add(this->Choose_but);
         this->groupBox2->Controls->Add(this->customProblemRadioButton);
         this->groupBox2->Controls->Add(this->gklsHardRadioButton);
         this->groupBox2->Controls->Add(this->gklsRadioButton2);
@@ -521,6 +529,16 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         this->groupBox2->TabIndex = 13;
         this->groupBox2->TabStop = false;
         this->groupBox2->Text = L"Problem";
+        // 
+        // Choose_but
+        // 
+        this->Choose_but->Location = System::Drawing::Point(200, 155);
+        this->Choose_but->Name = L"Choose_but";
+        this->Choose_but->Size = System::Drawing::Size(75, 23);
+        this->Choose_but->TabIndex = 2;
+        this->Choose_but->Text = L"Choose";
+        this->Choose_but->UseVisualStyleBackColor = true;
+        this->Choose_but->Click += gcnew System::EventHandler(this, &MainWindow::Choose_but_Click);
         // 
         // customProblemRadioButton
         // 
@@ -922,6 +940,10 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
         // 
         this->saveOPImgDialog->DefaultExt = L"png";
         this->saveOPImgDialog->Filter = L"PNG|*.png";
+        // 
+        // openProblemDialog
+        // 
+        this->openProblemDialog->FileName = L"CustomProblem.dll";
         // 
         // MainWindow
         // 
@@ -1791,6 +1813,12 @@ private: System::Void englishToolStripMenuItem_Click(System::Object^ sender, Sys
     this->graphSettingsToolStripMenuItem->Text = L"Graph settings";
     this->TaskGeneratorSettingsToolStripMenuItem->Text = L"Problem generator settings";
     this->algSettingsToolStripMenuItem->Text = L"Algorithm settings";
+}
+
+private: System::Void Choose_but_Click(System::Object^ sender, System::EventArgs^ e) {
+    if (openProblemDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+        mTaskGeneratorSettings.dllPath = openProblemDialog->FileName;
+    }
 }
 };
 }

@@ -35,22 +35,22 @@ optimizercore::OptimizerAlgorithmNested::~OptimizerAlgorithmNested()
 void optimizercore::OptimizerAlgorithmNested::AllocMem() {}
 
 void optimizercore::OptimizerAlgorithmNested::InitializeInformationStorage() {
-  if (!mIsAlgorithmMemoryAllocated) {
-    AllocMem();
-    mIsAlgorithmMemoryAllocated = true;
-  }
+    if (!mIsAlgorithmMemoryAllocated) {
+        AllocMem();
+        mIsAlgorithmMemoryAllocated = true;
+    }
 
-  mZ = HUGE_VAL;
-  mGlobalM = 1;
-  mMaxIntervalNorm = 0;
+    mZ = HUGE_VAL;
+    mGlobalM = 1;
+    mMaxIntervalNorm = 0;
 
-  mSearchInformationStorage.clear();
+    mSearchInformationStorage.clear();
 
 
 }
 
 void optimizercore::OptimizerAlgorithmNested::UpdateGlobalM(  // GlobalM is LipschitzConst on first recursion layer
-    std::set<OptimizerNestedTrialPoint>::iterator & newPointIt, const std::set<OptimizerNestedTrialPoint>& localStorage) {
+    std::set<OptimizerNestedTrialPoint>::iterator& newPointIt, const std::set<OptimizerNestedTrialPoint>& localStorage) {
     double max = mGlobalM;
     if (max == 1) max = 0;
 
@@ -333,18 +333,18 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
 
 
     for (int i = 1; i <= mNumberOfThreads; ++i) {
-        mNextTrialsPoints[i-1].x[0] = mSpaceTransform.GetLeftDomainBound().get()[0] + 
-            i * (mSpaceTransform.GetRightDomainBound().get()[0] 
-                - mSpaceTransform.GetLeftDomainBound().get()[0]) / (mNumberOfThreads+1);
+        mNextTrialsPoints[i - 1].x[0] = mSpaceTransform.GetLeftDomainBound().get()[0] +
+            i * (mSpaceTransform.GetRightDomainBound().get()[0]
+                - mSpaceTransform.GetLeftDomainBound().get()[0]) / (mNumberOfThreads + 1);
     }
     while (mGlobalIterationsNumber < mMaxNumberOfIterations && !stop) {
         iterationsCount++;
 
-        #pragma omp parallel for num_threads(mNumberOfThreads)
+        //#pragma omp parallel for num_threads(mNumberOfThreads)
         for (int i = 0; i < mNumberOfThreads; i++) {
             IndexOprimization(1, i);
 
-            #pragma omp critical
+            //#pragma omp critical
             if (mNextTrialsPoints[i].val < mZ)
                 mZ = mNextTrialsPoints[i].val;
             if (stopType == StopCriterionType::OptimalPoint) {
@@ -378,7 +378,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
             mNextTrialsPoints[i].x[0] = (left.x[0] + right.x[0]) / 2
                 - sgn(right.val - left.val) * (fabs(right.val - left.val)
                     / mIntervalsForTrials[i].localM) / (2 * r);
-            
+
             if (stopType != StopCriterionType::OptimalPoint) {
                 if (fabs(right.x[0] - left.x[0]) < eps) {
                     stop = true;
@@ -418,9 +418,9 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(const
 void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int thread_id)
 {
     if (index >= mMethodDimention) {
-        #pragma omp critical
+        //#pragma omp critical
         {
-            ++mGlobalIterationsNumber; 
+            ++mGlobalIterationsNumber;
         }
         mNextTrialsPoints[thread_id].val = mTargetFunction->Calculate(mNextTrialsPoints[thread_id].x.data());
         return;
@@ -464,21 +464,22 @@ void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int t
         lb[index] = mNextTrialsPoints[thread_id].x[index] = (localStorage[t].x[index] + localStorage[t + 1].x[index]) / 2
             - (localStorage[t + 1].val - localStorage[t].val) / (2 * m);
         IndexOprimization(index + 1, thread_id);
-        
+
         localStorage.insert(localStorage.begin() + t + 1, mNextTrialsPoints[thread_id]);
 
     }
-    #pragma omp critical
-    auto min = localStorage[t + 1];
-    for (int i = 0; i < localStorage.size(); ++i) {
-        if (localStorage[i].val < min.val) {
-            min = localStorage[i];
+    //#pragma omp critical
+    {
+        auto min = localStorage[t + 1];
+        for (int i = 0; i < localStorage.size(); ++i) {
+            if (localStorage[i].val < min.val) {
+                min = localStorage[i];
+            }
+            mSearchInformationStorage.emplace(localStorage[i]);
         }
-        mSearchInformationStorage.emplace(localStorage[i]);
+        mNextTrialsPoints[thread_id] = min;
     }
-    mNextTrialsPoints[thread_id] = min;
-   
-    
+
 }
 
 double optimizercore::OptimizerAlgorithmNested::GetLipschitzConst() const
