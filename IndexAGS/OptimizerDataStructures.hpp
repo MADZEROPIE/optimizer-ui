@@ -141,9 +141,10 @@ namespace optimizercore	{
 
 	struct OptimizerNestedTrialPoint { // Unconstrained
         std::vector<double> x;
-        double val;
+        double val = INFINITY;
 
-        OptimizerNestedTrialPoint() {}
+		OptimizerNestedTrialPoint() {}
+		OptimizerNestedTrialPoint(int dim) { x.resize(dim); }
         OptimizerNestedTrialPoint(const std::vector<double>& _x, double _val) {
 
 			x = _x;
