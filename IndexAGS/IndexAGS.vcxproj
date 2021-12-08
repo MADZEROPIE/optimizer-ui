@@ -82,6 +82,7 @@
     <ClInclude Include="HookeJeevesLocalMethod.hpp" />
     <ClInclude Include="LocalMethodCommon.hpp" />
     <ClInclude Include="OptimazerAlgorithmNested.hpp" />
+    <ClInclude Include="OptimizerAlgorithmAdaptive.h" />
     <ClInclude Include="OptimizerDataStructures.hpp" />
     <ClInclude Include="OptimizerFunction.hpp" />
     <ClInclude Include="OptimizerAlgorithm.hpp" />
@@ -101,6 +102,7 @@
     <ClCompile Include="CoreUtils.cpp" />
     <ClCompile Include="HookeJeevesLocalMethod.cpp" />
     <ClCompile Include="OptimazerAlgorithmNested.cpp" />
+    <ClCompile Include="OptimizerAlgorithmAdaptive.cpp" />
     <ClCompile Include="OptimizerAlgorithmUnconstrained.cpp" />
     <ClCompile Include="OptimizerDataStructures.cpp" />
     <ClCompile Include="main.cpp" />

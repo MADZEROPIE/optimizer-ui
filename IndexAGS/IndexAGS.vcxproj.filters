@@ -72,6 +72,9 @@
     <ClInclude Include="OptimazerAlgorithmNested.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OptimizerAlgorithmAdaptive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreUtils.cpp">
@@ -120,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OptimazerAlgorithmNested.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptimizerAlgorithmAdaptive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

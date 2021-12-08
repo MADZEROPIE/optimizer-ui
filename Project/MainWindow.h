@@ -18,6 +18,7 @@
 #include <msclr/marshal_cppstd.h>
 #include <string>
 #include <OptimazerAlgorithmNested.hpp>
+#include <OptimizerAlgorithmAdaptive.h>
 
 using namespace optimizercore;
 
@@ -178,6 +179,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ englishToolStripMenuItem;
 private: System::Windows::Forms::CheckBox^ checkBox1;
 private: System::Windows::Forms::Button^ Choose_but;
 private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
+private: System::Windows::Forms::CheckBox^ checkBox2;
 
 
   private:
@@ -256,6 +258,7 @@ private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->openProblemDialog = (gcnew System::Windows::Forms::OpenFileDialog());
+        this->checkBox2 = (gcnew System::Windows::Forms::CheckBox());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -315,6 +318,7 @@ private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
         // 
         // groupBox1
         // 
+        this->groupBox1->Controls->Add(this->checkBox2);
         this->groupBox1->Controls->Add(this->checkBox1);
         this->groupBox1->Controls->Add(this->isLocalCheckBox);
         this->groupBox1->Controls->Add(this->stopCheckBox);
@@ -348,6 +352,7 @@ private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
         this->checkBox1->TabIndex = 25;
         this->checkBox1->Text = L"Nested scheme";
         this->checkBox1->UseVisualStyleBackColor = true;
+        this->checkBox1->CheckedChanged += gcnew System::EventHandler(this, &MainWindow::checkBox1_CheckedChanged);
         // 
         // isLocalCheckBox
         // 
@@ -944,6 +949,18 @@ private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
         // openProblemDialog
         // 
         this->openProblemDialog->FileName = L"CustomProblem.dll";
+        // 
+        // checkBox2
+        // 
+        this->checkBox2->AutoSize = true;
+        this->checkBox2->Checked = true;
+        this->checkBox2->CheckState = System::Windows::Forms::CheckState::Checked;
+        this->checkBox2->Location = System::Drawing::Point(140, 196);
+        this->checkBox2->Name = L"checkBox2";
+        this->checkBox2->Size = System::Drawing::Size(105, 17);
+        this->checkBox2->TabIndex = 26;
+        this->checkBox2->Text = L"Adaptive Nested";
+        this->checkBox2->UseVisualStyleBackColor = true;
         // 
         // MainWindow
         // 
@@ -1620,7 +1637,7 @@ private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
               ags.GetLipschitzConst().ToString("F5") });
           delete[] y;
       }
-      else {
+      else if (!checkBox2->Checked){
           OptimizerAlgorithmNested ags;
           ags.SetParameters(*mCurrentAlgParams);
           ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
@@ -1655,7 +1672,41 @@ private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
           delete[] y;
       
       }
-  
+      else {
+          OptimizerAlgorithmAdaptive ags;
+          ags.SetParameters(*mCurrentAlgParams);
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+
+          expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
+          if (currentSequence != nullptr)
+              delete currentSequence;
+          currentSequence = new auto(ags.GetSearchSequence());
+          x = expResult.GetSolution().GetOptimumPoint().get();
+
+          err_val = expResult.GetSolution().GetOptimumValue() - err_val;
+          err_xy = utils::NormNDimMax(x, y, currentDimention);
+
+
+          //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
+          //this->task_answ_lbl->Text = "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+          //this->task_val_lbl->Text = expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+          setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
+          Invoke(setResultsDel,
+              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
+              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+              expResult.GetSolution().GetOptimumValue().ToString("F6"),
+              err_val.ToString("F6"),
+              err_xy.ToString("F6"),
+              err_xy.ToString("F6"),
+              ags.GetLipschitzConst().ToString("F5") });
+          delete[] y;
+
+      }
 
 
 
@@ -1819,6 +1870,13 @@ private: System::Void Choose_but_Click(System::Object^ sender, System::EventArgs
     if (openProblemDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
         mTaskGeneratorSettings.dllPath = openProblemDialog->FileName;
     }
+}
+private: System::Void checkBox1_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+    if (!checkBox1->Checked) { 
+        checkBox2->Checked = false;
+        checkBox2->Enabled = false;
+    }
+    else checkBox2->Enabled = true;
 }
 };
 }
