@@ -78,4 +78,25 @@ namespace optimizerui
 			//release unmanaged resources
 		}
 	};
+	ref class AdaptiveNestedSettings {
+	public:
+		bool globalM = true;
+		bool localM = false;
+		bool levelM = false;
+		AdaptiveNestedSettings()
+		{
+		}
+		//Dispose
+		~AdaptiveNestedSettings()
+		{
+			//release managed resources
+
+			//call finalizer
+			this->!AdaptiveNestedSettings();
+		}
+		!AdaptiveNestedSettings()
+		{
+			//release unmanaged resources
+		}
+	};
 }

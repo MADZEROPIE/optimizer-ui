@@ -87,6 +87,7 @@ namespace optimizercore
 
 		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
 		double** mNextPoints;
+		double* mLevelM;
 
 		void AllocMem();
 		void InitializeInformationStorage();

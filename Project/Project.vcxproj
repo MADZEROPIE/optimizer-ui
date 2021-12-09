@@ -295,6 +295,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdaptiveSettingsWindow.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="OptimizerFunctionWrappers.h" />
     <ClInclude Include="AlgorithmSettingsWindow.h">
       <FileType>CppForm</FileType>
@@ -336,6 +339,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdaptiveSettingsWindow.resx">
+      <DependentUpon>AdaptiveSettingsWindow.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OneDimGraphWindow.resx">
       <DependentUpon>OneDimGraphWindow.h</DependentUpon>
