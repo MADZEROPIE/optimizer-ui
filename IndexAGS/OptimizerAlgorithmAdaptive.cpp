@@ -68,7 +68,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(SubTask* task)
     if (max == 0) task->m = 1;
     else task->m = max * r;
     task->M = max;
-
+    if (task->m > mGlobalM) mGlobalM = task->m;
 }
 
 void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(SubTask* task)
@@ -79,11 +79,11 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(SubTask* task)
 
     
     int t = 0;
-    double m = task->m;
+    double m = mGlobalM; //task->m;
     int level = task->level;
     double lx = mSpaceTransform.GetLeftDomainBound().get()[level];
     double rx = mSpaceTransform.GetRightDomainBound().get()[level];
-    task->R = 2* m * (it1->x - lx) - 4 * it1->subtask->basepoint.val;
+    task->R = 2 * m * (it1->x - lx) - 4 * it1->subtask->basepoint.val;
     task->Rind = 0;
     while (it2 != task->trials.end()) {
         ++t;
@@ -99,13 +99,14 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(SubTask* task)
     double rtpm = 2 * m * (rx - it1->x) - 4 * it1->subtask->basepoint.val;
     if (rtpm > task->R) {
         task->R = rtpm;
-        task->Rind = t+1;
+        task->Rind = t + 1;
     }
 
 }
 
 OptimizerAlgorithmAdaptive::SubTask* optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
 {
+    mGlobalM = 0;
     SubTask* best = base_task;
     CalculateM(static_cast<SubTask*>(best));
     CalculateRanks(static_cast<SubTask*>(best));
@@ -298,10 +299,11 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
     base_task = new SubTask(0, nullptr, pnt);
     all_tasks.push_back(base_task);
     GenerateSubTasks(base_task, base_task->basepoint);
-    while (NormNDimMax(base_task->basepoint.x.data(), xOpt, mMethodDimention) >= eps && iterationsCount < mMaxNumberOfIterations) {
+    bool stop = false;
+    while (!stop && iterationsCount < mMaxNumberOfIterations) {
         SubTask* task = ChooseSubtask();
         int level = task->level;
-        double m = task->m;
+        double m = mGlobalM; //task->m;
 
         // CHOOSE NEW POINT
         double newx;
@@ -328,6 +330,13 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         pnt.x[level] = newx;
         GenerateSubTasks(task, pnt);
         ++iterationsCount;
+
+        auto base_it2 = base_task->trials.begin();
+        auto base_it = base_it2++;
+        while (base_it2 != base_task->trials.cend() && !stop) {
+            stop = (base_it2->x - base_it->x < eps);
+            ++base_it2; ++base_it;
+        }
     }
     SharedVector optPoint(new double[mMethodDimention], array_deleter<double>());
     std::memcpy(optPoint.get(), base_task->basepoint.x.data(), mMethodDimention * sizeof(double));
@@ -340,7 +349,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
 
 double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst() const
 {
-    /*if (base_task != nullptr)*/ return base_task->M;
+    /*if (base_task != nullptr)*/ return mGlobalM;
     //return 0.0;
 }
 
