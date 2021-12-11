@@ -21,9 +21,9 @@ namespace optimizercore
 		class ITask {
 		public:
 			int level=0;
-			ITask* parent = nullptr;
+			int parent_id = -1;
 			OptimizerNestedTrialPoint basepoint;
-			ITask(int _level=0, ITask* _parent=nullptr, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
+			ITask(int _level=0, int _parent_id = -1, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
 		};
 		class SubTask: public ITask {
 		  public:
@@ -37,7 +37,7 @@ namespace optimizercore
 
 			std::set<XSub> trials;
 		  public:
-			SubTask(int _level, ITask* _parent, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
+			SubTask(int _level, int _parent_id, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
 			~SubTask() { /*clear(); */}
 			void clear();
 		};
@@ -45,8 +45,8 @@ namespace optimizercore
 		{
 		public:
 			double x;
-			ITask* subtask;
-			XSub(double _x, ITask* _subtask = nullptr);
+			int subtask_id;
+			XSub(double _x, int _subtask = -1);
 			~XSub() = default;
 			bool operator <(const XSub& b) const { return x < b.x; }
 
@@ -87,23 +87,23 @@ namespace optimizercore
 
 		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
 		double** mNextPoints;
-		double* mLevelM;
+		//double* mLevelM;
 
 		void AllocMem();
 		void InitializeInformationStorage();
 		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
 
-		SubTask* base_task;
-		std::vector<SubTask*> all_tasks;  // Change to priority queue or smth
 
-		// Also. Doesn't store points, so...
-		std::vector<ITask*> all_trials;
+		std::vector<SubTask> all_tasks;  // Change to priority queue or smth
 
-		void UpdateParents(ITask* task);
-		void CalculateM(SubTask* task);
-		void CalculateRanks(SubTask* task);
-		SubTask* ChooseSubtask();
-		void GenerateSubTasks(SubTask* parent, OptimizerNestedTrialPoint npnt);
+		// Also. all_tasks Doesn't store points, so...
+		std::vector<ITask> all_trials;
+		std::vector<double> mLevelM;
+		void UpdateParents(int trial_id);
+		void CalculateM(int task_id);
+		void CalculateRanks(int task_id);
+		int ChooseSubtask();
+		void GenerateSubTasks(int parent, OptimizerNestedTrialPoint npnt);
 	public:
 		OptimizerAlgorithmAdaptive();
 		~OptimizerAlgorithmAdaptive();
