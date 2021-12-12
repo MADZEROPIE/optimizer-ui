@@ -211,7 +211,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::InitializeInformationStorage()
     mMaxIntervalNorm = 0;
 
     mSearchInformationStorage.clear();
-
+    all_tasks.clear();
+    all_trials.clear();
 }
 
 OptimizerSolution optimizercore::OptimizerAlgorithmAdaptive::DoLocalVerification(OptimizerSolution startSolution)
