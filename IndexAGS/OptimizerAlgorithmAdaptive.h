@@ -31,7 +31,6 @@ namespace optimizercore
 			double m = 1;
 			double M = 0;
 			int Rind = 0;
-			// std::vector<SubTask*> subtasks;  // subtasks+basepoint and trials have same usability, so why store both?
 
 			  // also best point ?
 

@@ -108,7 +108,10 @@ OptimizerAlgorithmAdaptive::SubTask* optimizercore::OptimizerAlgorithmAdaptive::
 {
     mGlobalM = 0;
     SubTask* best = base_task;
-    CalculateM(static_cast<SubTask*>(best));
+    for (int i = 0; i < all_tasks.size(); ++i) {
+        CalculateM(static_cast<SubTask*>(all_tasks[i]));
+    }
+    //CalculateM(static_cast<SubTask*>(base_task));
     CalculateRanks(static_cast<SubTask*>(best));
     for (int i = 1; i < all_tasks.size();++i) {
         CalculateM(static_cast<SubTask*>(all_tasks[i]));
@@ -191,7 +194,13 @@ void optimizercore::OptimizerAlgorithmAdaptive::InitializeInformationStorage()
     mMaxIntervalNorm = 0;
 
     mSearchInformationStorage.clear();
-
+    for (int i = 0; i < all_tasks.size(); ++i)
+        delete all_tasks[i];
+    for (int i = 0; i < all_trials.size(); ++i)
+        delete all_trials[i];
+    all_tasks.clear();
+    all_trials.clear();
+    base_task = nullptr;
 }
 
 OptimizerSolution optimizercore::OptimizerAlgorithmAdaptive::DoLocalVerification(OptimizerSolution startSolution)
@@ -319,7 +328,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             int t = task->Rind;
             int i = 0;
             auto itl = task->trials.begin();
-            while (i < t) { ++itl; ++i; } // BULLSHIT. CHANGE SET TO VECTOR AND USE SORT OR SMART INSERT
+            while (i < t) { ++itl; ++i; } // NONSENSE. CHANGE SET TO VECTOR AND USE SORT OR SMART INSERT
             auto itr = itl--;
             newx = (itl->x + itr->x) / 2 - (itr->subtask->basepoint.val - itl->subtask->basepoint.val) / (2 * m);
         }
@@ -334,7 +343,8 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         auto base_it2 = base_task->trials.begin();
         auto base_it = base_it2++;
         while (base_it2 != base_task->trials.cend() && !stop) {
-            stop = (base_it2->x - base_it->x < eps);
+            stop = (base_it2->x - base_it->x < eps/1.1);
+            //stop = NormNDimMax(base_it2->subtask->basepoint.x.data(), base_it->subtask->basepoint.x.data(), mMethodDimention) < eps/1.1;
             ++base_it2; ++base_it;
         }
     }
