@@ -1086,7 +1086,10 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
     Stopwatch s_watch;
     IOptimazerAlgorithm* ags;
     if (checkBox1->Checked) {
-         ags= new OptimizerAlgorithmNested();
+        if (!checkBox2->Checked)
+            ags = new OptimizerAlgorithmNested();
+        else
+            ags = new OptimizerAlgorithmAdaptive();
     }
     else {
         ags = new OptimizerAlgorithmUnconstrained();
