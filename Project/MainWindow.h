@@ -12,6 +12,7 @@
 #include "OneDimGraphWindow.h"
 #include "IsolinesGraphWindow.h"
 #include "TaskGeneratorSettingsWindow.h"
+#include "AdaptiveSettingsWindow.h"
 
 #using <disnet.dll>
 
@@ -108,6 +109,7 @@ namespace optimizerui {
     array<int, 1>^ mOperationCharacteristicData;
     GraphSettings mGraphSettings;
     AlgorithmSettings mAlgorithmSettings;
+    AdaptiveNestedSettings mAdaptiveSettings;
     TaskGeneratorSettings mTaskGeneratorSettings;
     ISearchSequence* currentSequence;
     OneDimGraphWindow^ mOneDimGraph;
@@ -180,6 +182,7 @@ private: System::Windows::Forms::CheckBox^ checkBox1;
 private: System::Windows::Forms::Button^ Choose_but;
 private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
 private: System::Windows::Forms::CheckBox^ checkBox2;
+private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolStripMenuItem;
 
 
   private:
@@ -195,6 +198,7 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
         this->label1 = (gcnew System::Windows::Forms::Label());
         this->label2 = (gcnew System::Windows::Forms::Label());
         this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+        this->checkBox2 = (gcnew System::Windows::Forms::CheckBox());
         this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
         this->isLocalCheckBox = (gcnew System::Windows::Forms::CheckBox());
         this->stopCheckBox = (gcnew System::Windows::Forms::CheckBox());
@@ -258,7 +262,7 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->openProblemDialog = (gcnew System::Windows::Forms::OpenFileDialog());
-        this->checkBox2 = (gcnew System::Windows::Forms::CheckBox());
+        this->adaptiveNestedSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -340,6 +344,18 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
         this->groupBox1->TabIndex = 7;
         this->groupBox1->TabStop = false;
         this->groupBox1->Text = L"Parameters of algorithm";
+        // 
+        // checkBox2
+        // 
+        this->checkBox2->AutoSize = true;
+        this->checkBox2->Checked = true;
+        this->checkBox2->CheckState = System::Windows::Forms::CheckState::Checked;
+        this->checkBox2->Location = System::Drawing::Point(140, 196);
+        this->checkBox2->Name = L"checkBox2";
+        this->checkBox2->Size = System::Drawing::Size(105, 17);
+        this->checkBox2->TabIndex = 26;
+        this->checkBox2->Text = L"Adaptive Nested";
+        this->checkBox2->UseVisualStyleBackColor = true;
         // 
         // checkBox1
         // 
@@ -876,9 +892,9 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
         // 
         // advSettingsToolStripMenuItem
         // 
-        this->advSettingsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+        this->advSettingsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
             this->graphSettingsToolStripMenuItem,
-                this->TaskGeneratorSettingsToolStripMenuItem, this->algSettingsToolStripMenuItem
+                this->TaskGeneratorSettingsToolStripMenuItem, this->algSettingsToolStripMenuItem, this->adaptiveNestedSettingsToolStripMenuItem
         });
         this->advSettingsToolStripMenuItem->Name = L"advSettingsToolStripMenuItem";
         this->advSettingsToolStripMenuItem->Size = System::Drawing::Size(116, 20);
@@ -950,17 +966,12 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
         // 
         this->openProblemDialog->FileName = L"CustomProblem.dll";
         // 
-        // checkBox2
+        // adaptiveNestedSettingsToolStripMenuItem
         // 
-        this->checkBox2->AutoSize = true;
-        this->checkBox2->Checked = true;
-        this->checkBox2->CheckState = System::Windows::Forms::CheckState::Checked;
-        this->checkBox2->Location = System::Drawing::Point(140, 196);
-        this->checkBox2->Name = L"checkBox2";
-        this->checkBox2->Size = System::Drawing::Size(105, 17);
-        this->checkBox2->TabIndex = 26;
-        this->checkBox2->Text = L"Adaptive Nested";
-        this->checkBox2->UseVisualStyleBackColor = true;
+        this->adaptiveNestedSettingsToolStripMenuItem->Name = L"adaptiveNestedSettingsToolStripMenuItem";
+        this->adaptiveNestedSettingsToolStripMenuItem->Size = System::Drawing::Size(257, 22);
+        this->adaptiveNestedSettingsToolStripMenuItem->Text = L"Adaptive Nested settings";
+        this->adaptiveNestedSettingsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::adaptiveNestedSettingsToolStripMenuItem_Click);
         // 
         // MainWindow
         // 
@@ -1512,6 +1523,11 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
     settings->ShowDialog();
   }
 
+    private: System::Void adaptiveNestedSettingsToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+        AdaptiveSettingsWindow ^ settings = gcnew AdaptiveSettingsWindow(mAdaptiveSettings);
+        settings->ShowDialog();
+    }
+
   private: System::Void savePoints() {
     String^ outputString;
 
@@ -1762,6 +1778,14 @@ private: System::Windows::Forms::CheckBox^ checkBox2;
     mCurrentAlgParams->localVerification = mAlgorithmSettings.localVerification;
     // Hmm... But if I'm about to add nested scheme as a part of this menu...
     mCurrentAlgParams->localTuningMode = static_cast<LocalTuningMode>(mAlgorithmSettings.localAdaptationMode);
+
+
+
+    mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Global;
+     if (mAdaptiveSettings.localM)
+           mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Single_task;
+     else if (mAdaptiveSettings.levelM)
+         mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Level;
   }
 
   private: System::Void saveOPChartToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -1881,5 +1905,6 @@ private: System::Void checkBox1_CheckedChanged(System::Object^ sender, System::E
     }
     else checkBox2->Enabled = true;
 }
+
 };
 }

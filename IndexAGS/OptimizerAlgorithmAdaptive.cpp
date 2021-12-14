@@ -62,9 +62,10 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     double max = 0;
     auto it2 = all_tasks[task_id].trials.begin();
     auto it1 = it2++;
+    int level = all_tasks[task_id].level;
     while (it2 != all_tasks[task_id].trials.cend()) {
         double mtpm = 0;
-        if(all_tasks[task_id].level + 1==mMethodDimention)
+        if(level + 1==mMethodDimention)
             mtpm = abs(all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / (it2->x - it1->x);
         else
             mtpm = abs(all_tasks[it1->subtask_id].basepoint.val - all_tasks[it2->subtask_id].basepoint.val) / (it2->x - it1->x);
@@ -74,6 +75,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     if (max == 0) all_tasks[task_id].m = 1;
     else all_tasks[task_id].m = max * r;
     all_tasks[task_id].M = max;
+    if (all_tasks[task_id].m > mLevelM[level]) mLevelM[level] = all_tasks[task_id].m;
     if (all_tasks[task_id].m > mGlobalM) mGlobalM = all_tasks[task_id].m;
 }
 
@@ -83,11 +85,18 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
     if (task.trials.size() < 1) return;
     auto it2 = task.trials.begin();
     auto it1 = it2++;
-
     
     int t = 0;
-    double m = mGlobalM; //task->m;
     int level = task.level;
+    double m;
+
+    if (mLipMode == LipshitzConstantEvaluation::Global)
+        m = mGlobalM; //task->m;
+    else if (mLipMode == LipshitzConstantEvaluation::Single_task)
+        m = task.m;
+    else if (mLipMode == LipshitzConstantEvaluation::Level)
+        m = mLevelM[level];
+
     double lx = mSpaceTransform.GetLeftDomainBound().get()[level];
     double rx = mSpaceTransform.GetRightDomainBound().get()[level];
     if(level+1 != mMethodDimention)
@@ -129,6 +138,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
 int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
 {
     mGlobalM = 0;
+    for (int i = 0; i < mLevelM.size(); ++i)
+        mLevelM[i] = 0;
     int best = 0;
     for (int i = 0; i < all_tasks.size(); ++i) {
         CalculateM(i);
@@ -296,10 +307,11 @@ void optimizercore::OptimizerAlgorithmAdaptive::SetParameters(OptimizerParameter
     mMapType = static_cast<int>(params.mapType);
     mMaxNumberOfIterations = params.maxIterationsNumber;
     mLocalTuningMode = params.localTuningMode;
+    mLipMode = params.lipEval;
     r = *params.r;
-    if (mNextPoints)
-        utils::DeleteMatrix(mNextPoints, mNumberOfThreads);
-    mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimention);
+    //if (mNextPoints)
+    //    utils::DeleteMatrix(mNextPoints, mNumberOfThreads);
+    //mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimention);
     this->SetThreadsNum(params.numberOfThreads);
 
     mIsParamsInitialized = true;
@@ -328,8 +340,15 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         int task_id = ChooseSubtask();
         SubTask& task = all_tasks[task_id];
         int level = task.level;
-        double m = mGlobalM; //task->m;
-
+        double m;
+        if (mLipMode == LipshitzConstantEvaluation::Global)
+            m = mGlobalM; //task->m;
+        else if (mLipMode == LipshitzConstantEvaluation::Single_task)
+            m = task.m;
+        else if (mLipMode == LipshitzConstantEvaluation::Level)
+            m = mLevelM[level];
+        else
+            m = mGlobalM;
         // CHOOSE NEW POINT
         double newx;
         if (task.Rind == 0) {
