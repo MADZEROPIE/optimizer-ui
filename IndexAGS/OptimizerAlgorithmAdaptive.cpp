@@ -144,6 +144,10 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
     for (int i = 0; i < all_tasks.size(); ++i) {
         CalculateM(i);
     }
+    for (int i = 0; i < mLevelM.size(); ++i) {
+        if (mLevelM[i] == 0)
+            mLevelM[i] = 1;
+    }
     CalculateRanks(best);
     for (int i = 1; i < all_tasks.size();++i) {
         CalculateRanks(i);
@@ -382,7 +386,8 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         auto base_it2 = base_task.trials.begin();
         auto base_it = base_it2++;
         while (base_it2 != base_task.trials.cend() && !stop) {
-            stop = (base_it2->x - base_it->x < eps);
+            //stop = (base_it2->x - base_it->x < eps);
+            stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(), all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps / 1.1;
             ++base_it2; ++base_it;
         }
     }
