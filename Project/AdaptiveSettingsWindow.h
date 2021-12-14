@@ -14,10 +14,10 @@ namespace optimizerui {
 	/// <summary>
 	/// Сводка для MyForm
 	/// </summary>
-	public ref class MyForm : public System::Windows::Forms::Form
+	public ref class AdaptiveSettingsWindow : public System::Windows::Forms::Form
 	{
 	public:
-		MyForm(AdaptiveNestedSettings% settings)
+		AdaptiveSettingsWindow(AdaptiveNestedSettings% settings)
 		{
 			InitializeComponent();
 			radioButton1->Checked = settings.globalM;
@@ -32,7 +32,7 @@ namespace optimizerui {
 		/// Освободить все используемые ресурсы.
 		/// </summary>
 		AdaptiveNestedSettings^ currentSettings;
-		~MyForm()
+		~AdaptiveSettingsWindow()
 		{
 			if (components)
 			{
@@ -74,7 +74,7 @@ namespace optimizerui {
 			this->radioButton1->TabStop = true;
 			this->radioButton1->Text = L"Global (all subtasks)";
 			this->radioButton1->UseVisualStyleBackColor = true;
-			this->radioButton1->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton1_CheckedChanged);
+			this->radioButton1->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton1_CheckedChanged);
 			// 
 			// radioButton2
 			// 
@@ -86,7 +86,7 @@ namespace optimizerui {
 			this->radioButton2->TabStop = true;
 			this->radioButton2->Text = L"Single-task";
 			this->radioButton2->UseVisualStyleBackColor = true;
-			this->radioButton2->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton2_CheckedChanged);
+			this->radioButton2->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton2_CheckedChanged);
 			// 
 			// radioButton3
 			// 
@@ -98,7 +98,7 @@ namespace optimizerui {
 			this->radioButton3->TabStop = true;
 			this->radioButton3->Text = L"Level of tasks";
 			this->radioButton3->UseVisualStyleBackColor = true;
-			this->radioButton3->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioButton3_CheckedChanged);
+			this->radioButton3->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton3_CheckedChanged);
 			// 
 			// label1
 			// 
@@ -118,7 +118,7 @@ namespace optimizerui {
 			this->Controls->Add(this->radioButton3);
 			this->Controls->Add(this->radioButton2);
 			this->Controls->Add(this->radioButton1);
-			this->Name = L"MyForm";
+			this->Name = L"AdaptiveSettingsWindow";
 			this->Text = L"Adaptive Nested Scheme Settings";
 			this->ResumeLayout(false);
 			this->PerformLayout();

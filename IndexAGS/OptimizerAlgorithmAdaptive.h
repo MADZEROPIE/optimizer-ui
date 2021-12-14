@@ -82,6 +82,7 @@ namespace optimizercore
 		OptimizerNestedTrialPoint mOptimumEvaluation,* mNextTrialsPoints;
 
 		LocalTuningMode mLocalTuningMode;
+		LipshitzConstantEvaluation mLipMode;
 
 		double* leftDomainBound,* rightDomainBound;
 
