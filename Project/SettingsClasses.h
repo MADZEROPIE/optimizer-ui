@@ -83,6 +83,7 @@ namespace optimizerui
 		bool globalM = true;
 		bool localM = false;
 		bool levelM = false;
+		bool maxprevM = false;
 		AdaptiveNestedSettings()
 		{
 		}

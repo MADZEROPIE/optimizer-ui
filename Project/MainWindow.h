@@ -1786,6 +1786,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
            mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Single_task;
      else if (mAdaptiveSettings.levelM)
          mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Level;
+     else if (mAdaptiveSettings.maxprevM)
+         mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Max_prev;
   }
 
   private: System::Void saveOPChartToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {

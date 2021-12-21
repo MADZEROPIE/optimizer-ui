@@ -8,7 +8,7 @@ namespace optimizercore	{
 
 	enum class StopCriterionType : int { OptimalPoint = 0, Precision = 1 };
 	enum class LocalTuningMode : int { None = 0, Maximum = 1, Adaptive = 2 };
-	enum class LipshitzConstantEvaluation : int { Global = 0, Single_task = 1, Level = 2 };
+	enum class LipshitzConstantEvaluation : int { Global = 0, Single_task = 1, Level = 2, Max_prev = 3 };
 
 
 	struct OptimizerTrialPoint
