@@ -57,6 +57,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     if (all_tasks[task_id].trials.size() <= 1) {
         all_tasks[task_id].M = 0;
         all_tasks[task_id].m = 1;
+        if (mLipMode == LipshitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m)
+            all_tasks[task_id].m = mGlobalM;
         return;
     }
     double max = 0;
@@ -65,10 +67,6 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     auto it2 = all_tasks[task_id].trials.begin();
     auto it1 = it2++;
     int level = all_tasks[task_id].level;
-    if (level == 0) {
-        level++;
-        level--;
-    }
     while (it2 != all_tasks[task_id].trials.cend()) {
         double mtpm = 0;
         if (level + 1 == mMethodDimention)
@@ -83,6 +81,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     all_tasks[task_id].M = max;
     if (all_tasks[task_id].m > mLevelM[level]) mLevelM[level] = all_tasks[task_id].m;
     if (all_tasks[task_id].m > mGlobalM) mGlobalM = all_tasks[task_id].m;
+    if (mLipMode == LipshitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m) 
+        all_tasks[task_id].m = mGlobalM;
 }
 
 void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
@@ -98,7 +98,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
 
     if (mLipMode == LipshitzConstantEvaluation::Global)
         m = mGlobalM; //task->m;
-    else if (mLipMode == LipshitzConstantEvaluation::Single_task)
+    else if (mLipMode == LipshitzConstantEvaluation::Single_task || mLipMode == LipshitzConstantEvaluation::Max_prev)
         m = task.m;
     else if (mLipMode == LipshitzConstantEvaluation::Level)
         m = mLevelM[level];
@@ -190,8 +190,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
     
     int level = all_tasks[parent_id].level + 1;
     npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level])/2;
-    SubTask task =  SubTask(level, parent_id, npnt);
-    all_tasks.emplace_back(std::move(task));
+    all_tasks.push_back(SubTask(level, parent_id, npnt));
     all_tasks[parent_id].trials.emplace(XSub(npnt.x[level-1], all_tasks.size()-1));
     
     return GenerateSubTasks(all_tasks.size() - 1, npnt);
@@ -356,9 +355,9 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         SubTask& task = all_tasks[task_id];
         int level = task.level;
         double m;
-        if (mLipMode == LipshitzConstantEvaluation::Global)
+        if (mLipMode == LipshitzConstantEvaluation::Global || mLipMode == LipshitzConstantEvaluation::Max_prev)
             m = mGlobalM;
-        else if (mLipMode == LipshitzConstantEvaluation::Single_task)
+        else if (mLipMode == LipshitzConstantEvaluation::Single_task)// || mLipMode == LipshitzConstantEvaluation::Max_prev)
             m = task.m;
         else if (mLipMode == LipshitzConstantEvaluation::Level)
             m = mLevelM[level];
@@ -397,12 +396,13 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         auto base_it2 = base_task.trials.begin();
         auto base_it = base_it2++;
         if (stopType == StopCriterionType::OptimalPoint) {
-            stop = NormNDimMax(all_tasks[0].basepoint.x.data(), xOpt, mMethodDimention) < eps / 1.1;
+            stop = NormNDimMax(all_tasks[0].basepoint.x.data(), xOpt, mMethodDimention) < eps;
         }
         while (base_it2 != base_task.trials.cend() && !stop) {
             //stop = (base_it2->x - base_it->x < eps);
             if (stopType != StopCriterionType::OptimalPoint)
-                stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(), all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps / 1.1;
+                stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(),
+                    all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps;
             ++base_it2; ++base_it;
         }
     }
@@ -417,8 +417,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
 
 double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst() const
 {
-    /*if (base_task != nullptr)*/ return mGlobalM;
-    //return 0.0;
+    return mGlobalM;
 }
 
 OptimazerNestedSearchSequence optimizercore::OptimizerAlgorithmAdaptive::GetSearchSequence() const

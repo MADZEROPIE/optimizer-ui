@@ -26,6 +26,8 @@ namespace optimizerui {
 
 			currentSettings = %settings;
 		}
+	private: System::Windows::Forms::RadioButton^ radioButton4;
+	public:
 
 	protected:
 		/// <summary>
@@ -62,6 +64,7 @@ namespace optimizerui {
 			this->radioButton2 = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButton3 = (gcnew System::Windows::Forms::RadioButton());
 			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->radioButton4 = (gcnew System::Windows::Forms::RadioButton());
 			this->SuspendLayout();
 			// 
 			// radioButton1
@@ -109,11 +112,24 @@ namespace optimizerui {
 			this->label1->TabIndex = 3;
 			this->label1->Text = L"Evaluation of Lipshitz constant";
 			// 
-			// MyForm
+			// radioButton4
+			// 
+			this->radioButton4->AutoSize = true;
+			this->radioButton4->Location = System::Drawing::Point(12, 108);
+			this->radioButton4->Name = L"radioButton4";
+			this->radioButton4->Size = System::Drawing::Size(147, 17);
+			this->radioButton4->TabIndex = 4;
+			this->radioButton4->TabStop = true;
+			this->radioButton4->Text = L"Max by previous subtasks";
+			this->radioButton4->UseVisualStyleBackColor = true;
+			this->radioButton4->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton4_CheckedChanged);
+			// 
+			// AdaptiveSettingsWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(323, 106);
+			this->ClientSize = System::Drawing::Size(323, 134);
+			this->Controls->Add(this->radioButton4);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->radioButton3);
 			this->Controls->Add(this->radioButton2);
@@ -146,5 +162,12 @@ namespace optimizerui {
 			currentSettings->levelM = radioButton3->Checked;
 		}
 	}
+private: System::Void radioButton4_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	if (currentSettings) {
+		// currentSettings->globalM = radioButton1->Checked;
+		// currentSettings->localM = radioButton2->Checked;
+		currentSettings->maxprevM = radioButton4->Checked;
+	}
+}
 };
 }
