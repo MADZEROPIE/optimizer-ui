@@ -159,6 +159,7 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
     if (mGlobalM == 0)
         mGlobalM = 1;
     CalculateRanks(best);
+
     for (int i = 1; i < all_tasks.size();++i) {
         CalculateRanks(i);
         if (all_tasks[i].R > all_tasks[best].R) {
@@ -394,14 +395,13 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
 
         SubTask& base_task = all_tasks[0];
         auto base_it2 = base_task.trials.begin();
-        if (stopType == StopCriterionType::OptimalPoint)
-            stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(), xOpt, mMethodDimention) < eps / 1.1;
         auto base_it = base_it2++;
+        if (stopType == StopCriterionType::OptimalPoint) {
+            stop = NormNDimMax(all_tasks[0].basepoint.x.data(), xOpt, mMethodDimention) < eps / 1.1;
+        }
         while (base_it2 != base_task.trials.cend() && !stop) {
             //stop = (base_it2->x - base_it->x < eps);
-            if (stopType== StopCriterionType::OptimalPoint)
-                stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(), xOpt, mMethodDimention) < eps / 1.1;
-            else
+            if (stopType != StopCriterionType::OptimalPoint)
                 stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(), all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps / 1.1;
             ++base_it2; ++base_it;
         }
