@@ -51,7 +51,7 @@ namespace optimizercore
 
 		double* leftDomainBound, *rightDomainBound;
 
-		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
+		double mBaseM, mZ, eps, r, mMaxIntervalNorm, mGlobalM;
 		double** mNextPoints;
 
 		void AllocMem();

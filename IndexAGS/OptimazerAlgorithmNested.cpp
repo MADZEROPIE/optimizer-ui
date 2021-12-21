@@ -41,7 +41,7 @@ void optimizercore::OptimizerAlgorithmNested::InitializeInformationStorage() {
     }
 
     mZ = HUGE_VAL;
-    mGlobalM = 1;
+    mBaseM = 1;
     mMaxIntervalNorm = 0;
 
     mSearchInformationStorage.clear();
@@ -51,7 +51,7 @@ void optimizercore::OptimizerAlgorithmNested::InitializeInformationStorage() {
 
 void optimizercore::OptimizerAlgorithmNested::UpdateGlobalM(  // GlobalM is LipschitzConst on first recursion layer
     std::set<OptimizerNestedTrialPoint>::iterator& newPointIt, const std::set<OptimizerNestedTrialPoint>& localStorage) {
-    double max = mGlobalM;
+    double max = mBaseM;
     if (max == 1) max = 0;
 
 
@@ -92,16 +92,16 @@ void optimizercore::OptimizerAlgorithmNested::UpdateGlobalM(  // GlobalM is Lips
 
     //printf("%e |", mMaxIntervalNorm);
     if (max != 0)
-        mGlobalM = max;
+        mBaseM = max;
     else
-        mGlobalM = 1;
-
+        mBaseM = 1;
+    if (mBaseM > mGlobalM) mGlobalM = mBaseM;
 
 }
 
 int optimizercore::OptimizerAlgorithmNested::UpdateRanks(const std::set<OptimizerNestedTrialPoint>& localStorage, bool isLocal)
 {
-    double dx, curr_rank, mu1 = -HUGE_VAL, localM = mGlobalM;
+    double dx, curr_rank, mu1 = -HUGE_VAL, localM = mBaseM;
     double localMConsts[3];
 
     for (int i = 0; i < mNumberOfThreads; i++)
@@ -145,7 +145,7 @@ int optimizercore::OptimizerAlgorithmNested::UpdateRanks(const std::set<Optimize
             else
                 mu1 = fmax(localMConsts[1], localMConsts[2]);
 
-            double mu2 = mGlobalM * dx / mMaxIntervalNorm;
+            double mu2 = mBaseM * dx / mMaxIntervalNorm;
 
             if (mLocalTuningMode == LocalTuningMode::Maximum) {
                 localM = fmax(localMConsts[1], fmax(0.5 * (mu1 + mu2), 0.001));
@@ -157,7 +157,7 @@ int optimizercore::OptimizerAlgorithmNested::UpdateRanks(const std::set<Optimize
 
                 localM = fmax(localMConsts[1], fmax(mu1 / r + (r - 1) * mu2 / r, 0.001));
                 //localM = fmax(mu1*mMConvolution + (1 - mMConvolution)*mu2, 0.01);
-                //localM = fmax(mu1 / r + (1 - 1 / r)*mGlobalM, 0.01);
+                //localM = fmax(mu1 / r + (1 - 1 / r)*mBaseM, 0.01);
                 //if (mu1 < 0 || mu2 < 0)
                 //	throw - 1;
                 //printf(" %e  %e ||", mu1, mu2);
@@ -450,6 +450,7 @@ void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int t
 
         double m = 1;
         if (M != 0) m = r * M;
+        if (m > mGlobalM) mGlobalM = m;
         t = 0;
         double R = m * (localStorage[1].x[index] - localStorage[0].x[index]) +
             (pow((localStorage[1].val - localStorage[0].val), 2) / (m * (localStorage[1].x[index] - localStorage[0].x[index])))
