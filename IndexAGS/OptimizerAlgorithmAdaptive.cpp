@@ -64,15 +64,15 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     double max = 0;
     all_tasks[task_id].M = 0;
     all_tasks[task_id].m = 0;
-    auto it2 = all_tasks[task_id].trials.begin();
+    auto it2 = all_tasks[task_id].trials.cbegin();
     auto it1 = it2++;
     int level = all_tasks[task_id].level;
     while (it2 != all_tasks[task_id].trials.cend()) {
         double mtpm = 0;
         if (level + 1 == mMethodDimention)
-            mtpm = abs(all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / (it2->x - it1->x);
+            mtpm = abs((all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / (it2->x - it1->x));
         else
-            mtpm = abs(all_tasks[it1->subtask_id].basepoint.val - all_tasks[it2->subtask_id].basepoint.val) / (it2->x - it1->x);
+            mtpm = abs((all_tasks[it1->subtask_id].basepoint.val - all_tasks[it2->subtask_id].basepoint.val) / (it2->x - it1->x));
         if (mtpm > max) max = mtpm;
         ++it1; ++it2;
     }
@@ -107,15 +107,22 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
 
     double lx = mSpaceTransform.GetLeftDomainBound().get()[level];
     double rx = mSpaceTransform.GetRightDomainBound().get()[level];
-    if (level+1 != mMethodDimention)
-        task.R = 2 * m * (it1->x - lx) - 4 * all_tasks[it1->subtask_id].basepoint.val;
+    double zl;
+    double zr;
+    if (level + 1 != mMethodDimention)
+        zr = all_tasks[it1->subtask_id].basepoint.val;
     else
-        task.R = 2 * m * (it1->x - lx) - 4 * all_trials[it1->subtask_id].basepoint.val;
+        zr = all_trials[it1->subtask_id].basepoint.val;
+    if (mIndexZ == IndexMethodOptions::None)
+        task.R = 2 * m * (it1->x - lx) - 4 * zr;
+    else if (mIndexZ == IndexMethodOptions::Global)
+        task.R = 2 * (it1->x - lx) - 4 * (zr - all_tasks[0].basepoint.val) / m;
+    else
+        task.R = 2 * (it1->x - lx) - 4 * (zr - all_tasks[task_id].basepoint.val) / m;
     task.Rind = 0;
     while (it2 != task.trials.end()) {
         ++t;
-        double zl;
-        double zr;
+
         if (level + 1 != mMethodDimention) {
             zl = all_tasks[it1->subtask_id].basepoint.val;
             zr = all_tasks[it2->subtask_id].basepoint.val;
@@ -124,7 +131,14 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
             zl = all_trials[it1->subtask_id].basepoint.val;
             zr = all_trials[it2->subtask_id].basepoint.val;
         }
-        double rtpm = m * (it2->x - it1->x) + (zr-zl)*(zr-zl)/(m * (it2->x - it1->x)) - 2 * (zr + zl);
+        double rtpm;
+        double del = (it2->x - it1->x);
+        if (mIndexZ == IndexMethodOptions::None)
+            rtpm = m * del + (zr - zl) * (zr - zl) / (m * del) - 2 * (zr + zl);
+        else if (mIndexZ == IndexMethodOptions::Global)
+            rtpm = del + (zr - zl) * (zr - zl) / (m*m * del) - 2 * (zr + zl - 2 * all_tasks[0].basepoint.val) / m;
+        else
+            rtpm = del + (zr - zl) * (zr - zl) / (m * m * del) - 2 * (zr + zl - 2 * all_tasks[task_id].basepoint.val) / m;
         if (rtpm > task.R) {
             task.R = rtpm;
             task.Rind = t;
@@ -132,10 +146,17 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
         ++it1; ++it2;
     }
     double rtpm;
+
     if (level + 1 != mMethodDimention)
-        rtpm = 2 * m * (rx - it1->x) - 4 * all_tasks[it1->subtask_id].basepoint.val;
+        zl = all_tasks[it1->subtask_id].basepoint.val;
     else
-        rtpm = 2 * m * (rx - it1->x) - 4 * all_trials[it1->subtask_id].basepoint.val;
+        zl = all_trials[it1->subtask_id].basepoint.val;
+    if (mIndexZ == IndexMethodOptions::None)
+        rtpm = 2 * m * (rx - it1->x) - 4 * zl;
+    else if (mIndexZ == IndexMethodOptions::Global)
+        rtpm = 2 * (rx - it1->x) - 4 * (zl - all_tasks[0].basepoint.val) / m;
+    else
+        rtpm = 2 * (rx - it1->x) - 4 * (zl - all_tasks[task_id].basepoint.val) / m;
     if (rtpm > task.R) {
         task.R = rtpm;
         task.Rind = t + 1;
@@ -145,24 +166,31 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
 
 int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
 {
+    // Reset M
     mGlobalM = 0;
-    for (int i = 0; i < mLevelM.size(); ++i)
+    for (int i = 0; i < mLevelM.size(); ++i) {
         mLevelM[i] = 0;
+    }
+
+    // Calculate m
     int best = 0;
     for (int i = 0; i < all_tasks.size(); ++i) {
         CalculateM(i);
     }
+
+    // Check M
     for (int i = 0; i < mLevelM.size(); ++i) {
         if (mLevelM[i] == 0)
             mLevelM[i] = 1;
     }
     if (mGlobalM == 0)
         mGlobalM = 1;
-    CalculateRanks(best);
 
+    // Calculate Ranks
+    CalculateRanks(best);
     for (int i = 1; i < all_tasks.size();++i) {
         CalculateRanks(i);
-        if (all_tasks[i].R > all_tasks[best].R) {
+        if (all_tasks[i].R >= all_tasks[best].R) {
             best = i;
         }
     }
@@ -179,9 +207,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
         all_tasks[parent_id].trials.insert(XSub(npnt.x[all_tasks[parent_id].level], all_trials.size()-1));
         if (all_tasks[parent_id].basepoint.val >= npnt.val) {
             all_tasks[parent_id].basepoint = npnt;
-            UpdateParents(all_trials.size() - 1);
         }
-
+        UpdateParents(all_trials.size() - 1);
         
         mSearchInformationStorage.insert(npnt);
         
@@ -322,6 +349,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::SetParameters(OptimizerParameter
     mMaxNumberOfIterations = params.maxIterationsNumber;
     mLocalTuningMode = params.localTuningMode;
     mLipMode = params.lipEval;
+    mIndexZ = params.indexZ;
     r = *params.r;
     //if (mNextPoints)
     //    utils::DeleteMatrix(mNextPoints, mNumberOfThreads);
@@ -343,10 +371,10 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
     size_t iterationsCount = 0;
     mGlobalIterationsNumber = 0;
 
-    OptimizerNestedTrialPoint pnt(mMethodDimention);
-    pnt.x[0] = (mSpaceTransform.GetRightDomainBound().get()[0] + mSpaceTransform.GetLeftDomainBound().get()[0]) / 2;
-    pnt.val = INFINITY;
-    all_tasks.push_back(SubTask(0, -1, pnt));
+    OptimizerNestedTrialPoint pnt1(mMethodDimention);
+    pnt1.x[0] = (mSpaceTransform.GetRightDomainBound().get()[0] + mSpaceTransform.GetLeftDomainBound().get()[0]) / 2;
+    pnt1.val = INFINITY;
+    all_tasks.push_back(SubTask(0, -1, pnt1));
     
     GenerateSubTasks(0, all_tasks[0].basepoint);
     bool stop = false;
@@ -379,14 +407,15 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             auto itl = task.trials.begin();
             while (i < t) { ++itl; ++i; } // NONSENSE. CHANGE SET TO VECTOR AND USE SORT OR SMART INSERT
             auto itr = itl--;
-            if(level+1!=mMethodDimention)
+            if (level + 1 != mMethodDimention)
                 newx = (itl->x + itr->x) / 2 - (all_tasks[itr->subtask_id].basepoint.val - all_tasks[itl->subtask_id].basepoint.val) / (2 * m);
             else
                 newx = (itl->x + itr->x) / 2 - (all_trials[itr->subtask_id].basepoint.val - all_trials[itl->subtask_id].basepoint.val) / (2 * m);
         }
 
         // Make new trial
-        pnt = task.basepoint;
+        OptimizerNestedTrialPoint pnt(task.basepoint);
+        //pnt = task.basepoint;
         pnt.val = INFINITY;
         pnt.x[level] = newx;
         GenerateSubTasks(task_id, pnt);
