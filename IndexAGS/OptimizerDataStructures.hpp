@@ -9,6 +9,7 @@ namespace optimizercore	{
 	enum class StopCriterionType : int { OptimalPoint = 0, Precision = 1 };
 	enum class LocalTuningMode : int { None = 0, Maximum = 1, Adaptive = 2 };
 	enum class LipshitzConstantEvaluation : int { Global = 0, Single_task = 1, Level = 2, Max_prev = 3 };
+	enum class IndexMethodOptions : int { None = 0, Single_task = 1, Global = 2 };
 
 
 	struct OptimizerTrialPoint
@@ -67,6 +68,7 @@ namespace optimizercore	{
 		LocalTuningMode localTuningMode;
 		MapType mapType;
 		LipshitzConstantEvaluation lipEval;
+		IndexMethodOptions indexZ;
 		int mapTightness;
 		OptimizerParameters()
 		{
@@ -75,7 +77,7 @@ namespace optimizercore	{
 		OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps,
 			double* _r, double* _reserves, unsigned _algDimention, int _localExponent,
 			int _localMixParameter, int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness,
-			bool _localVerification, LipshitzConstantEvaluation _lipEval)
+			bool _localVerification, LipshitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ)
 		{
 			maxIterationsNumber = _maxIterationsNumber;
 			numberOfThreads = _numberOfThreads;
@@ -90,11 +92,12 @@ namespace optimizercore	{
 			mapTightness = _mapTightness;
 			localVerification = _localVerification;
 			lipEval = _lipEval;
+			indexZ = _indexZ;
 		}
 		OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps,
 			double* _r, double* _reserves, unsigned _algDimention, int _localExponent,
 			int _localMixParameter, int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness,
-			bool _localVerification, LocalTuningMode _localTuningMode, LipshitzConstantEvaluation _lipEval)
+			bool _localVerification, LocalTuningMode _localTuningMode, LipshitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ)
 		{
 			maxIterationsNumber = _maxIterationsNumber;
 			numberOfThreads = _numberOfThreads;
@@ -110,6 +113,7 @@ namespace optimizercore	{
 			localVerification = _localVerification;
 			localTuningMode = _localTuningMode;
 			lipEval = _lipEval;
+			indexZ = _indexZ;
 		}
 	};
 

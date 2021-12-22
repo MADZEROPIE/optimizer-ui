@@ -83,6 +83,7 @@ namespace optimizercore
 
 		LocalTuningMode mLocalTuningMode;
 		LipshitzConstantEvaluation mLipMode;
+		IndexMethodOptions mIndexZ;
 
 		double* leftDomainBound,* rightDomainBound;
 
