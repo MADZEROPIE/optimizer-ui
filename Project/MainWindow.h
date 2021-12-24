@@ -1781,13 +1781,13 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
 
 
 
-    mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Global;
+    mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Global;
      if (mAdaptiveSettings.localM)
-           mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Single_task;
+           mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Single_task;
      else if (mAdaptiveSettings.levelM)
-         mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Level;
+         mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Level;
      else if (mAdaptiveSettings.maxprevM)
-         mCurrentAlgParams->lipEval = LipshitzConstantEvaluation::Max_prev;
+         mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Max_prev;
 
 
      mCurrentAlgParams->indexZ = IndexMethodOptions::None;
