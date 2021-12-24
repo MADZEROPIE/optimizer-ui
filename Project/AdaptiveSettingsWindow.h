@@ -127,9 +127,9 @@ namespace optimizerui {
 			this->label1->AutoSize = true;
 			this->label1->Location = System::Drawing::Point(12, 13);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(151, 13);
+			this->label1->Size = System::Drawing::Size(157, 13);
 			this->label1->TabIndex = 3;
-			this->label1->Text = L"Evaluation of Lipshitz constant";
+			this->label1->Text = L"Evaluation of Lipschitz constant";
 			// 
 			// radioButton4
 			// 

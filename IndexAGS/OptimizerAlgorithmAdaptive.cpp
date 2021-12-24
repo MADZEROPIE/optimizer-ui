@@ -57,7 +57,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     if (all_tasks[task_id].trials.size() <= 1) {
         all_tasks[task_id].M = 0;
         all_tasks[task_id].m = 1;
-        if (mLipMode == LipshitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m)
+        if (mLipMode == LipschitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m)
             all_tasks[task_id].m = mGlobalM;
         return;
     }
@@ -81,7 +81,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     all_tasks[task_id].M = max;
     if (all_tasks[task_id].m > mLevelM[level]) mLevelM[level] = all_tasks[task_id].m;
     if (all_tasks[task_id].m > mGlobalM) mGlobalM = all_tasks[task_id].m;
-    if (mLipMode == LipshitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m) 
+    if (mLipMode == LipschitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m) 
         all_tasks[task_id].m = mGlobalM;
 }
 
@@ -96,11 +96,11 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
     int level = task.level;
     double m;
 
-    if (mLipMode == LipshitzConstantEvaluation::Global)
+    if (mLipMode == LipschitzConstantEvaluation::Global)
         m = mGlobalM; //task->m;
-    else if (mLipMode == LipshitzConstantEvaluation::Single_task || mLipMode == LipshitzConstantEvaluation::Max_prev)
+    else if (mLipMode == LipschitzConstantEvaluation::Single_task || mLipMode == LipschitzConstantEvaluation::Max_prev)
         m = task.m;
-    else if (mLipMode == LipshitzConstantEvaluation::Level)
+    else if (mLipMode == LipschitzConstantEvaluation::Level)
         m = mLevelM[level];
     else
         throw "IDK";
@@ -383,11 +383,11 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         SubTask& task = all_tasks[task_id];
         int level = task.level;
         double m;
-        if (mLipMode == LipshitzConstantEvaluation::Global || mLipMode == LipshitzConstantEvaluation::Max_prev)
+        if (mLipMode == LipschitzConstantEvaluation::Global || mLipMode == LipschitzConstantEvaluation::Max_prev)
             m = mGlobalM;
-        else if (mLipMode == LipshitzConstantEvaluation::Single_task)// || mLipMode == LipshitzConstantEvaluation::Max_prev)
+        else if (mLipMode == LipschitzConstantEvaluation::Single_task)// || mLipMode == LipschitzConstantEvaluation::Max_prev)
             m = task.m;
-        else if (mLipMode == LipshitzConstantEvaluation::Level)
+        else if (mLipMode == LipschitzConstantEvaluation::Level)
             m = mLevelM[level];
         else
             throw "IDK";
