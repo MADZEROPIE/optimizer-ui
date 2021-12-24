@@ -74,7 +74,7 @@ int TRastriginProblem::GetOptimumPoint(double* point) const
     return IProblem::UNDEFINED;
 
   for (int i = 0; i < mDimension; i++)
-      point[i] = -2.2;// 0.0;
+      point[i] = 0.0;
   return IProblem::OK;
 }
 
@@ -101,7 +101,7 @@ double TRastriginProblem::CalculateFunctionals(const double* x, int fNumber)
 {
   double sum = 0.;
   for (int j = 0; j < mDimension; j++)
-      sum += 2*x[j];// * x[j]; //- 10. * cos(2.0 * M_PI * x[j]) + 10.0;
+      sum += x[j] * x[j] - 10. * cos(2.0 * M_PI * x[j]) + 10.0;
   return sum;
 }
 
