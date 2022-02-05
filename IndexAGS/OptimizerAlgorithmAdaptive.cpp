@@ -200,7 +200,7 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
 void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, OptimizerNestedTrialPoint npnt)
 {
 
-    if (all_tasks[parent_id].level+1 == mMethodDimention) {
+    if (all_tasks[parent_id].level + 1 == mMethodDimention) {
         npnt.val = mTargetFunction->Calculate(npnt.x.data());
         ITask newtrial (mMethodDimention, parent_id, npnt);
         all_trials.push_back(newtrial);
@@ -216,9 +216,21 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
     }
     
     int level = all_tasks[parent_id].level + 1;
-    npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level])/2;
+    if (mNewPNT == NewPointOptions::Half || all_tasks[parent_id].trials.size()<2)
+        npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level])/2;
+    else {
+        auto tmp = std::upper_bound(all_tasks[parent_id].trials.begin(), all_tasks[parent_id].trials.end(), XSub(npnt.x[level - 1], -1));
+        if (tmp == all_tasks[parent_id].trials.begin() || tmp == all_tasks[parent_id].trials.end())
+            npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
+        else {
+            auto tmp2 = tmp--;
+            npnt.x[level] = all_tasks[tmp->subtask_id].basepoint.x[level] +
+                (all_tasks[tmp2->subtask_id].basepoint.x[level] - all_tasks[tmp->subtask_id].basepoint.x[level])
+                * ((npnt.x[level - 1] - tmp->x) / (tmp2->x - tmp->x));
+        }
+    }
     all_tasks.push_back(SubTask(level, parent_id, npnt));
-    all_tasks[parent_id].trials.emplace(XSub(npnt.x[level-1], all_tasks.size()-1));
+    all_tasks[parent_id].trials.emplace(XSub(npnt.x[level - 1], all_tasks.size() - 1));
     
     return GenerateSubTasks(all_tasks.size() - 1, npnt);
 }
@@ -350,6 +362,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::SetParameters(OptimizerParameter
     mLocalTuningMode = params.localTuningMode;
     mLipMode = params.lipEval;
     mIndexZ = params.indexZ;
+    mNewPNT = params.newPNT;
     r = *params.r;
     //if (mNextPoints)
     //    utils::DeleteMatrix(mNextPoints, mNumberOfThreads);

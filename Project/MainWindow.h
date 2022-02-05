@@ -1786,8 +1786,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
            mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Single_task;
      else if (mAdaptiveSettings.levelM)
          mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Level;
-     else if (mAdaptiveSettings.maxprevM)
-         mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Max_prev;
+
 
 
      mCurrentAlgParams->indexZ = IndexMethodOptions::None;
@@ -1795,6 +1794,10 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
          mCurrentAlgParams->indexZ = IndexMethodOptions::Single_task;
      else if (mAdaptiveSettings.globalZ)
          mCurrentAlgParams->indexZ = IndexMethodOptions::Global;
+
+     mCurrentAlgParams->newPNT = NewPointOptions::Half;
+     if (mAdaptiveSettings.medianPnt)
+         mCurrentAlgParams->newPNT = NewPointOptions::Median;
 
   }
 

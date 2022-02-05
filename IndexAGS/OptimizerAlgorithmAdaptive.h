@@ -20,7 +20,7 @@ namespace optimizercore
 		class XSub;
 		class ITask {
 		public:
-			int level=0;
+			int level = 0;
 			int parent_id = -1;
 			OptimizerNestedTrialPoint basepoint;
 			ITask(int _level=0, int _parent_id = -1, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
@@ -84,6 +84,7 @@ namespace optimizercore
 		LocalTuningMode mLocalTuningMode;
 		LipschitzConstantEvaluation mLipMode;
 		IndexMethodOptions mIndexZ;
+		NewPointOptions mNewPNT;
 
 		double* leftDomainBound,* rightDomainBound;
 
