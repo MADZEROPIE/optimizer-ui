@@ -10,7 +10,7 @@ namespace optimizercore	{
 	enum class LocalTuningMode : int { None = 0, Maximum = 1, Adaptive = 2 };
 	enum class LipschitzConstantEvaluation : int { Global = 0, Single_task = 1, Level = 2, Max_prev = 3 };
 	enum class IndexMethodOptions : int { None = 0, Single_task = 1, Global = 2 };
-
+	enum class NewPointOptions : int { Half = 0, Median = 1 };
 
 	struct OptimizerTrialPoint
 	{
@@ -69,6 +69,7 @@ namespace optimizercore	{
 		MapType mapType;
 		LipschitzConstantEvaluation lipEval;
 		IndexMethodOptions indexZ;
+		NewPointOptions newPNT;
 		int mapTightness;
 		OptimizerParameters()
 		{
@@ -77,7 +78,7 @@ namespace optimizercore	{
 		OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps,
 			double* _r, double* _reserves, unsigned _algDimention, int _localExponent,
 			int _localMixParameter, int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness,
-			bool _localVerification, LipschitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ)
+			bool _localVerification, LipschitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ, NewPointOptions _newPNT)
 		{
 			maxIterationsNumber = _maxIterationsNumber;
 			numberOfThreads = _numberOfThreads;
@@ -93,11 +94,13 @@ namespace optimizercore	{
 			localVerification = _localVerification;
 			lipEval = _lipEval;
 			indexZ = _indexZ;
+			newPNT = _newPNT;
 		}
 		OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps,
 			double* _r, double* _reserves, unsigned _algDimention, int _localExponent,
 			int _localMixParameter, int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness,
-			bool _localVerification, LocalTuningMode _localTuningMode, LipschitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ)
+			bool _localVerification, LocalTuningMode _localTuningMode, LipschitzConstantEvaluation _lipEval,
+			IndexMethodOptions _indexZ, NewPointOptions _newPNT)
 		{
 			maxIterationsNumber = _maxIterationsNumber;
 			numberOfThreads = _numberOfThreads;
@@ -114,6 +117,7 @@ namespace optimizercore	{
 			localTuningMode = _localTuningMode;
 			lipEval = _lipEval;
 			indexZ = _indexZ;
+			newPNT = _newPNT;
 		}
 	};
 

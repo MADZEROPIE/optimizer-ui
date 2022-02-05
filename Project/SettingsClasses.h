@@ -81,15 +81,18 @@ namespace optimizerui
 	ref class AdaptiveNestedSettings {
 	public:
 		// Lipshitz
-		bool globalM = true;
-		bool localM = false;
+		bool globalM = false;
+		bool localM = true;
 		bool levelM = false;
-		bool maxprevM = false;
 
 		// Index
-		bool noneZ = true;
-		bool localZ = false;
+		bool noneZ = false;
+		bool localZ = true;
 		bool globalZ = false;
+
+		// New point
+		bool halfPnt = false;
+		bool medianPnt = true;
 		AdaptiveNestedSettings()
 		{
 		}

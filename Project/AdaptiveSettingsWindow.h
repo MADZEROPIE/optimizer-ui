@@ -23,21 +23,30 @@ namespace optimizerui {
 			radioButton1->Checked = settings.globalM;
 			radioButton2->Checked = settings.localM;
 			radioButton3->Checked = settings.levelM;
-			radioButton4->Checked = settings.maxprevM;
 
 			radioButton7->Checked = settings.noneZ;
 			radioButton5->Checked = settings.localZ;
 			radioButton6->Checked = settings.globalZ;
 
+			radioButton8->Checked = settings.halfPnt;
+			radioButton9->Checked = settings.medianPnt;
+
 			currentSettings = %settings;
 		}
-	private: System::Windows::Forms::RadioButton^ radioButton4;
+
 	private: System::Windows::Forms::Panel^ panel1;
 	private: System::Windows::Forms::Panel^ panel2;
 	private: System::Windows::Forms::RadioButton^ radioButton6;
 	private: System::Windows::Forms::RadioButton^ radioButton5;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::RadioButton^ radioButton7;
+	private: System::Windows::Forms::RadioButton^ radioButton8;
+	private: System::Windows::Forms::RadioButton^ radioButton9;
+	private: System::Windows::Forms::Label^ label3;
+	private: System::Windows::Forms::Panel^ panel3;
+
+
+
 	public:
 
 	protected:
@@ -75,15 +84,19 @@ namespace optimizerui {
 			this->radioButton2 = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButton3 = (gcnew System::Windows::Forms::RadioButton());
 			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->radioButton4 = (gcnew System::Windows::Forms::RadioButton());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->panel2 = (gcnew System::Windows::Forms::Panel());
 			this->radioButton7 = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButton6 = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButton5 = (gcnew System::Windows::Forms::RadioButton());
 			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->radioButton8 = (gcnew System::Windows::Forms::RadioButton());
+			this->radioButton9 = (gcnew System::Windows::Forms::RadioButton());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->panel3 = (gcnew System::Windows::Forms::Panel());
 			this->panel1->SuspendLayout();
 			this->panel2->SuspendLayout();
+			this->panel3->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// radioButton1
@@ -131,27 +144,14 @@ namespace optimizerui {
 			this->label1->TabIndex = 3;
 			this->label1->Text = L"Evaluation of Lipschitz constant";
 			// 
-			// radioButton4
-			// 
-			this->radioButton4->AutoSize = true;
-			this->radioButton4->Location = System::Drawing::Point(3, 71);
-			this->radioButton4->Name = L"radioButton4";
-			this->radioButton4->Size = System::Drawing::Size(147, 17);
-			this->radioButton4->TabIndex = 4;
-			this->radioButton4->TabStop = true;
-			this->radioButton4->Text = L"Max by previous subtasks";
-			this->radioButton4->UseVisualStyleBackColor = true;
-			this->radioButton4->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton4_CheckedChanged);
-			// 
 			// panel1
 			// 
 			this->panel1->Controls->Add(this->radioButton1);
-			this->panel1->Controls->Add(this->radioButton4);
 			this->panel1->Controls->Add(this->radioButton2);
 			this->panel1->Controls->Add(this->radioButton3);
 			this->panel1->Location = System::Drawing::Point(15, 29);
 			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(200, 100);
+			this->panel1->Size = System::Drawing::Size(200, 75);
 			this->panel1->TabIndex = 5;
 			// 
 			// panel2
@@ -161,7 +161,7 @@ namespace optimizerui {
 			this->panel2->Controls->Add(this->radioButton5);
 			this->panel2->Location = System::Drawing::Point(247, 32);
 			this->panel2->Name = L"panel2";
-			this->panel2->Size = System::Drawing::Size(200, 100);
+			this->panel2->Size = System::Drawing::Size(101, 72);
 			this->panel2->TabIndex = 6;
 			// 
 			// radioButton7
@@ -209,11 +209,55 @@ namespace optimizerui {
 			this->label2->TabIndex = 7;
 			this->label2->Text = L"Index method";
 			// 
+			// radioButton8
+			// 
+			this->radioButton8->AutoSize = true;
+			this->radioButton8->Location = System::Drawing::Point(3, 3);
+			this->radioButton8->Name = L"radioButton8";
+			this->radioButton8->Size = System::Drawing::Size(44, 17);
+			this->radioButton8->TabIndex = 8;
+			this->radioButton8->TabStop = true;
+			this->radioButton8->Text = L"Half";
+			this->radioButton8->UseVisualStyleBackColor = true;
+			this->radioButton8->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton8_CheckedChanged);
+			// 
+			// radioButton9
+			// 
+			this->radioButton9->AutoSize = true;
+			this->radioButton9->Location = System::Drawing::Point(3, 26);
+			this->radioButton9->Name = L"radioButton9";
+			this->radioButton9->Size = System::Drawing::Size(60, 17);
+			this->radioButton9->TabIndex = 9;
+			this->radioButton9->TabStop = true;
+			this->radioButton9->Text = L"Median";
+			this->radioButton9->UseVisualStyleBackColor = true;
+			this->radioButton9->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton9_CheckedChanged);
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->Location = System::Drawing::Point(423, 13);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(56, 13);
+			this->label3->TabIndex = 10;
+			this->label3->Text = L"New Point";
+			// 
+			// panel3
+			// 
+			this->panel3->Controls->Add(this->radioButton8);
+			this->panel3->Controls->Add(this->radioButton9);
+			this->panel3->Location = System::Drawing::Point(397, 32);
+			this->panel3->Name = L"panel3";
+			this->panel3->Size = System::Drawing::Size(120, 72);
+			this->panel3->TabIndex = 11;
+			// 
 			// AdaptiveSettingsWindow
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(459, 134);
+			this->ClientSize = System::Drawing::Size(540, 134);
+			this->Controls->Add(this->panel3);
+			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->panel2);
 			this->Controls->Add(this->panel1);
@@ -224,6 +268,8 @@ namespace optimizerui {
 			this->panel1->PerformLayout();
 			this->panel2->ResumeLayout(false);
 			this->panel2->PerformLayout();
+			this->panel3->ResumeLayout(false);
+			this->panel3->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -234,7 +280,6 @@ namespace optimizerui {
 			currentSettings->globalM = radioButton1->Checked;  // Should be enough, but why not ?
 			currentSettings->localM = radioButton2->Checked;
 			currentSettings->levelM = radioButton3->Checked;
-			currentSettings->maxprevM = radioButton4->Checked;
 		}
 	}
 	private: System::Void radioButton2_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
@@ -242,7 +287,6 @@ namespace optimizerui {
 			currentSettings->globalM = radioButton1->Checked;
 			currentSettings->localM = radioButton2->Checked;
 			currentSettings->levelM = radioButton3->Checked;
-			currentSettings->maxprevM = radioButton4->Checked;
 		}
 	}
 	private: System::Void radioButton3_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
@@ -250,17 +294,9 @@ namespace optimizerui {
 			currentSettings->globalM = radioButton1->Checked;
 			currentSettings->localM = radioButton2->Checked;
 			currentSettings->levelM = radioButton3->Checked;
-			currentSettings->maxprevM = radioButton4->Checked;
 		}
 	}
-private: System::Void radioButton4_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	if (currentSettings) {
-		currentSettings->globalM = radioButton1->Checked;
-		currentSettings->localM = radioButton2->Checked;
-		currentSettings->levelM = radioButton3->Checked;
-		currentSettings->maxprevM = radioButton4->Checked;
-	}
-}
+
 private: System::Void radioButton7_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 	if (currentSettings) {
 		currentSettings->noneZ = radioButton7->Checked;
@@ -280,6 +316,19 @@ private: System::Void radioButton6_CheckedChanged(System::Object^ sender, System
 		currentSettings->noneZ = radioButton7->Checked;
 		currentSettings->localZ = radioButton5->Checked;
 		currentSettings->globalZ = radioButton6->Checked;
+	}
+}
+
+private: System::Void radioButton8_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	if (currentSettings) {
+		currentSettings->halfPnt = radioButton8->Checked;
+		currentSettings->medianPnt = radioButton9->Checked;
+	}
+}
+private: System::Void radioButton9_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	if (currentSettings) {
+		currentSettings->halfPnt = radioButton8->Checked;
+		currentSettings->medianPnt = radioButton9->Checked;
 	}
 }
 };
