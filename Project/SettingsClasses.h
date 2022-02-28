@@ -84,6 +84,7 @@ namespace optimizerui
 		bool globalM = false;
 		bool localM = true;
 		bool levelM = false;
+		bool adaptiveM = false;
 
 		// Index
 		bool noneZ = false;

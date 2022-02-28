@@ -1786,7 +1786,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
            mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Single_task;
      else if (mAdaptiveSettings.levelM)
          mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Level;
-
+     else if (mAdaptiveSettings.adaptiveM)
+         mCurrentAlgParams->lipEval = LipschitzConstantEvaluation::Adaptive;
 
 
      mCurrentAlgParams->indexZ = IndexMethodOptions::None;

@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <string>
 
 using namespace optimizercore;
 using namespace optimizercore::utils;
@@ -57,10 +58,9 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     if (all_tasks[task_id].trials.size() <= 1) {
         all_tasks[task_id].M = 0;
         all_tasks[task_id].m = 1;
-        if (mLipMode == LipschitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m)
-            all_tasks[task_id].m = mGlobalM;
         return;
     }
+    all_tasks[task_id].minIntervalNorm = INFINITY;
     double max = 0;
     all_tasks[task_id].M = 0;
     all_tasks[task_id].m = 0;
@@ -69,6 +69,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     int level = all_tasks[task_id].level;
     while (it2 != all_tasks[task_id].trials.cend()) {
         double mtpm = 0;
+        if ((it2->x - it1->x) > mMaxIntervalNorm) mMaxIntervalNorm = it2->x - it1->x;
+        if ((it2->x - it1->x) < all_tasks[task_id].minIntervalNorm) all_tasks[task_id].minIntervalNorm = it2->x - it1->x;
         if (level + 1 == mMethodDimention)
             mtpm = abs((all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / (it2->x - it1->x));
         else
@@ -81,14 +83,12 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     all_tasks[task_id].M = max;
     if (all_tasks[task_id].m > mLevelM[level]) mLevelM[level] = all_tasks[task_id].m;
     if (all_tasks[task_id].m > mGlobalM) mGlobalM = all_tasks[task_id].m;
-    if (mLipMode == LipschitzConstantEvaluation::Max_prev && mGlobalM > all_tasks[task_id].m) 
-        all_tasks[task_id].m = mGlobalM;
 }
 
 void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
 {
     SubTask& task = all_tasks[task_id];
-    if (task.trials.size() < 1) return;
+    if (task.trials.size() < 1) throw "No trials in task " + std::to_string(task_id);//return;
     auto it2 = task.trials.begin();
     auto it1 = it2++;
     
@@ -98,10 +98,24 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
 
     if (mLipMode == LipschitzConstantEvaluation::Global)
         m = mGlobalM; //task->m;
-    else if (mLipMode == LipschitzConstantEvaluation::Single_task || mLipMode == LipschitzConstantEvaluation::Max_prev)
+    else if (mLipMode == LipschitzConstantEvaluation::Single_task)
         m = task.m;
     else if (mLipMode == LipschitzConstantEvaluation::Level)
         m = mLevelM[level];
+    else if (mLipMode == LipschitzConstantEvaluation::Adaptive) {
+        if (task.trials.size() <= 1) m = mGlobalM;
+        else {
+            double MG = mGlobalM * task.minIntervalNorm / mMaxIntervalNorm;
+            if (MG > task.m) {
+                m = MG;
+                // TODO: ADD COUNTER
+            }
+            else {
+                m = task.m;
+                // TODO: ADD COUNTER
+            }
+        }
+    }
     else
         throw "IDK";
 
@@ -172,8 +186,9 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
         mLevelM[i] = 0;
     }
 
+    // Reset mMaxIntervalNorm
+    mMaxIntervalNorm = 0;
     // Calculate m
-    int best = 0;
     for (int i = 0; i < all_tasks.size(); ++i) {
         CalculateM(i);
     }
@@ -187,6 +202,7 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
         mGlobalM = 1;
 
     // Calculate Ranks
+    int best = 0;
     CalculateRanks(best);
     for (int i = 1; i < all_tasks.size();++i) {
         CalculateRanks(i);
@@ -391,9 +407,9 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         SubTask& task = all_tasks[task_id];
         int level = task.level;
         double m;
-        if (mLipMode == LipschitzConstantEvaluation::Global || mLipMode == LipschitzConstantEvaluation::Max_prev)
+        if (mLipMode == LipschitzConstantEvaluation::Global || mLipMode == LipschitzConstantEvaluation::Adaptive)
             m = mGlobalM;
-        else if (mLipMode == LipschitzConstantEvaluation::Single_task)// || mLipMode == LipschitzConstantEvaluation::Max_prev)
+        else if (mLipMode == LipschitzConstantEvaluation::Single_task)// || mLipMode == LipschitzConstantEvaluation::Adaptive)
             m = task.m;
         else if (mLipMode == LipschitzConstantEvaluation::Level)
             m = mLevelM[level];
