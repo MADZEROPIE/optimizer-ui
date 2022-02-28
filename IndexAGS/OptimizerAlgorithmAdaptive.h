@@ -23,13 +23,14 @@ namespace optimizercore
 			int level = 0;
 			int parent_id = -1;
 			OptimizerNestedTrialPoint basepoint;
-			ITask(int _level=0, int _parent_id = -1, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
+			ITask(int _level = 0, int _parent_id = -1, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
 		};
 		class SubTask: public ITask {
 		  public:
 			double R = -INFINITY;
 			double m = 1;
 			double M = 0;
+			double minIntervalNorm = INFINITY;
 			int Rind = 0;
 			// std::vector<SubTask*> subtasks;  // subtasks+basepoint and trials have same usability, so why store both?
 

@@ -23,6 +23,7 @@ namespace optimizerui {
 			radioButton1->Checked = settings.globalM;
 			radioButton2->Checked = settings.localM;
 			radioButton3->Checked = settings.levelM;
+			radioButton4->Checked = settings.adaptiveM;
 
 			radioButton7->Checked = settings.noneZ;
 			radioButton5->Checked = settings.localZ;
@@ -44,6 +45,8 @@ namespace optimizerui {
 	private: System::Windows::Forms::RadioButton^ radioButton9;
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Panel^ panel3;
+	private: System::Windows::Forms::RadioButton^ radioButton4;
+
 
 
 
@@ -85,6 +88,7 @@ namespace optimizerui {
 			this->radioButton3 = (gcnew System::Windows::Forms::RadioButton());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->radioButton4 = (gcnew System::Windows::Forms::RadioButton());
 			this->panel2 = (gcnew System::Windows::Forms::Panel());
 			this->radioButton7 = (gcnew System::Windows::Forms::RadioButton());
 			this->radioButton6 = (gcnew System::Windows::Forms::RadioButton());
@@ -146,13 +150,26 @@ namespace optimizerui {
 			// 
 			// panel1
 			// 
+			this->panel1->Controls->Add(this->radioButton4);
 			this->panel1->Controls->Add(this->radioButton1);
 			this->panel1->Controls->Add(this->radioButton2);
 			this->panel1->Controls->Add(this->radioButton3);
 			this->panel1->Location = System::Drawing::Point(15, 29);
 			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(200, 75);
+			this->panel1->Size = System::Drawing::Size(200, 93);
 			this->panel1->TabIndex = 5;
+			// 
+			// radioButton4
+			// 
+			this->radioButton4->AutoSize = true;
+			this->radioButton4->Location = System::Drawing::Point(3, 72);
+			this->radioButton4->Name = L"radioButton4";
+			this->radioButton4->Size = System::Drawing::Size(67, 17);
+			this->radioButton4->TabIndex = 3;
+			this->radioButton4->TabStop = true;
+			this->radioButton4->Text = L"Adaptive";
+			this->radioButton4->UseVisualStyleBackColor = true;
+			this->radioButton4->CheckedChanged += gcnew System::EventHandler(this, &AdaptiveSettingsWindow::radioButton4_CheckedChanged);
 			// 
 			// panel2
 			// 
@@ -275,11 +292,13 @@ namespace optimizerui {
 
 		}
 #pragma endregion
+	// Lipshitz Constant
 	private: System::Void radioButton1_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 		if (currentSettings) {
 			currentSettings->globalM = radioButton1->Checked;  // Should be enough, but why not ?
 			currentSettings->localM = radioButton2->Checked;
 			currentSettings->levelM = radioButton3->Checked;
+			currentSettings->adaptiveM = radioButton4->Checked;
 		}
 	}
 	private: System::Void radioButton2_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
@@ -287,6 +306,7 @@ namespace optimizerui {
 			currentSettings->globalM = radioButton1->Checked;
 			currentSettings->localM = radioButton2->Checked;
 			currentSettings->levelM = radioButton3->Checked;
+			currentSettings->adaptiveM = radioButton4->Checked;
 		}
 	}
 	private: System::Void radioButton3_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
@@ -294,42 +314,52 @@ namespace optimizerui {
 			currentSettings->globalM = radioButton1->Checked;
 			currentSettings->localM = radioButton2->Checked;
 			currentSettings->levelM = radioButton3->Checked;
+			currentSettings->adaptiveM = radioButton4->Checked;
 		}
 	}
+	private: System::Void radioButton4_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings) {
+			currentSettings->globalM = radioButton1->Checked;
+			currentSettings->localM = radioButton2->Checked;
+			currentSettings->levelM = radioButton3->Checked;
+			currentSettings->adaptiveM = radioButton4->Checked;
+		}
+	}
+	// Index method
+	private: System::Void radioButton7_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings) {
+			currentSettings->noneZ = radioButton7->Checked;
+			currentSettings->localZ = radioButton5->Checked;
+			currentSettings->globalZ = radioButton6->Checked;
+		}
+	}
+	private: System::Void radioButton5_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings) {
+			currentSettings->noneZ = radioButton7->Checked;
+			currentSettings->localZ = radioButton5->Checked;
+			currentSettings->globalZ = radioButton6->Checked;
+		}
+	}
+	private: System::Void radioButton6_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings) {
+			currentSettings->noneZ = radioButton7->Checked;
+			currentSettings->localZ = radioButton5->Checked;
+			currentSettings->globalZ = radioButton6->Checked;
+		}
+	}
+	// New point
+	private: System::Void radioButton8_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings) {
+			currentSettings->halfPnt = radioButton8->Checked;
+			currentSettings->medianPnt = radioButton9->Checked;
+		}
+	}
+	private: System::Void radioButton9_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (currentSettings) {
+			currentSettings->halfPnt = radioButton8->Checked;
+			currentSettings->medianPnt = radioButton9->Checked;
+		}
+}
 
-private: System::Void radioButton7_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	if (currentSettings) {
-		currentSettings->noneZ = radioButton7->Checked;
-		currentSettings->localZ = radioButton5->Checked;
-		currentSettings->globalZ = radioButton6->Checked;
-	}
-}
-private: System::Void radioButton5_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	if (currentSettings) {
-		currentSettings->noneZ = radioButton7->Checked;
-		currentSettings->localZ = radioButton5->Checked;
-		currentSettings->globalZ = radioButton6->Checked;
-	}
-}
-private: System::Void radioButton6_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	if (currentSettings) {
-		currentSettings->noneZ = radioButton7->Checked;
-		currentSettings->localZ = radioButton5->Checked;
-		currentSettings->globalZ = radioButton6->Checked;
-	}
-}
-
-private: System::Void radioButton8_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	if (currentSettings) {
-		currentSettings->halfPnt = radioButton8->Checked;
-		currentSettings->medianPnt = radioButton9->Checked;
-	}
-}
-private: System::Void radioButton9_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
-	if (currentSettings) {
-		currentSettings->halfPnt = radioButton8->Checked;
-		currentSettings->medianPnt = radioButton9->Checked;
-	}
-}
 };
 }
