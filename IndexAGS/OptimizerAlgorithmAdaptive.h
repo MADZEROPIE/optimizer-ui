@@ -74,6 +74,9 @@ namespace optimizercore
 		int mMapType;
 		int mMapTightness;
 
+		uint64_t mLocalCount;
+		uint64_t mGlobalCount;
+
 		OptimizerSpaceTransformation mSpaceTransform;
 		OptimizerFunction* mTargetFunction;
 		OptimizerFunctionPtr mTargetFunctionSmartPtr;
@@ -121,6 +124,8 @@ namespace optimizercore
 			StopCriterionType stopType);
 
 		double GetLipschitzConst() const;
+		uint64_t GetCountLocalM() const;
+		uint64_t GetCountGlobalM() const;
 		OptimazerNestedSearchSequence GetSearchSequence() const;
 
     };
