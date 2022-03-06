@@ -108,10 +108,11 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
             double MG = mGlobalM * task.minIntervalNorm / mMaxIntervalNorm;
             if (MG > task.m) {
                 m = MG;
-                // TODO: ADD COUNTER
+                ++mGlobalCount;
             }
             else {
                 m = task.m;
+                ++mLocalCount;
                 // TODO: ADD COUNTER
             }
         }
@@ -285,6 +286,9 @@ void optimizercore::OptimizerAlgorithmAdaptive::InitializeInformationStorage()
     mGlobalM = 1;
     mMaxIntervalNorm = 0;
 
+    mLocalCount = 0;
+    mGlobalCount = 0;
+
     mSearchInformationStorage.clear();
     all_tasks.clear();
     all_trials.clear();
@@ -407,12 +411,26 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         SubTask& task = all_tasks[task_id];
         int level = task.level;
         double m;
-        if (mLipMode == LipschitzConstantEvaluation::Global || mLipMode == LipschitzConstantEvaluation::Adaptive)
-            m = mGlobalM;
-        else if (mLipMode == LipschitzConstantEvaluation::Single_task)// || mLipMode == LipschitzConstantEvaluation::Adaptive)
+        if (mLipMode == LipschitzConstantEvaluation::Global)
+            m = mGlobalM; //task->m;
+        else if (mLipMode == LipschitzConstantEvaluation::Single_task)
             m = task.m;
         else if (mLipMode == LipschitzConstantEvaluation::Level)
             m = mLevelM[level];
+        else if (mLipMode == LipschitzConstantEvaluation::Adaptive) {
+            if (task.trials.size() <= 1) m = mGlobalM;
+            else {
+                double MG = mGlobalM * task.minIntervalNorm / mMaxIntervalNorm;
+                if (MG > task.m) {
+                    m = MG;
+                    ++mGlobalCount;
+                }
+                else {
+                    m = task.m;
+                    ++mLocalCount;
+                }
+            }
+        }
         else
             throw "IDK";
         // CHOOSE NEW POINT
@@ -472,6 +490,17 @@ double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst() const
 {
     return mGlobalM;
 }
+
+uint64_t optimizercore::OptimizerAlgorithmAdaptive::GetCountLocalM() const
+{
+    return mLocalCount;
+}
+
+uint64_t optimizercore::OptimizerAlgorithmAdaptive::GetCountGlobalM() const
+{
+    return mGlobalCount;
+}
+
 
 OptimazerNestedSearchSequence optimizercore::OptimizerAlgorithmAdaptive::GetSearchSequence() const
 {

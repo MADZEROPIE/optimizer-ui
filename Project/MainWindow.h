@@ -36,7 +36,7 @@ namespace optimizerui {
   using namespace System::Globalization;
   using namespace System::Threading;
 
-  delegate System::Void setResultsDelegate(System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^);
+  delegate System::Void setResultsDelegate(System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^);
 
   public ref class MainWindow : public System::Windows::Forms::Form
   {
@@ -183,6 +183,8 @@ private: System::Windows::Forms::Button^ Choose_but;
 private: System::Windows::Forms::OpenFileDialog^ openProblemDialog;
 private: System::Windows::Forms::CheckBox^ checkBox2;
 private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolStripMenuItem;
+private: System::Windows::Forms::Label^ label14;
+private: System::Windows::Forms::Label^ label15;
 
 
   private:
@@ -191,8 +193,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
 #pragma region Windows Form Designer generated code
     void InitializeComponent(void)
     {
-        System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-        System::Windows::Forms::DataVisualization::Charting::Title^ title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
+        System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+        System::Windows::Forms::DataVisualization::Charting::Title^ title2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
         this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
         this->solveSeriesButton = (gcnew System::Windows::Forms::Button());
         this->label1 = (gcnew System::Windows::Forms::Label());
@@ -255,6 +257,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->graphSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->TaskGeneratorSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->algSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+        this->adaptiveNestedSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->toolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->russianToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
         this->englishToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -262,7 +265,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->openProblemDialog = (gcnew System::Windows::Forms::OpenFileDialog());
-        this->adaptiveNestedSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+        this->label14 = (gcnew System::Windows::Forms::Label());
+        this->label15 = (gcnew System::Windows::Forms::Label());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -280,17 +284,17 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // 
         // chart1
         // 
-        chartArea1->Name = L"ChartArea1";
-        this->chart1->ChartAreas->Add(chartArea1);
+        chartArea2->Name = L"ChartArea1";
+        this->chart1->ChartAreas->Add(chartArea2);
         this->chart1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->chart1->Location = System::Drawing::Point(0, 24);
         this->chart1->Name = L"chart1";
-        this->chart1->Size = System::Drawing::Size(485, 624);
+        this->chart1->Size = System::Drawing::Size(485, 639);
         this->chart1->TabIndex = 0;
         this->chart1->Text = L"chart1";
-        title1->Name = L"Title1";
-        title1->Text = L"Operating characteristics";
-        this->chart1->Titles->Add(title1);
+        title2->Name = L"Title1";
+        title2->Text = L"Operating characteristics";
+        this->chart1->Titles->Add(title2);
         // 
         // solveSeriesButton
         // 
@@ -356,6 +360,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->checkBox2->TabIndex = 26;
         this->checkBox2->Text = L"Adaptive Nested";
         this->checkBox2->UseVisualStyleBackColor = true;
+        this->checkBox2->CheckedChanged += gcnew System::EventHandler(this, &MainWindow::checkBox2_CheckedChanged);
         // 
         // checkBox1
         // 
@@ -486,7 +491,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // 
         this->label4->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
         this->label4->AutoSize = true;
-        this->label4->Location = System::Drawing::Point(3, 594);
+        this->label4->Location = System::Drawing::Point(3, 609);
         this->label4->Name = L"label4";
         this->label4->Size = System::Drawing::Size(51, 13);
         this->label4->TabIndex = 8;
@@ -495,7 +500,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // progressBar1
         // 
         this->progressBar1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->progressBar1->Location = System::Drawing::Point(76, 596);
+        this->progressBar1->Location = System::Drawing::Point(76, 611);
         this->progressBar1->Name = L"progressBar1";
         this->progressBar1->Size = System::Drawing::Size(193, 11);
         this->progressBar1->TabIndex = 10;
@@ -503,7 +508,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // clear_button
         // 
         this->clear_button->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->clear_button->Location = System::Drawing::Point(129, 622);
+        this->clear_button->Location = System::Drawing::Point(129, 637);
         this->clear_button->Name = L"clear_button";
         this->clear_button->Size = System::Drawing::Size(127, 23);
         this->clear_button->TabIndex = 11;
@@ -662,6 +667,8 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // 
         // groupBox3
         // 
+        this->groupBox3->Controls->Add(this->label14);
+        this->groupBox3->Controls->Add(this->label15);
         this->groupBox3->Controls->Add(this->lipConstLabel);
         this->groupBox3->Controls->Add(this->label17);
         this->groupBox3->Controls->Add(this->error_xy);
@@ -676,7 +683,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->groupBox3->Controls->Add(this->label7);
         this->groupBox3->Location = System::Drawing::Point(2, 416);
         this->groupBox3->Name = L"groupBox3";
-        this->groupBox3->Size = System::Drawing::Size(276, 162);
+        this->groupBox3->Size = System::Drawing::Size(276, 189);
         this->groupBox3->TabIndex = 14;
         this->groupBox3->TabStop = false;
         this->groupBox3->Text = L"Results";
@@ -792,7 +799,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // ShowLogButton
         // 
         this->ShowLogButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
-        this->ShowLogButton->Location = System::Drawing::Point(2, 622);
+        this->ShowLogButton->Location = System::Drawing::Point(2, 637);
         this->ShowLogButton->Name = L"ShowLogButton";
         this->ShowLogButton->Size = System::Drawing::Size(121, 23);
         this->ShowLogButton->TabIndex = 18;
@@ -814,7 +821,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->tableLayoutPanel1->Name = L"tableLayoutPanel1";
         this->tableLayoutPanel1->RowCount = 1;
         this->tableLayoutPanel1->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Percent, 100)));
-        this->tableLayoutPanel1->Size = System::Drawing::Size(781, 654);
+        this->tableLayoutPanel1->Size = System::Drawing::Size(781, 669);
         this->tableLayoutPanel1->TabIndex = 19;
         // 
         // panel1
@@ -829,7 +836,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->panel1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->panel1->Location = System::Drawing::Point(3, 3);
         this->panel1->Name = L"panel1";
-        this->panel1->Size = System::Drawing::Size(284, 648);
+        this->panel1->Size = System::Drawing::Size(284, 663);
         this->panel1->TabIndex = 0;
         // 
         // panel2
@@ -839,7 +846,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->panel2->Dock = System::Windows::Forms::DockStyle::Fill;
         this->panel2->Location = System::Drawing::Point(293, 3);
         this->panel2->Name = L"panel2";
-        this->panel2->Size = System::Drawing::Size(485, 648);
+        this->panel2->Size = System::Drawing::Size(485, 663);
         this->panel2->TabIndex = 1;
         // 
         // menuStrip1
@@ -924,6 +931,13 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         this->algSettingsToolStripMenuItem->Text = L"Algorithm settings";
         this->algSettingsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::algSettingsToolStripMenuItem_Click);
         // 
+        // adaptiveNestedSettingsToolStripMenuItem
+        // 
+        this->adaptiveNestedSettingsToolStripMenuItem->Name = L"adaptiveNestedSettingsToolStripMenuItem";
+        this->adaptiveNestedSettingsToolStripMenuItem->Size = System::Drawing::Size(257, 22);
+        this->adaptiveNestedSettingsToolStripMenuItem->Text = L"Adaptive Nested settings";
+        this->adaptiveNestedSettingsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::adaptiveNestedSettingsToolStripMenuItem_Click);
+        // 
         // toolStripMenuItem1
         // 
         this->toolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
@@ -966,18 +980,29 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
         // 
         this->openProblemDialog->FileName = L"CustomProblem.dll";
         // 
-        // adaptiveNestedSettingsToolStripMenuItem
+        // label14
         // 
-        this->adaptiveNestedSettingsToolStripMenuItem->Name = L"adaptiveNestedSettingsToolStripMenuItem";
-        this->adaptiveNestedSettingsToolStripMenuItem->Size = System::Drawing::Size(257, 22);
-        this->adaptiveNestedSettingsToolStripMenuItem->Text = L"Adaptive Nested settings";
-        this->adaptiveNestedSettingsToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainWindow::adaptiveNestedSettingsToolStripMenuItem_Click);
+        this->label14->AutoSize = true;
+        this->label14->Location = System::Drawing::Point(140, 163);
+        this->label14->Name = L"label14";
+        this->label14->Size = System::Drawing::Size(10, 13);
+        this->label14->TabIndex = 19;
+        this->label14->Text = L"-";
+        // 
+        // label15
+        // 
+        this->label15->AutoSize = true;
+        this->label15->Location = System::Drawing::Point(7, 163);
+        this->label15->Name = L"label15";
+        this->label15->Size = System::Drawing::Size(100, 13);
+        this->label15->TabIndex = 18;
+        this->label15->Text = L"Local M usage (%) :";
         // 
         // MainWindow
         // 
         this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
         this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-        this->ClientSize = System::Drawing::Size(781, 654);
+        this->ClientSize = System::Drawing::Size(781, 669);
         this->Controls->Add(this->tableLayoutPanel1);
         this->MinimumSize = System::Drawing::Size(797, 660);
         this->Name = L"MainWindow";
@@ -1647,13 +1672,16 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
           //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
           setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
           Invoke(setResultsDel,
-              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
-              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
-              expResult.GetSolution().GetOptimumValue().ToString("F6"),
-              err_val.ToString("F6"),
-              err_xy.ToString("F6"),
-              err_xy.ToString("F6"),
-              ags.GetLipschitzConst().ToString("F5") });
+              gcnew array<System::String^> { 
+                expResult.GetSolution().GetIterationsCount().ToString(),
+                "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+                expResult.GetSolution().GetOptimumValue().ToString("F6"),
+                err_val.ToString("F6"),
+                err_xy.ToString("F6"),
+                err_xy.ToString("F6"),
+                ags.GetLipschitzConst().ToString("F5"),
+                "-"
+          });
           delete[] y;
       }
       else if (!checkBox2->Checked){
@@ -1681,13 +1709,16 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
           //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
           setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
           Invoke(setResultsDel,
-              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
-              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
-              expResult.GetSolution().GetOptimumValue().ToString("F6"),
-              err_val.ToString("F6"),
-              err_xy.ToString("F6"),
-              err_xy.ToString("F6"),
-              ags.GetLipschitzConst().ToString("F5") });
+              gcnew array<System::String^> {
+              expResult.GetSolution().GetIterationsCount().ToString(),
+                  "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+                  expResult.GetSolution().GetOptimumValue().ToString("F6"),
+                  err_val.ToString("F6"),
+                  err_xy.ToString("F6"),
+                  err_xy.ToString("F6"),
+                  ags.GetLipschitzConst().ToString("F5"),
+                  "-"
+          });
           delete[] y;
       
       }
@@ -1716,13 +1747,16 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
           //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
           setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
           Invoke(setResultsDel,
-              gcnew array<System::String^> { expResult.GetSolution().GetIterationsCount().ToString(),
-              "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
-              expResult.GetSolution().GetOptimumValue().ToString("F6"),
-              err_val.ToString("F6"),
-              err_xy.ToString("F6"),
-              err_xy.ToString("F6"),
-              ags.GetLipschitzConst().ToString("F5") });
+              gcnew array<System::String^> { 
+              expResult.GetSolution().GetIterationsCount().ToString(),
+                  "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
+                  expResult.GetSolution().GetOptimumValue().ToString("F6"),
+                  err_val.ToString("F6"),
+                  err_xy.ToString("F6"),
+                  err_xy.ToString("F6"),
+                  ags.GetLipschitzConst().ToString("F5"),
+                  (double(ags.GetCountLocalM()) / (ags.GetCountLocalM() + ags.GetCountGlobalM())).ToString("F5")
+          });
           delete[] y;
 
       }
@@ -1730,7 +1764,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
 
 
   }
-  private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7) {
+  private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7, System::String^ s8) {
       this->it_count_lbl->Text = s1;
       this->task_answ_lbl->Text = s2;
       this->task_val_lbl->Text = s3;
@@ -1738,6 +1772,7 @@ private: System::Windows::Forms::ToolStripMenuItem^ adaptiveNestedSettingsToolSt
       this->error_xy->Text = s5;
       this->mErrorValueString = s6;
       this->lipConstLabel->Text = s7;
+      this->label14->Text = s8;
   }
 
 
@@ -1920,5 +1955,9 @@ private: System::Void checkBox1_CheckedChanged(System::Object^ sender, System::E
     else checkBox2->Enabled = true;
 }
 
+private: System::Void checkBox2_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+    label15->Visible = checkBox2->Checked;
+    label14->Visible = checkBox2->Checked;
+}
 };
 }
