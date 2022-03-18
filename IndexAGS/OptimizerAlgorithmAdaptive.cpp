@@ -69,7 +69,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     int level = all_tasks[task_id].level;
     while (it2 != all_tasks[task_id].trials.cend()) {
         double mtpm = 0;
-        if ((it2->x - it1->x) > mMaxIntervalNorm) mMaxIntervalNorm = it2->x - it1->x;
+        
         if ((it2->x - it1->x) < all_tasks[task_id].minIntervalNorm) all_tasks[task_id].minIntervalNorm = it2->x - it1->x;
         if (level + 1 == mMethodDimention)
             mtpm = abs((all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / (it2->x - it1->x));
@@ -83,6 +83,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     all_tasks[task_id].M = max;
     if (all_tasks[task_id].m > mLevelM[level]) mLevelM[level] = all_tasks[task_id].m;
     if (all_tasks[task_id].m > mGlobalM) mGlobalM = all_tasks[task_id].m;
+    if (all_tasks[task_id].minIntervalNorm > mMaxIntervalNorm) mMaxIntervalNorm = all_tasks[task_id].minIntervalNorm;
 }
 
 void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
@@ -94,31 +95,9 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
     
     int t = 0;
     int level = task.level;
-    double m;
+    double m = Choosem(task_id,mLipMode);
 
-    if (mLipMode == LipschitzConstantEvaluation::Global)
-        m = mGlobalM; //task->m;
-    else if (mLipMode == LipschitzConstantEvaluation::Single_task)
-        m = task.m;
-    else if (mLipMode == LipschitzConstantEvaluation::Level)
-        m = mLevelM[level];
-    else if (mLipMode == LipschitzConstantEvaluation::Adaptive) {
-        if (task.trials.size() <= 1) m = mGlobalM;
-        else {
-            double MG = mGlobalM * task.minIntervalNorm / mMaxIntervalNorm;
-            if (MG > task.m) {
-                m = MG;
-                ++mGlobalCount;
-            }
-            else {
-                m = task.m;
-                ++mLocalCount;
-                // TODO: ADD COUNTER
-            }
-        }
-    }
-    else
-        throw "IDK";
+    
 
     double lx = mSpaceTransform.GetLeftDomainBound().get()[level];
     double rx = mSpaceTransform.GetRightDomainBound().get()[level];
@@ -217,7 +196,8 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
 void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, OptimizerNestedTrialPoint npnt)
 {    
     // Iterative
-    int level = all_tasks[parent_id].level + 1;
+    
+    /*int level = all_tasks[parent_id].level + 1;
     while (level < mMethodDimention) {
         if (mNewPNT == NewPointOptions::Half || all_tasks[parent_id].trials.size() < 2)
             npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
@@ -237,7 +217,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
         parent_id = all_tasks.size() - 1;
         ++level;
     }
-
+    
     npnt.val = mTargetFunction->Calculate(npnt.x.data());
     ITask newtrial(mMethodDimention, parent_id, npnt);
     all_trials.push_back(newtrial);
@@ -248,7 +228,73 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
     UpdateParents(all_trials.size() - 1);
 
     mSearchInformationStorage.insert(npnt);
+    */
     
+
+    // Recursive
+    
+    if (all_tasks[parent_id].level + 1 == mMethodDimention) {
+        npnt.val = mTargetFunction->Calculate(npnt.x.data());
+        ITask newtrial(mMethodDimention, parent_id, npnt);
+        all_trials.push_back(newtrial);
+        all_tasks[parent_id].trials.insert(XSub(npnt.x[all_tasks[parent_id].level], all_trials.size() - 1));
+        if (all_tasks[parent_id].basepoint.val >= npnt.val) {
+            all_tasks[parent_id].basepoint = npnt;
+        }
+        UpdateParents(all_trials.size() - 1);
+
+        mSearchInformationStorage.insert(npnt);
+
+        return;
+    }
+
+    int level = all_tasks[parent_id].level + 1;
+    if (mNewPNT == NewPointOptions::Half || all_tasks[parent_id].trials.size() < 2)
+        npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
+    else {
+        auto tmp = std::upper_bound(all_tasks[parent_id].trials.begin(), all_tasks[parent_id].trials.end(), XSub(npnt.x[level - 1], -1));
+        if (tmp == all_tasks[parent_id].trials.begin() || tmp == all_tasks[parent_id].trials.end())
+            npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
+        else {
+            auto tmp2 = tmp--;
+            npnt.x[level] = all_tasks[tmp->subtask_id].basepoint.x[level] +
+                (all_tasks[tmp2->subtask_id].basepoint.x[level] - all_tasks[tmp->subtask_id].basepoint.x[level])
+                * ((npnt.x[level - 1] - tmp->x) / (tmp2->x - tmp->x));
+        }
+    }
+    all_tasks.push_back(SubTask(level, parent_id, npnt));
+    all_tasks[parent_id].trials.emplace(XSub(npnt.x[level - 1], all_tasks.size() - 1));
+
+    return GenerateSubTasks(all_tasks.size() - 1, npnt);
+    
+}
+
+double optimizercore::OptimizerAlgorithmAdaptive::Choosem(int task_id, LipschitzConstantEvaluation mtype)
+{
+    double m;
+    if (mLipMode == LipschitzConstantEvaluation::Global)
+        m = mGlobalM; //task->m;
+    else if (mLipMode == LipschitzConstantEvaluation::Single_task)
+        m = all_tasks[task_id].m;
+    else if (mLipMode == LipschitzConstantEvaluation::Level)
+        m = mLevelM[all_tasks[task_id].level];
+    else if (mLipMode == LipschitzConstantEvaluation::Adaptive) {
+        if (all_tasks[task_id].trials.size() <= 1) m = mGlobalM;
+        else {
+            double MG = mGlobalM * all_tasks[task_id].minIntervalNorm / mMaxIntervalNorm;
+            if (MG > all_tasks[task_id].m) {
+                m = MG;
+                ++mGlobalCount;
+            }
+            else {
+                m = all_tasks[task_id].m;
+                ++mLocalCount;
+            }
+        }
+    }
+    else
+        throw "IDK";
+    return m;
 }
 
 optimizercore::OptimizerAlgorithmAdaptive::OptimizerAlgorithmAdaptive()
@@ -410,29 +456,8 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         int task_id = ChooseSubtask();
         SubTask& task = all_tasks[task_id];
         int level = task.level;
-        double m;
-        if (mLipMode == LipschitzConstantEvaluation::Global)
-            m = mGlobalM; //task->m;
-        else if (mLipMode == LipschitzConstantEvaluation::Single_task)
-            m = task.m;
-        else if (mLipMode == LipschitzConstantEvaluation::Level)
-            m = mLevelM[level];
-        else if (mLipMode == LipschitzConstantEvaluation::Adaptive) {
-            if (task.trials.size() <= 1) m = mGlobalM;
-            else {
-                double MG = mGlobalM * task.minIntervalNorm / mMaxIntervalNorm;
-                if (MG > task.m) {
-                    m = MG;
-                    ++mGlobalCount;
-                }
-                else {
-                    m = task.m;
-                    ++mLocalCount;
-                }
-            }
-        }
-        else
-            throw "IDK";
+        double m = Choosem(task_id, mLipMode);
+
         // CHOOSE NEW POINT
         double newx;
         if (task.Rind == 0) {
