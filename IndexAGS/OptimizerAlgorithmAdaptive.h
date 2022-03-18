@@ -111,6 +111,7 @@ namespace optimizercore
 		void CalculateRanks(int task_id);
 		int ChooseSubtask();
 		void GenerateSubTasks(int parent, OptimizerNestedTrialPoint npnt);
+		double Choosem(int task_id, LipschitzConstantEvaluation mtype);
 	public:
 		OptimizerAlgorithmAdaptive();
 		~OptimizerAlgorithmAdaptive();
