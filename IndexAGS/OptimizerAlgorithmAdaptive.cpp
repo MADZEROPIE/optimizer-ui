@@ -69,12 +69,13 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id)
     int level = all_tasks[task_id].level;
     while (it2 != all_tasks[task_id].trials.cend()) {
         double mtpm = 0;
-        
-        if ((it2->x - it1->x) < all_tasks[task_id].minIntervalNorm) all_tasks[task_id].minIntervalNorm = it2->x - it1->x;
+        double dx = it2->x - it1->x;
+        if (dx < 0) throw "smth bad";
+        if (dx < all_tasks[task_id].minIntervalNorm) all_tasks[task_id].minIntervalNorm = dx;
         if (level + 1 == mMethodDimention)
-            mtpm = abs((all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / (it2->x - it1->x));
+            mtpm = abs((all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / dx);
         else
-            mtpm = abs((all_tasks[it1->subtask_id].basepoint.val - all_tasks[it2->subtask_id].basepoint.val) / (it2->x - it1->x));
+            mtpm = abs((all_tasks[it1->subtask_id].basepoint.val - all_tasks[it2->subtask_id].basepoint.val) / dx);
         if (mtpm > max) max = mtpm;
         ++it1; ++it2;
     }
@@ -95,9 +96,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id)
     
     int t = 0;
     int level = task.level;
-    double m = Choosem(task_id,mLipMode);
-
-    
+    double m = Choosem(task_id, mLipMode);
 
     double lx = mSpaceTransform.GetLeftDomainBound().get()[level];
     double rx = mSpaceTransform.GetRightDomainBound().get()[level];
@@ -488,18 +487,18 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         GenerateSubTasks(task_id, pnt);
         ++iterationsCount;
 
-        SubTask& base_task = all_tasks[0];
-        auto base_it2 = base_task.trials.begin();
-        auto base_it = base_it2++;
         if (stopType == StopCriterionType::OptimalPoint) {
             stop = NormNDimMax(all_tasks[0].basepoint.x.data(), xOpt, mMethodDimention) < eps;
         }
-        while (base_it2 != base_task.trials.cend() && !stop) {
-            //stop = (base_it2->x - base_it->x < eps);
-            if (stopType != StopCriterionType::OptimalPoint)
+        else {
+            auto base_it2 = all_tasks[0].trials.cbegin();
+            auto base_it = base_it2++;
+            while (base_it2 != all_tasks[0].trials.cend() && !stop) {
+                //stop = (base_it2->x - base_it->x < eps);
                 stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(),
-                    all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps;
-            ++base_it2; ++base_it;
+                        all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps;
+                ++base_it2; ++base_it;
+            }
         }
     }
     SharedVector optPoint(new double[mMethodDimention], array_deleter<double>());
@@ -513,7 +512,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
 
 double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst() const
 {
-    return mGlobalM;
+    return mGlobalM/r;
 }
 
 uint64_t optimizercore::OptimizerAlgorithmAdaptive::GetCountLocalM() const
