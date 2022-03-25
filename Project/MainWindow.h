@@ -1230,10 +1230,25 @@ private: System::Windows::Forms::Label^ label15;
   private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
     if (!solveSingleTaskBackgroundWorker->IsBusy) {
         readAlgorithmParameters();  // If parameters are read by a worker, exception throws.
+
+        ExperimentsLog += "------ Single Task ------";
+        if (grishaginRadioButton->Checked)
+            ExperimentsLog += "\nProblem class: Grishagin functions\n";
+        else if (gklsRadioButton2->Checked)
+            ExperimentsLog += "\nProblem class: GKLS Simple\n";
+        else if (gklsHardRadioButton->Checked)
+            ExperimentsLog += "\nProblem class: GKLS Hard\n";
+        else
+            ExperimentsLog += "\nProblem class: Custom problem\n";
+        ExperimentsLog+= "Task number: "+ task_number->Value.ToString() + "\n";
+        
+
+
         solveSingleTaskBackgroundWorker->RunWorkerAsync();
         solveSingleTaskButton->Enabled = false;
         solveSeriesButton->Enabled = false;
     }
+
   }
 
 
@@ -1670,6 +1685,15 @@ private: System::Windows::Forms::Label^ label15;
           //this->mErrorValueString = err_xy.ToString("F6");
           ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
           //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+
+          ExperimentsLog += "\nIterations count: " + expResult.GetSolution().GetIterationsCount().ToString();
+          ExperimentsLog += "\nOptimal point: "+ "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")";
+          ExperimentsLog += "\nOptimal value: " + expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          ExperimentsLog += "\nHolder constant: " + ags.GetLipschitzConst().ToString("F5");
           setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
           Invoke(setResultsDel,
               gcnew array<System::String^> { 
@@ -1707,6 +1731,14 @@ private: System::Windows::Forms::Label^ label15;
           //this->mErrorValueString = err_xy.ToString("F6");
           ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
           //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+          ExperimentsLog += "\nIterations count: " + expResult.GetSolution().GetIterationsCount().ToString();
+          ExperimentsLog += "\nOptimal point: " + "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")" ;
+          ExperimentsLog += "\nOptimal value: " + expResult.GetSolution().GetOptimumValue().ToString("F6");
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          ExperimentsLog += "\nHolder constant: " + ags.GetLipschitzConst().ToString("F5");
           setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
           Invoke(setResultsDel,
               gcnew array<System::String^> {
@@ -1745,6 +1777,17 @@ private: System::Windows::Forms::Label^ label15;
           //this->mErrorValueString = err_xy.ToString("F6");
           ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
           //this->lipConstLabel->Text = ags.GetLipschitzConst().ToString("F5");
+
+          ExperimentsLog += "\nIterations count: " + expResult.GetSolution().GetIterationsCount().ToString();
+          ExperimentsLog += "\nOptimal point: " + "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")" ;
+          ExperimentsLog += "\nOptimal value: " + expResult.GetSolution().GetOptimumValue().ToString("F6") ;
+          //this->error_val->Text = err_val.ToString("F6");
+          //this->error_xy->Text = err_xy.ToString("F6");
+          //this->mErrorValueString = err_xy.ToString("F6");
+          ////lipConstLabel->Text = ags.GetLipschitzConst(0).ToString("F5");
+          ExperimentsLog += "\nHolder constant: " + ags.GetLipschitzConst().ToString("F5");
+          if (mAdaptiveSettings.adaptiveM)
+            ExperimentsLog += "\nLocal M usage: " + (double(ags.GetCountLocalM()) / (ags.GetCountLocalM() + ags.GetCountGlobalM())).ToString("F5") ;
           setResultsDelegate^ setResultsDel = gcnew setResultsDelegate(this, &MainWindow::setResults);
           Invoke(setResultsDel,
               gcnew array<System::String^> { 
@@ -1760,7 +1803,7 @@ private: System::Windows::Forms::Label^ label15;
           delete[] y;
 
       }
-
+      ExperimentsLog += "\n--------------------------------------\n";
 
 
   }
