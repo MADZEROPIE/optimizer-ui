@@ -110,4 +110,26 @@ namespace optimizerui
 			//release unmanaged resources
 		}
 	};
+
+	ref class LanguageSettings {
+	public:
+
+		bool english = true;
+
+		LanguageSettings()
+		{
+		}
+		//Dispose
+		~LanguageSettings()
+		{
+			//release managed resources
+
+			//call finalizer
+			this->!LanguageSettings();
+		}
+		!LanguageSettings()
+		{
+			//release unmanaged resources
+		}
+	};
 }

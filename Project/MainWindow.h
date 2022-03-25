@@ -110,6 +110,7 @@ namespace optimizerui {
     GraphSettings mGraphSettings;
     AlgorithmSettings mAlgorithmSettings;
     AdaptiveNestedSettings mAdaptiveSettings;
+    LanguageSettings mLanguageSettings;
     TaskGeneratorSettings mTaskGeneratorSettings;
     ISearchSequence* currentSequence;
     OneDimGraphWindow^ mOneDimGraph;
@@ -232,6 +233,8 @@ private: System::Windows::Forms::Label^ label15;
         this->task_number = (gcnew System::Windows::Forms::NumericUpDown());
         this->label6 = (gcnew System::Windows::Forms::Label());
         this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
+        this->label14 = (gcnew System::Windows::Forms::Label());
+        this->label15 = (gcnew System::Windows::Forms::Label());
         this->lipConstLabel = (gcnew System::Windows::Forms::Label());
         this->label17 = (gcnew System::Windows::Forms::Label());
         this->error_xy = (gcnew System::Windows::Forms::Label());
@@ -265,8 +268,6 @@ private: System::Windows::Forms::Label^ label15;
         this->solveSingleTaskBackgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
         this->saveOPImgDialog = (gcnew System::Windows::Forms::SaveFileDialog());
         this->openProblemDialog = (gcnew System::Windows::Forms::OpenFileDialog());
-        this->label14 = (gcnew System::Windows::Forms::Label());
-        this->label15 = (gcnew System::Windows::Forms::Label());
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
         this->groupBox1->SuspendLayout();
         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->threadsNumNumericUpDown))->BeginInit();
@@ -397,7 +398,7 @@ private: System::Windows::Forms::Label^ label15;
         // 
         // threadsNumNumericUpDown
         // 
-        this->threadsNumNumericUpDown->Location = System::Drawing::Point(215, 141);
+        this->threadsNumNumericUpDown->Location = System::Drawing::Point(214, 146);
         this->threadsNumNumericUpDown->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 64, 0, 0, 0 });
         this->threadsNumNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
         this->threadsNumNumericUpDown->Name = L"threadsNumNumericUpDown";
@@ -418,7 +419,7 @@ private: System::Windows::Forms::Label^ label15;
         // 
         this->MapTypeComboBox->FormattingEnabled = true;
         this->MapTypeComboBox->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"injective", L"semi-linear", L"non-injective" });
-        this->MapTypeComboBox->Location = System::Drawing::Point(133, 116);
+        this->MapTypeComboBox->Location = System::Drawing::Point(133, 121);
         this->MapTypeComboBox->Name = L"MapTypeComboBox";
         this->MapTypeComboBox->Size = System::Drawing::Size(128, 21);
         this->MapTypeComboBox->TabIndex = 17;
@@ -426,7 +427,7 @@ private: System::Windows::Forms::Label^ label15;
         // label11
         // 
         this->label11->AutoSize = true;
-        this->label11->Location = System::Drawing::Point(6, 120);
+        this->label11->Location = System::Drawing::Point(7, 124);
         this->label11->Name = L"label11";
         this->label11->Size = System::Drawing::Size(75, 13);
         this->label11->TabIndex = 15;
@@ -687,6 +688,24 @@ private: System::Windows::Forms::Label^ label15;
         this->groupBox3->TabIndex = 14;
         this->groupBox3->TabStop = false;
         this->groupBox3->Text = L"Results";
+        // 
+        // label14
+        // 
+        this->label14->AutoSize = true;
+        this->label14->Location = System::Drawing::Point(140, 163);
+        this->label14->Name = L"label14";
+        this->label14->Size = System::Drawing::Size(10, 13);
+        this->label14->TabIndex = 19;
+        this->label14->Text = L"-";
+        // 
+        // label15
+        // 
+        this->label15->AutoSize = true;
+        this->label15->Location = System::Drawing::Point(7, 163);
+        this->label15->Name = L"label15";
+        this->label15->Size = System::Drawing::Size(100, 13);
+        this->label15->TabIndex = 18;
+        this->label15->Text = L"Local M usage (%) :";
         // 
         // lipConstLabel
         // 
@@ -979,24 +998,6 @@ private: System::Windows::Forms::Label^ label15;
         // openProblemDialog
         // 
         this->openProblemDialog->FileName = L"CustomProblem.dll";
-        // 
-        // label14
-        // 
-        this->label14->AutoSize = true;
-        this->label14->Location = System::Drawing::Point(140, 163);
-        this->label14->Name = L"label14";
-        this->label14->Size = System::Drawing::Size(10, 13);
-        this->label14->TabIndex = 19;
-        this->label14->Text = L"-";
-        // 
-        // label15
-        // 
-        this->label15->AutoSize = true;
-        this->label15->Location = System::Drawing::Point(7, 163);
-        this->label15->Name = L"label15";
-        this->label15->Size = System::Drawing::Size(100, 13);
-        this->label15->TabIndex = 18;
-        this->label15->Text = L"Local M usage (%) :";
         // 
         // MainWindow
         // 
@@ -1564,7 +1565,7 @@ private: System::Windows::Forms::Label^ label15;
   }
 
     private: System::Void adaptiveNestedSettingsToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
-        AdaptiveSettingsWindow ^ settings = gcnew AdaptiveSettingsWindow(mAdaptiveSettings);
+        AdaptiveSettingsWindow ^ settings = gcnew AdaptiveSettingsWindow(mAdaptiveSettings, mLanguageSettings);
         settings->ShowDialog();
     }
 
@@ -1888,6 +1889,7 @@ private: System::Windows::Forms::Label^ label15;
 
     // Localization
 private: System::Void russianToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    this->mLanguageSettings.english = false;
     this->groupBox1->Text = L"Параметры алгоритма";
     this->label1->Text = L"Параметр надёжности:";
     this->label2->Text = L"Точность:";
@@ -1913,7 +1915,7 @@ private: System::Void russianToolStripMenuItem_Click(System::Object^ sender, Sys
     this->grishaginRadioButton->Text = L"Функции Гришагина";
     this->gklsRadioButton2->Text = L"GKLS Простой"; // ???
     this->gklsHardRadioButton->Text = L"GKLS Сложный"; // ???
-    this->customProblemRadioButton->Text = L"Свои функции"; // ???
+    this->customProblemRadioButton->Text = L"Другое"; // ???
 
     this->groupBox3->Text = L"Результаты";
     this->label7->Text = L"Координаты";
@@ -1938,6 +1940,7 @@ private: System::Void russianToolStripMenuItem_Click(System::Object^ sender, Sys
     this->algSettingsToolStripMenuItem->Text = L"Настройки алгоритма";
 }
 private: System::Void englishToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    this->mLanguageSettings.english = true;
     this->groupBox1->Text = L"Parameters of algorithm";
     this->label1->Text = L"Reliability coefficient:";
     this->label2->Text = L"Accuracy:";
