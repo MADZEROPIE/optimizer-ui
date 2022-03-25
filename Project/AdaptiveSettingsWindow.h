@@ -17,7 +17,7 @@ namespace optimizerui {
 	public ref class AdaptiveSettingsWindow : public System::Windows::Forms::Form
 	{
 	public:
-		AdaptiveSettingsWindow(AdaptiveNestedSettings% settings)
+		AdaptiveSettingsWindow(AdaptiveNestedSettings% settings, LanguageSettings %lan)
 		{
 			InitializeComponent();
 			radioButton1->Checked = settings.globalM;
@@ -33,6 +33,8 @@ namespace optimizerui {
 			radioButton9->Checked = settings.medianPnt;
 
 			currentSettings = %settings;
+			languageSettings = % lan;
+			setLanguage();
 		}
 
 	private: System::Windows::Forms::Panel^ panel1;
@@ -57,6 +59,7 @@ namespace optimizerui {
 		/// Освободить все используемые ресурсы.
 		/// </summary>
 		AdaptiveNestedSettings^ currentSettings;
+		LanguageSettings^ languageSettings;
 		~AdaptiveSettingsWindow()
 		{
 			if (components)
@@ -360,6 +363,16 @@ namespace optimizerui {
 			currentSettings->medianPnt = radioButton9->Checked;
 		}
 }
+	private: System::Void setLanguage() {
+		if (languageSettings) {
+			if (languageSettings->english) {
+				this->Text = L"Adaptive Nested Scheme Settings";
+			}
+			else {
+				this->Text = L"Настройки адаптивной вложенной схемы";
+			}
+		}
+	}
 
 };
 }
