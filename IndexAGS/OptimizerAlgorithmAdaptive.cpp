@@ -185,7 +185,7 @@ int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask()
     CalculateRanks(best);
     for (int i = 1; i < all_tasks.size();++i) {
         CalculateRanks(i);
-        if (all_tasks[i].R >= all_tasks[best].R) {
+        if (all_tasks[i].R > all_tasks[best].R) {
             best = i;
         }
     }
@@ -252,8 +252,10 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
         npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
     else {
         auto tmp = std::upper_bound(all_tasks[parent_id].trials.begin(), all_tasks[parent_id].trials.end(), XSub(npnt.x[level - 1], -1));
-        if (tmp == all_tasks[parent_id].trials.begin() || tmp == all_tasks[parent_id].trials.end())
+        if (tmp == all_tasks[parent_id].trials.begin() || tmp == all_tasks[parent_id].trials.end()) {
+            // double xtmp = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
             npnt.x[level] = (mSpaceTransform.GetRightDomainBound().get()[level] + mSpaceTransform.GetLeftDomainBound().get()[level]) / 2;
+        }
         else {
             auto tmp2 = tmp--;
             npnt.x[level] = all_tasks[tmp->subtask_id].basepoint.x[level] +
@@ -495,6 +497,8 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             auto base_it = base_it2++;
             while (base_it2 != all_tasks[0].trials.cend() && !stop) {
                 //stop = (base_it2->x - base_it->x < eps);
+                if (all_tasks[base_it->subtask_id].basepoint.val < all_tasks[0].basepoint.val)
+                    throw "Update parents(?) not workin' properly"; // Debug check.
                 stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(),
                         all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps;
                 ++base_it2; ++base_it;
@@ -510,8 +514,13 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         return OptimizerResult(solution);
 }
 
-double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst() const
+double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst()
 {
+    // TODO: DELETE THIS. CALCULATE M AFTER LAST TRIAL IS DONE.
+    for (int i = 0; i < all_tasks.size(); ++i) {
+        this->CalculateM(i);
+    }
+
     return mGlobalM/r;
 }
 

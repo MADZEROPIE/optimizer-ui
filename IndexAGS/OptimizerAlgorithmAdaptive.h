@@ -124,7 +124,7 @@ namespace optimizercore
 		OptimizerResult StartOptimization(const double* xOpt,
 			StopCriterionType stopType);
 
-		double GetLipschitzConst() const;
+		double GetLipschitzConst();
 		uint64_t GetCountLocalM() const;
 		uint64_t GetCountGlobalM() const;
 		OptimazerNestedSearchSequence GetSearchSequence() const;

@@ -36,13 +36,12 @@ namespace optimizerui {
   using namespace System::Globalization;
   using namespace System::Threading;
 
-  delegate System::Void setResultsDelegate(System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^);
+  delegate System::Void setResultsDelegate(System::String^, System::String^, System::String^, System::String^, System::String^, System::String^, System::String^);
 
   public ref class MainWindow : public System::Windows::Forms::Form
   {
   public:
     MainWindow(void) {
-      mErrorValueString = gcnew String(" ");
       InitializeComponent();
 
       series_count = mCurrentTaskNumber = 0;
@@ -105,7 +104,7 @@ namespace optimizerui {
     int max_it_count, series_count, map_type, mCurrentTaskNumber;
     CultureInfo^ MyCI;
     NumberFormatInfo^ nfi;
-    String^ ExperimentsLog, ^mErrorValueString;
+    String^ ExperimentsLog;
     array<int, 1>^ mOperationCharacteristicData;
     GraphSettings mGraphSettings;
     AlgorithmSettings mAlgorithmSettings;
@@ -194,8 +193,8 @@ private: System::Windows::Forms::Label^ label15;
 #pragma region Windows Form Designer generated code
     void InitializeComponent(void)
     {
-        System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea2 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
-        System::Windows::Forms::DataVisualization::Charting::Title^ title2 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
+        System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+        System::Windows::Forms::DataVisualization::Charting::Title^ title1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Title());
         this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
         this->solveSeriesButton = (gcnew System::Windows::Forms::Button());
         this->label1 = (gcnew System::Windows::Forms::Label());
@@ -285,17 +284,17 @@ private: System::Windows::Forms::Label^ label15;
         // 
         // chart1
         // 
-        chartArea2->Name = L"ChartArea1";
-        this->chart1->ChartAreas->Add(chartArea2);
+        chartArea1->Name = L"ChartArea1";
+        this->chart1->ChartAreas->Add(chartArea1);
         this->chart1->Dock = System::Windows::Forms::DockStyle::Fill;
         this->chart1->Location = System::Drawing::Point(0, 24);
         this->chart1->Name = L"chart1";
         this->chart1->Size = System::Drawing::Size(485, 639);
         this->chart1->TabIndex = 0;
         this->chart1->Text = L"chart1";
-        title2->Name = L"Title1";
-        title2->Text = L"Operating characteristics";
-        this->chart1->Titles->Add(title2);
+        title1->Name = L"Title1";
+        title1->Text = L"Operating characteristics";
+        this->chart1->Titles->Add(title1);
         // 
         // solveSeriesButton
         // 
@@ -472,12 +471,13 @@ private: System::Windows::Forms::Label^ label15;
         // reliability_coeff
         // 
         this->reliability_coeff->DecimalPlaces = 1;
+        this->reliability_coeff->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 65536 });
         this->reliability_coeff->Location = System::Drawing::Point(210, 24);
         this->reliability_coeff->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
         this->reliability_coeff->Name = L"reliability_coeff";
         this->reliability_coeff->Size = System::Drawing::Size(47, 20);
         this->reliability_coeff->TabIndex = 9;
-        this->reliability_coeff->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 3, 0, 0, 0 });
+        this->reliability_coeff->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
         // 
         // label3
         // 
@@ -1703,7 +1703,6 @@ private: System::Windows::Forms::Label^ label15;
                 expResult.GetSolution().GetOptimumValue().ToString("F6"),
                 err_val.ToString("F6"),
                 err_xy.ToString("F6"),
-                err_xy.ToString("F6"),
                 ags.GetLipschitzConst().ToString("F5"),
                 "-"
           });
@@ -1747,7 +1746,6 @@ private: System::Windows::Forms::Label^ label15;
                   "(" + x[0].ToString("F4") + " ; " + x[1].ToString("F4") + ")",
                   expResult.GetSolution().GetOptimumValue().ToString("F6"),
                   err_val.ToString("F6"),
-                  err_xy.ToString("F6"),
                   err_xy.ToString("F6"),
                   ags.GetLipschitzConst().ToString("F5"),
                   "-"
@@ -1797,7 +1795,6 @@ private: System::Windows::Forms::Label^ label15;
                   expResult.GetSolution().GetOptimumValue().ToString("F6"),
                   err_val.ToString("F6"),
                   err_xy.ToString("F6"),
-                  err_xy.ToString("F6"),
                   ags.GetLipschitzConst().ToString("F5"),
                   (double(ags.GetCountLocalM()) / (ags.GetCountLocalM() + ags.GetCountGlobalM())).ToString("F5")
           });
@@ -1808,15 +1805,14 @@ private: System::Windows::Forms::Label^ label15;
 
 
   }
-  private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7, System::String^ s8) {
+  private: System::Void setResults(System::String^ s1, System::String^ s2, System::String^ s3, System::String^ s4, System::String^ s5, System::String^ s6, System::String^ s7) {
       this->it_count_lbl->Text = s1;
       this->task_answ_lbl->Text = s2;
       this->task_val_lbl->Text = s3;
       this->error_val->Text = s4;
       this->error_xy->Text = s5;
-      this->mErrorValueString = s6;
-      this->lipConstLabel->Text = s7;
-      this->label14->Text = s8;
+      this->lipConstLabel->Text = s6;
+      this->label14->Text = s7;
   }
 
 
