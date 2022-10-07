@@ -18,78 +18,69 @@
 #include <iostream>
 
 // ------------------------------------------------------------------------------------------------
-TProblemManager::TProblemManager() : mLibHandle(NULL), mProblem(NULL),
-  mCreate(NULL), mDestroy(NULL)
-{
-
+TProblemManager::TProblemManager() : mLibHandle(NULL), mProblem(NULL), mCreate(NULL), mDestroy(NULL) {
 }
 
 // ------------------------------------------------------------------------------------------------
-TProblemManager::~TProblemManager()
-{
-  FreeProblemLibrary();
-}
-
-// ------------------------------------------------------------------------------------------------
-int TProblemManager::LoadProblemLibrary(const std::string& libPath)
-{
-  if (mLibHandle)
+TProblemManager::~TProblemManager() {
     FreeProblemLibrary();
-  mLibHandle = LoadLibrary(libPath.c_str());
+}
 
-  if (!mLibHandle)
-  {
-    std::cerr << "Cannot load library: " << libPath << std::endl;
-    return TProblemManager::ERROR_;
-  }
-  mCreate = (create_t*)GetProcAddress(mLibHandle, "create");
-  mDestroy = (destroy_t*)GetProcAddress(mLibHandle, "destroy");
-  if (!mCreate || !mDestroy)
-  {
-    std::cerr << "Cannot load symbols: " << GetLastError() << std::endl;
-    FreeLibHandler();
-    return TProblemManager::ERROR_;
-  }
+// ------------------------------------------------------------------------------------------------
+int TProblemManager::LoadProblemLibrary(const std::string& libPath) {
+    if (mLibHandle)
+        FreeProblemLibrary();
+    mLibHandle = LoadLibrary(libPath.c_str());
 
-  mProblem = mCreate();
-  if (!mProblem)
-  {
-    FreeLibHandler();
+    if (!mLibHandle) {
+        std::cerr << "Cannot load library: " << libPath << std::endl;
+        return TProblemManager::ERROR_;
+    }
+    mCreate = (create_t*)GetProcAddress(mLibHandle, "create");
+    mDestroy = (destroy_t*)GetProcAddress(mLibHandle, "destroy");
+    if (!mCreate || !mDestroy) {
+        std::cerr << "Cannot load symbols: " << GetLastError() << std::endl;
+        FreeLibHandler();
+        return TProblemManager::ERROR_;
+    }
+
+    mProblem = mCreate();
+    if (!mProblem) {
+        FreeLibHandler();
+        mCreate = NULL;
+        mDestroy = NULL;
+        std::cerr << "Cannot create problem instance" << std::endl;
+    }
+
+    return TProblemManager::OK_;
+}
+
+// ------------------------------------------------------------------------------------------------
+void TProblemManager::FreeLibHandler() {
+    FreeLibrary(mLibHandle);
+    mLibHandle = NULL;
+}
+
+// ------------------------------------------------------------------------------------------------
+int TProblemManager::FreeProblemLibrary() {
+    if (mProblem)
+        mDestroy(mProblem);
+    if (mLibHandle)
+        FreeLibHandler();
+    mLibHandle = NULL;
+    mProblem = NULL;
     mCreate = NULL;
     mDestroy = NULL;
-    std::cerr << "Cannot create problem instance" << std::endl;
-  }
-
-  return TProblemManager::OK_;
+    return TProblemManager::OK_;
 }
 
 // ------------------------------------------------------------------------------------------------
-void TProblemManager::FreeLibHandler()
-{
-  FreeLibrary(mLibHandle);
-  mLibHandle = NULL;
-}
+IProblem* TProblemManager::GetProblem() const {
 
-// ------------------------------------------------------------------------------------------------
-int TProblemManager::FreeProblemLibrary()
-{
-  if (mProblem)
-    mDestroy(mProblem);
-  if (mLibHandle)
-    FreeLibHandler();
-  mLibHandle = NULL;
-  mProblem = NULL;
-  mCreate = NULL;
-  mDestroy = NULL;
-  return TProblemManager::OK_;
-}
-
-// ------------------------------------------------------------------------------------------------
-IProblem* TProblemManager::GetProblem() const
-{
-  if (mProblem)
+    // if (mProblem)
+    //    return mProblem;
+    // else
+    //    return NULL;
     return mProblem;
-  else
-    return NULL;
 }
 // - end of file ----------------------------------------------------------------------------------

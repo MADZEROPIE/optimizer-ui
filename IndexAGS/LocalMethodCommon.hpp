@@ -3,11 +3,11 @@
 
 namespace localoptimizer
 {
-	class LocalMethodCommon
-	{
-	public:
-		virtual void StartOptimization(double*) = 0;
-	};
+    class LocalMethodCommon
+    {
+    public:
+        virtual void StartOptimization(double*) = 0;
+    };
 }
 
 #endif

@@ -11,67 +11,63 @@
 
 #include <set>
 
-namespace optimizercore	{
+namespace optimizercore {
 
-	class EXPORT_API OptimizerAlgorithm final
-	{
+class EXPORT_API OptimizerAlgorithm final {
 
-	private:
+private:
+    size_t mCurrentStorageSize;
+    size_t mStorageReallocStep;
 
-		size_t mCurrentStorageSize;
-		size_t mStorageReallocStep;
+    bool mLocalMixType;
+    bool mIsAlgorithmMemoryAllocated;
+    bool mIsParamsInitialized;
+    bool mIsTaskInitialized;
+    bool mNeedLocalVerification;
 
-		bool mLocalMixType;
-		bool mIsAlgorithmMemoryAllocated;
-		bool mIsParamsInitialized;
-		bool mIsTaskInitialized;
-		bool mNeedLocalVerification;
+    int mNumberOfThreads;
+    int mLocalStartIterationNumber;
+    int mMaxNumberOfIterations;
+    int mRestrictionsNumber;
+    int mMapTightness;
+    int mMethodDimention;
+    int mAlpha;
+    int mLocalMixParameter;
+    int mMapType;
 
-		int mNumberOfThreads;
-		int mLocalStartIterationNumber;
-		int mMaxNumberOfIterations;
-		int mRestrictionsNumber;
-		int mMapTightness;
-		int mMethodDimention;
-		int mAlpha;
-		int mLocalMixParameter;
-		int mMapType;
+    OptimizerTask mTask;
+    OptimizerSpaceTransformation mSpaceTransform;
+    OptimizerFunction *mTargetFunction, **mRestrictions;
 
-		OptimizerTask mTask;
-		OptimizerSpaceTransformation mSpaceTransform;
-		OptimizerFunction *mTargetFunction, **mRestrictions;
+    OptimaizerInterval* mIntervalsForTrials;
+    std::set<OptimizerTrialPoint> mSearchInformationStorage;
+    OptimizerTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
 
-		OptimaizerInterval *mIntervalsForTrials;
-		std::set<OptimizerTrialPoint> mSearchInformationStorage;
-		OptimizerTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
+    double *lip_const, *set_ranks, eps, *r, reserves;
+    double** mNextPoints;
+    IndxSet** v_indexes;
 
-		double *lip_const, *set_ranks, eps, *r, reserves;
-		double **mNextPoints;
-		IndxSet **v_indexes;
+    int GetIndex(OptimizerTrialPoint* oneDimPoint, double* point);
+    void AllocMem();
+    void InitializeInformationStorages();
+    void UpdateLipConsts(IndxSet* set, const OptimizerTrialPoint& value);
+    int UpdateRanks(bool isLocal);
+    bool InsertNewTrials(int trialsNumber);
+    OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
 
-		int GetIndex(OptimizerTrialPoint* oneDimPoint, double* point);
-		void AllocMem();
-		void InitializeInformationStorages();
-		void UpdateLipConsts(IndxSet* set, const OptimizerTrialPoint& value);
-		int UpdateRanks(bool isLocal);
-		bool InsertNewTrials(int trialsNumber);
-		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
+public:
+    OptimizerAlgorithm();
+    ~OptimizerAlgorithm();
 
-	public:
+    void SetTask(OptimizerTask task);
+    void SetThreadsNum(int num);
+    void SetParameters(OptimizerParameters params);
 
-		OptimizerAlgorithm();
-		~OptimizerAlgorithm();
+    OptimizerResult StartOptimization(const double* xOpt, StopCriterionType stopType);
 
-		void SetTask(OptimizerTask task);
-		void SetThreadsNum(int num);
-		void SetParameters(OptimizerParameters params);
+    double GetLipschitzConst(int fNumber) const;
+    OptimizerSearchSequence GetSearchSequence() const;
+};
 
-		OptimizerResult StartOptimization(const double* xOpt,
-			StopCriterionType stopType);
-
-		double GetLipschitzConst(int fNumber) const;
-		OptimizerSearchSequence GetSearchSequence() const;
-	};
-
-}
+}  // namespace optimizercore
 #endif

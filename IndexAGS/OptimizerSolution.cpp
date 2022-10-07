@@ -16,7 +16,7 @@ OptimizerSolution::OptimizerSolution(int iterationsCount, double optimumValue, d
     mOptimumValue = optimumValue;
     mOneDimOptimumPoint = oneDimOptimumPoint;
     mOptimumPoint = optimumPoint;
-    mDimention = dimention;
+    mDimension = dimention;
 
     mIsInitialized = true;
 }

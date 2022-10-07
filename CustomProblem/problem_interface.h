@@ -38,10 +38,8 @@
 
 В классе #TIProblem описаны прототипы методов, которые должны быть реализованы в подключамых модулях с задачами.
 */
-class IProblem
-{
+class IProblem {
 public:
-
     /// Код ошибки, возвращаемый, если операция завершена успешно
     static const int OK = 0;
     /** Код ошибки, возвращаемый методами #GetOptimumValue и #GetOptimumPoint,
@@ -67,40 +65,43 @@ public:
     \return Код ошибки
     */
     virtual int SetDimension(int dimension) = 0;
+
     ///Возвращает размерность задачи, можно вызывать после #Initialize
     virtual int GetDimension() const = 0;
     ///Инициализация задачи
     virtual int Initialize() = 0;
 
     /** Метод возвращает границы области поиска
-    */
+     */
     virtual void GetBounds(double* lower, double* upper) = 0;
+
     /** Метод возвращает значение целевой функции в точке глобального минимума
     \param[out] value оптимальное значение
     \return Код ошибки (#OK или #UNDEFINED)
     */
     virtual int GetOptimumValue(double& value) const = 0;
+
     /** Метод возвращает значение функции с номером index в точке глобального минимума
     \param[out] value оптимальное значение
     \return Код ошибки (#OK или #UNDEFINED)
     */
-    virtual int GetOptimumValue(double& value, int index) const
-    {
+    virtual int GetOptimumValue(double& value, int index) const {
         return IProblem::UNDEFINED;
     }
+
     /** Метод возвращает координаты точки глобального минимума целевой функции
     \param[out] y точка, в которой достигается оптимальное значение
     \return Код ошибки (#OK или #UNDEFINED)
     */
     virtual int GetOptimumPoint(double* y) const = 0;
+
     /** Метод возвращает координаты всех точек глобального минимума целевой функции
     и их количество
     \param[out] y координаты точек, в которых достигается оптимальное значение
     \param[out] n количество точек, в которых достигается оптимальное значение
     \return Код ошибки (#OK или #UNDEFINED)
     */
-    virtual int GetAllOptimumPoint(double* y, int& n) const
-    {
+    virtual int GetAllOptimumPoint(double* y, int& n) const {
         return IProblem::UNDEFINED;
     }
 
@@ -108,10 +109,12 @@ public:
     \return Число функций
     */
     virtual int GetNumberOfFunctions() const = 0;
+
     /** Метод возвращает число ограничений в задаче
     \return Число ограничений
     */
     virtual int GetNumberOfConstraints() const = 0;
+
     /** Метод возвращает число критериев в задаче
     \return Число критериев
     */
@@ -126,9 +129,9 @@ public:
     */
     virtual double CalculateFunctionals(const double* y, int fNumber);
 
-
-
-    virtual bool isOptimal(const double* y, double* minv, double* maxv) { return true; }
+    virtual bool isOptimal(const double* y, double* minv, double* maxv) {
+        return true;
+    }
 
     ///Деструктор
     virtual ~IProblem() = 0;
@@ -143,10 +146,8 @@ public:
 В классе #IGPUProblem описаны прототипы методов, которые должны быть реализованы в подключамых
 модулях с решением на GPU.
 */
-class IGPUProblem : public IProblem
-{
+class IGPUProblem : public IProblem {
 public:
-
     /** Метод, вычисляющий функции задачи в нескольких точках одновременно
 
   \param[in] y массив, содержащий последовательно записанные многомерные точки, в которых необходимо
@@ -155,13 +156,11 @@ public:
   \param[in] numPoints количество передаваемых точек
   \param[out] values массив, в который будут записаны вычисленные значения функционалов
   */
-    virtual void CalculateFunctionals(double* y, int fNumber, int& numPoints, double* values)
-    {
-        throw std::runtime_error(std::string("Required overload of the following method is not implemented: ")
-            + std::string(__FUNCTION__));
+    virtual void CalculateFunctionals(double* y, int fNumber, int& numPoints, double* values) {
+        throw std::runtime_error(std::string("Required overload of the following method is not implemented: ") +
+                                 std::string(__FUNCTION__));
     }
 };
-
 
 //// ------------------------------------------------------------------------------------------------
 
@@ -176,8 +175,7 @@ public:
 Дискретные параметры являются последними в векторе параметров y.
 */
 
-class IIntegerProgrammingProblem : public IGPUProblem
-{
+class IIntegerProgrammingProblem : public IGPUProblem {
 public:
     /// Код ошибки, возвращаемый, если попытались получить значения для недискретного параметра
     static const int ERROR_DISCRETE_VALUE = -201;
@@ -205,28 +203,29 @@ public:
     -1 - возвращает после -1, т.е. левую границу области
     \param[out] value переменная в которую сохраняется значение дискретного параметра
     */
-    virtual int GetNextDiscreteValues(int* mCurrentDiscreteValueIndex, double& value, int discreteVariable, int previousNumber = -2) = 0;
+    virtual int GetNextDiscreteValues(int* mCurrentDiscreteValueIndex, double& value, int discreteVariable,
+                                      int previousNumber = -2) = 0;
     /// Проверяет является ли value допустимым значением для параметра с номером discreteVariable
     virtual bool IsPermissibleValue(double value, int discreteVariable) = 0;
 };
 
 ////
 //// ------------------------------------------------------------------------------------------------
-//void IGPUProblem::CalculateFunctionals(double* y, int fNumber, int& numPoints, double* values)
+// void IGPUProblem::CalculateFunctionals(double* y, int fNumber, int& numPoints, double* values)
 //{
 //  throw std::runtime_error(std::string("Required overload of the following method is not implemented: ")
 //    + std::string(__FUNCTION__));
 //}
 
 // ------------------------------------------------------------------------------------------------
-inline double IProblem::CalculateFunctionals(const double* y, int fNumber)
-{
-    throw std::runtime_error(std::string("Required overload of the following method is not implemented: ")
-        + std::string(__FUNCTION__));
+inline double IProblem::CalculateFunctionals(const double* y, int fNumber) {
+    throw std::runtime_error(std::string("Required overload of the following method is not implemented: ") +
+                             std::string(__FUNCTION__));
 }
 
 // ------------------------------------------------------------------------------------------------
-inline IProblem::~IProblem() {}
+inline IProblem::~IProblem() {
+}
 
 ///Тип функции-фабрики, которая экспортируется подключаемой библиотекой с задачей
 typedef IProblem* create_t();

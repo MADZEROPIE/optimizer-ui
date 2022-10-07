@@ -2,6 +2,7 @@
 #include <cassert>
 #include "VAGrisFunction.h"
 using namespace vagrisfunction;
+// clang-format off
 static const double rand_minimums[] = {
 0.603052, 0.408337, /*f(min1)=-13.51436*/
   0.652988, 0.320592, /*f(min2)=-11.28447*/
@@ -116,214 +117,215 @@ static const unsigned char matcon[10][45] = {
 	{ 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1 },
 	{ 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0 },
 };
-VAGrisFunction::VAGrisFunction()
-{
-	mFunctionNumber = 1;
-}
-VAGrisFunction::~VAGrisFunction() { }
-void VAGrisFunction::SetFunctionNumber(int value)
-{
-	assert(value > 0 && value <= 100);
-	mFunctionNumber = value;
+// clang-format on
 
-	int lst, i, j, i1, i2, i3;
-	int nf = mFunctionNumber;
-
-	if (nf < 1 || nf > 100)
-		nf = 1;
-	lst = 10;
-	i1 = (nf - 1) / lst;
-	i2 = i1 * lst;
-	for (j = 0; j < 45; j++)
-		icnf[j] = matcon[i1][j];
-	if (i2 != (nf - 1)) {
-		i3 = nf - 1 - i2;
-		for (j = 1; j <= i3; j++)
-			for (i = 0; i < 196; i++)
-				rndm20(icnf);
-	}
-	for (j = 0; j < 7; j++)
-		for (i = 0; i < 7; i++){
-			af[i][j] = 2.*rndm20(icnf) - 1.;
-			cf[i][j] = 2.*rndm20(icnf) - 1.;
-		}
-	for (j = 0; j < 7; j++)
-		for (i = 0; i < 7; i++){
-			bf[i][j] = 2.*rndm20(icnf) - 1.;
-			df[i][j] = 2.*rndm20(icnf) - 1.;
-		}
-}
-int VAGrisFunction::GetFunctionNumber() const
-{
-	return mFunctionNumber;
+VAGrisFunction::VAGrisFunction() {
+    mFunctionNumber = 1;
 }
 
-double VAGrisFunction::GetMinimumXCoordinate(int fNumber) const
-{
-	assert(fNumber > 0 && fNumber <= 100);
-	return rand_minimums[2 * (fNumber - 1)];
-}
-double VAGrisFunction::GetMinimumYCoordinate(int fNumber) const
-{
-	assert(fNumber > 0 && fNumber <= 100);
-	return rand_minimums[2 * (fNumber - 1) + 1];
-}
-double VAGrisFunction::EvaluateFunction(double x, double y) const
-{
-	int i, j;
-	double d1, d2, sx1, cx1, sy1, cy1;
-	double snx[7], csx[7], sny[7], csy[7];
-
-	d1 = M_PI * x;
-	d2 = M_PI * y;
-	sx1 = sin(d1);
-	cx1 = cos(d1);
-	sy1 = sin(d2);
-	cy1 = cos(d2);
-	snx[0] = sx1;
-	csx[0] = cx1;
-	sny[0] = sy1;
-	csy[0] = cy1;
-	for (i = 0; i < 6; i++){
-		snx[i + 1] = snx[i] * cx1 + csx[i] * sx1;
-		csx[i + 1] = csx[i] * cx1 - snx[i] * sx1;
-		sny[i + 1] = sny[i] * cy1 + csy[i] * sy1;
-		csy[i + 1] = csy[i] * cy1 - sny[i] * sy1;
-	}
-	d1 = 0;
-	d2 = 0;
-	for (i = 0; i < 7; i++)
-		for (j = 0; j < 7; j++) {
-			d1 = d1 + af[i][j] * snx[i] * sny[j] + bf[i][j] * csx[i] * csy[j];
-			d2 = d2 + cf[i][j] * snx[i] * sny[j] - df[i][j] * csx[i] * csy[j];
-		}
-	return(-sqrt(d1*d1 + d2*d2));
-}
-double VAGrisFunction::EvaluateXDerivative(double x, double y) const
-{
-	int i, j;
-	double dd, d1, d2, t1, t2, sx1, cx1, sy1, cy1;
-	double snx[7], csx[7], sny[7], csy[7];
-
-	d1 = M_PI * x;
-	d2 = M_PI * y;
-	sx1 = sin(d1);
-	cx1 = cos(d1);
-	sy1 = sin(d2);
-	cy1 = cos(d2);
-	snx[0] = sx1;
-	csx[0] = cx1;
-	sny[0] = sy1;
-	csy[0] = cy1;
-	for (i = 0; i < 6; i++) {
-		snx[i + 1] = snx[i] * cx1 + csx[i] * sx1;
-		csx[i + 1] = csx[i] * cx1 - snx[i] * sx1;
-		sny[i + 1] = sny[i] * cy1 + csy[i] * sy1;
-		csy[i + 1] = csy[i] * cy1 - sny[i] * sy1;
-	}
-	d1 = 0;
-	d2 = 0;
-	for (i = 0; i < 7; i++)
-		for (j = 0; j < 7; j++) {
-			d1 = d1 + af[i][j] * snx[i] * sny[j] + bf[i][j] * csx[i] * csy[j];
-			d2 = d2 + cf[i][j] * snx[i] * sny[j] - df[i][j] * csx[i] * csy[j];
-		}
-	dd = sqrt(d1*d1 + d2*d2);
-	t1 = 0;
-	t2 = 0;
-	for (i = 0; i < 7; i++)
-		for (j = 0; j < 7; j++){
-			t1 += af[i][j] * M_PI*(i + 1)*csx[i] * sny[j];
-			t1 -= bf[i][j] * M_PI*(i + 1)*snx[i] * csy[j];
-			t2 += cf[i][j] * M_PI*(i + 1)*csx[i] * sny[j];
-			t2 += df[i][j] * M_PI*(i + 1)*snx[i] * csy[j];
-		}
-	return(-(t1*d1 + t2*d2) / dd);
-}
-double VAGrisFunction::EvaluateYDerivative(double x, double y) const
-{
-	int i, j;
-	double dd, d1, d2, t1, t2, sx1, cx1, sy1, cy1;
-	double snx[7], csx[7], sny[7], csy[7];
-
-	d1 = M_PI*x;
-	d2 = M_PI*y;
-	sx1 = sin(d1);
-	cx1 = cos(d1);
-	sy1 = sin(d2);
-	cy1 = cos(d2);
-	snx[0] = sx1;
-	csx[0] = cx1;
-	sny[0] = sy1;
-	csy[0] = cy1;
-	for (i = 0; i<6; i++){
-		snx[i + 1] = snx[i] * cx1 + csx[i] * sx1;
-		csx[i + 1] = csx[i] * cx1 - snx[i] * sx1;
-		sny[i + 1] = sny[i] * cy1 + csy[i] * sy1;
-		csy[i + 1] = csy[i] * cy1 - sny[i] * sy1;
-	}
-	d1 = 0;
-	d2 = 0;
-	for (i = 0; i<7; i++)
-	for (j = 0; j<7; j++){
-		d1 = d1 + af[i][j] * snx[i] * sny[j] + bf[i][j] * csx[i] * csy[j];
-		d2 = d2 + cf[i][j] * snx[i] * sny[j] - df[i][j] * csx[i] * csy[j];
-	}
-	dd = sqrt(d1*d1 + d2*d2);
-	t1 = 0;
-	t2 = 0;
-	for (i = 0; i<7; i++)
-	for (j = 0; j<7; j++){
-		t1 += af[i][j] * M_PI*(j + 1)*snx[i] * csy[j];
-		t1 -= bf[i][j] * M_PI*(j + 1)*csx[i] * sny[j];
-		t2 += cf[i][j] * M_PI*(j + 1)*snx[i] * csy[j];
-		t2 += df[i][j] * M_PI*(j + 1)*csx[i] * sny[j];
-	}
-	return(-(t1*d1 + t2*d2) / dd);
-}
-double VAGrisFunction::rndm20(unsigned char k[])
-{
-	int i;
-	unsigned char k1[45];
-	double de2, rndm;
-
-	for (i = 0; i < 38; i++)
-		k1[i] = k[i + 7];
-	for (i = 38; i < 45; i++)
-		k1[i] = 0;
-	for (i = 0; i < 45; i++)
-		k[i] = (unsigned char)abs(k[i] - k1[i]);
-	for (i = 27; i<45; i++)
-		k1[i] = k[i - 27];
-	for (i = 0; i < 27; i++)
-		k1[i] = 0;
-
-	gen(k, k1, 9, 44);
-	gen(k, k1, 0, 8);
-
-	rndm = 0.;
-	de2 = 1.;
-	for (i = 0; i < 36; i++) {
-		de2 = de2 / 2;
-		rndm = rndm + k[i + 9] * de2;
-	}
-	return (rndm);
+VAGrisFunction::~VAGrisFunction() {
 }
 
-void VAGrisFunction::gen(unsigned char k[], unsigned char k1[], int kap1, int kap2)
-{
-	int jct, i, j;
+void VAGrisFunction::SetFunctionNumber(int value) {
+    assert(value > 0 && value <= 100);
+    mFunctionNumber = value;
 
-	jct = 0;
-	for (i = kap2; i >= kap1; i--){
-		j = (k[i] + k1[i] + jct) / 2;
-		k[i] = k[i] + k1[i] + (unsigned char)jct - (unsigned char)j * 2;
-		jct = j;
-	}
-	if (jct != 0)
-		for (i = kap2; i >= kap1; i--){
-			j = (k[i] + jct) / 2;
-			k[i] = k[i] + (unsigned char)jct - (unsigned char)j * 2;
-			jct = j;
-		}
+    int lst, i, j, i1, i2, i3;
+    int nf = mFunctionNumber;
+
+    if (nf < 1 || nf > 100)
+        nf = 1;
+    lst = 10;
+    i1 = (nf - 1) / lst;
+    i2 = i1 * lst;
+    for (j = 0; j < 45; j++)
+        icnf[j] = matcon[i1][j];
+    if (i2 != (nf - 1)) {
+        i3 = nf - 1 - i2;
+        for (j = 1; j <= i3; j++)
+            for (i = 0; i < 196; i++)
+                rndm20(icnf);
+    }
+    for (j = 0; j < 7; j++)
+        for (i = 0; i < 7; i++) {
+            af[i][j] = 2. * rndm20(icnf) - 1.;
+            cf[i][j] = 2. * rndm20(icnf) - 1.;
+        }
+    for (j = 0; j < 7; j++)
+        for (i = 0; i < 7; i++) {
+            bf[i][j] = 2. * rndm20(icnf) - 1.;
+            df[i][j] = 2. * rndm20(icnf) - 1.;
+        }
+}
+
+int VAGrisFunction::GetFunctionNumber() const {
+    return mFunctionNumber;
+}
+
+double VAGrisFunction::GetMinimumXCoordinate(int fNumber) const {
+    assert(fNumber > 0 && fNumber <= 100);
+    return rand_minimums[2 * (fNumber - 1)];
+}
+
+double VAGrisFunction::GetMinimumYCoordinate(int fNumber) const {
+    assert(fNumber > 0 && fNumber <= 100);
+    return rand_minimums[2 * (fNumber - 1) + 1];
+}
+
+double VAGrisFunction::EvaluateFunction(double x, double y) const {
+    int i, j;
+    double d1, d2, sx1, cx1, sy1, cy1;
+    double snx[7], csx[7], sny[7], csy[7];
+
+    d1 = M_PI * x;
+    d2 = M_PI * y;
+    sx1 = sin(d1);
+    cx1 = cos(d1);
+    sy1 = sin(d2);
+    cy1 = cos(d2);
+    snx[0] = sx1;
+    csx[0] = cx1;
+    sny[0] = sy1;
+    csy[0] = cy1;
+    for (i = 0; i < 6; i++) {
+        snx[i + 1] = snx[i] * cx1 + csx[i] * sx1;
+        csx[i + 1] = csx[i] * cx1 - snx[i] * sx1;
+        sny[i + 1] = sny[i] * cy1 + csy[i] * sy1;
+        csy[i + 1] = csy[i] * cy1 - sny[i] * sy1;
+    }
+    d1 = 0;
+    d2 = 0;
+    for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++) {
+            d1 = d1 + af[i][j] * snx[i] * sny[j] + bf[i][j] * csx[i] * csy[j];
+            d2 = d2 + cf[i][j] * snx[i] * sny[j] - df[i][j] * csx[i] * csy[j];
+        }
+    return (-sqrt(d1 * d1 + d2 * d2));
+}
+
+double VAGrisFunction::EvaluateXDerivative(double x, double y) const {
+    int i, j;
+    double dd, d1, d2, t1, t2, sx1, cx1, sy1, cy1;
+    double snx[7], csx[7], sny[7], csy[7];
+
+    d1 = M_PI * x;
+    d2 = M_PI * y;
+    sx1 = sin(d1);
+    cx1 = cos(d1);
+    sy1 = sin(d2);
+    cy1 = cos(d2);
+    snx[0] = sx1;
+    csx[0] = cx1;
+    sny[0] = sy1;
+    csy[0] = cy1;
+    for (i = 0; i < 6; i++) {
+        snx[i + 1] = snx[i] * cx1 + csx[i] * sx1;
+        csx[i + 1] = csx[i] * cx1 - snx[i] * sx1;
+        sny[i + 1] = sny[i] * cy1 + csy[i] * sy1;
+        csy[i + 1] = csy[i] * cy1 - sny[i] * sy1;
+    }
+    d1 = 0;
+    d2 = 0;
+    for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++) {
+            d1 = d1 + af[i][j] * snx[i] * sny[j] + bf[i][j] * csx[i] * csy[j];
+            d2 = d2 + cf[i][j] * snx[i] * sny[j] - df[i][j] * csx[i] * csy[j];
+        }
+    dd = sqrt(d1 * d1 + d2 * d2);
+    t1 = 0;
+    t2 = 0;
+    for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++) {
+            t1 += af[i][j] * M_PI * (i + 1) * csx[i] * sny[j];
+            t1 -= bf[i][j] * M_PI * (i + 1) * snx[i] * csy[j];
+            t2 += cf[i][j] * M_PI * (i + 1) * csx[i] * sny[j];
+            t2 += df[i][j] * M_PI * (i + 1) * snx[i] * csy[j];
+        }
+    return (-(t1 * d1 + t2 * d2) / dd);
+}
+
+double VAGrisFunction::EvaluateYDerivative(double x, double y) const {
+    int i, j;
+    double dd, d1, d2, t1, t2, sx1, cx1, sy1, cy1;
+    double snx[7], csx[7], sny[7], csy[7];
+
+    d1 = M_PI * x;
+    d2 = M_PI * y;
+    sx1 = sin(d1);
+    cx1 = cos(d1);
+    sy1 = sin(d2);
+    cy1 = cos(d2);
+    snx[0] = sx1;
+    csx[0] = cx1;
+    sny[0] = sy1;
+    csy[0] = cy1;
+    for (i = 0; i < 6; i++) {
+        snx[i + 1] = snx[i] * cx1 + csx[i] * sx1;
+        csx[i + 1] = csx[i] * cx1 - snx[i] * sx1;
+        sny[i + 1] = sny[i] * cy1 + csy[i] * sy1;
+        csy[i + 1] = csy[i] * cy1 - sny[i] * sy1;
+    }
+    d1 = 0;
+    d2 = 0;
+    for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++) {
+            d1 = d1 + af[i][j] * snx[i] * sny[j] + bf[i][j] * csx[i] * csy[j];
+            d2 = d2 + cf[i][j] * snx[i] * sny[j] - df[i][j] * csx[i] * csy[j];
+        }
+    dd = sqrt(d1 * d1 + d2 * d2);
+    t1 = 0;
+    t2 = 0;
+    for (i = 0; i < 7; i++)
+        for (j = 0; j < 7; j++) {
+            t1 += af[i][j] * M_PI * (j + 1) * snx[i] * csy[j];
+            t1 -= bf[i][j] * M_PI * (j + 1) * csx[i] * sny[j];
+            t2 += cf[i][j] * M_PI * (j + 1) * snx[i] * csy[j];
+            t2 += df[i][j] * M_PI * (j + 1) * csx[i] * sny[j];
+        }
+    return (-(t1 * d1 + t2 * d2) / dd);
+}
+
+double VAGrisFunction::rndm20(unsigned char k[]) {
+    int i;
+    unsigned char k1[45];
+    double de2, rndm;
+
+    for (i = 0; i < 38; i++)
+        k1[i] = k[i + 7];
+    for (i = 38; i < 45; i++)
+        k1[i] = 0;
+    for (i = 0; i < 45; i++)
+        k[i] = (unsigned char)abs(k[i] - k1[i]);
+    for (i = 27; i < 45; i++)
+        k1[i] = k[i - 27];
+    for (i = 0; i < 27; i++)
+        k1[i] = 0;
+
+    gen(k, k1, 9, 44);
+    gen(k, k1, 0, 8);
+
+    rndm = 0.;
+    de2 = 1.;
+    for (i = 0; i < 36; i++) {
+        de2 = de2 / 2;
+        rndm = rndm + k[i + 9] * de2;
+    }
+    return (rndm);
+}
+
+void VAGrisFunction::gen(unsigned char k[], unsigned char k1[], int kap1, int kap2) {
+    int jct, i, j;
+
+    jct = 0;
+    for (i = kap2; i >= kap1; i--) {
+        j = (k[i] + k1[i] + jct) / 2;
+        k[i] = k[i] + k1[i] + (unsigned char)jct - (unsigned char)j * 2;
+        jct = j;
+    }
+    if (jct != 0)
+        for (i = kap2; i >= kap1; i--) {
+            j = (k[i] + jct) / 2;
+            k[i] = k[i] + (unsigned char)jct - (unsigned char)j * 2;
+            jct = j;
+        }
 }

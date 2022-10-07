@@ -4,17 +4,17 @@
 #include "OptimizerCoreGlobal.hpp"
 #include "CoreUtils.hpp"
 
-namespace optimizercore	{
+namespace optimizercore {
 
-	class OptimizerFunction
-	{
+class OptimizerFunction {
 
-	public:
-		virtual ~OptimizerFunction() {};
-		virtual double Calculate(const double*) = 0;
-	};
+public:
+    virtual ~OptimizerFunction(){};
+    virtual double Calculate(const double*) = 0;
+};
 
-	using OptimizerFunctionPtr = std::shared_ptr<OptimizerFunction>;
-}
+using OptimizerFunctionPtr = std::shared_ptr<OptimizerFunction>;
+
+}  // namespace optimizercore
 
 #endif

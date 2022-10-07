@@ -2,44 +2,40 @@
 #define OPTIMIZER_SPACE_TRANSFORMATION_HPP
 
 #include "OptimizerCoreGlobal.hpp"
-#include"OptimizerFunction.hpp"
+#include "OptimizerFunction.hpp"
 
-namespace optimizercore
-{
-	class EXPORT_API OptimizerSpaceTransformation final
-	{
-	private:
+namespace optimizercore {
 
-		SharedVector mLeftDomainBound;
-		SharedVector mRightDomainBound;
-		SharedVector mSpaceShiftValues;
-		int mDimention;
-		double mRho;
-		double* mLeftBoundPtr;
-		double* mRightBoundPtr;
-		double* mSpaceShiftValuesPtr;
+class EXPORT_API OptimizerSpaceTransformation final {
+private:
+    SharedVector mLeftDomainBound;
+    SharedVector mRightDomainBound;
+    SharedVector mSpaceShiftValues;
+    int mDimension;
+    double mRho;
+    double* mLeftBoundPtr;
+    double* mRightBoundPtr;
+    double* mSpaceShiftValuesPtr;
 
-		OptimizerFunctionPtr mZeroConstraint;
+    OptimizerFunctionPtr mZeroConstraint;
 
-		bool mNeedZeroConstraint;
-		bool mIsInitialized;
+    bool mNeedZeroConstraint;
+    bool mIsInitialized;
 
-	public:
+public:
+    OptimizerSpaceTransformation();
 
-		OptimizerSpaceTransformation();
+    OptimizerSpaceTransformation(SharedVector leftBound, SharedVector rightBound, int domainDimention);
 
-		OptimizerSpaceTransformation(SharedVector leftBound, SharedVector rightBound,
-			int domainDimention);
+    void Transform(const double*, double*) const;
+    void InvertTransform(const double*, double*) const;
+    OptimizerFunctionPtr GetZeroConstraint() const;
+    bool IsZeroConstraintActive() const;
+    SharedVector GetLeftDomainBound() const;
+    SharedVector GetRightDomainBound() const;
+    int GetDomainDimention() const;
+};
 
-		void Transform(const double*, double*) const;
-		void InvertTransform(const double*, double*) const;
-		OptimizerFunctionPtr GetZeroConstraint() const;
-		bool IsZeroConstraintActive() const;
-		SharedVector GetLeftDomainBound() const;
-		SharedVector GetRightDomainBound() const;
-		int GetDomainDimention() const;
-
-	};
-}
+}  // namespace optimizercore
 
 #endif

@@ -3,39 +3,32 @@
 
 #include "OptimizerCoreGlobal.hpp"
 
-namespace optimizercore
-{
-    class EXPORT_API OptimizerSolution final
-    {
-    private:
+namespace optimizercore {
+class EXPORT_API OptimizerSolution final {
+private:
+    int mIteratinsCount;
+    unsigned mDimension;
+    double mOptimumValue;
+    double mOneDimOptimumPoint;
+    SharedVector mOptimumPoint;
 
-        int mIteratinsCount;
-        unsigned mDimention;
-        double mOptimumValue;
-        double mOneDimOptimumPoint;
-        SharedVector mOptimumPoint;
+    bool mIsInitialized;
 
-        bool mIsInitialized;
+public:
+    OptimizerSolution();
+    OptimizerSolution(int iterationsCount, double optimumValue, double oneDimOptimumPoint,
+                      unsigned dimention, SharedVector optimumPoint);
+    OptimizerSolution(const OptimizerSolution& sol) = default;
+    ~OptimizerSolution() {
+    }
 
-    public:
-        OptimizerSolution();
-        OptimizerSolution(
-            int iterationsCount,
-            double optimumValue,
-            double oneDimOptimumPoint,
-            unsigned dimention,
-            SharedVector optimumPoint);
-        OptimizerSolution(const OptimizerSolution& sol) = default;
-        ~OptimizerSolution() {}
+    int GetIterationsCount() const;
+    double GetOneDimOptimumPoint() const;
+    double GetOptimumValue() const;
+    SharedVector GetOptimumPoint() const;
 
-        int GetIterationsCount() const;
-        double GetOneDimOptimumPoint() const;
-        double GetOptimumValue() const;
-        SharedVector GetOptimumPoint() const;
-
-    private:
-        void CheckIsInitialized() const;
-
-    };
-}
+private:
+    void CheckIsInitialized() const;
+};
+}  // namespace optimizercore
 #endif

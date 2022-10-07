@@ -40,56 +40,53 @@
 
 В классе #TProblemManager реализованы основные функции, для загрузки\выгрузки библиотек с задачами
 */
-class EXPORT_API TProblemManager
-{
+class EXPORT_API TProblemManager {
 protected:
+    ///Указатель на дескриптор загруженной библиотеки
+    HINSTANCE mLibHandle;
+    ///Указатель на созданный объект, описывающий задачу
+    IProblem* mProblem;
+    ///Указатель на функцию-фабрику задач
+    create_t* mCreate;
+    ///Указатель на функцию-деструктор задач
+    destroy_t* mDestroy;
 
-  ///Указатель на дескриптор загруженной библиотеки
-  HINSTANCE mLibHandle;
-  ///Указатель на созданный объект, описывающий задачу
-  IProblem* mProblem;
-  ///Указатель на функцию-фабрику задач
-  create_t* mCreate;
-  ///Указатель на функцию-деструктор задач
-  destroy_t* mDestroy;
+    /// Метод, освобождающий загруженную библиотеку. Будет вызван в деструкторе
+    int FreeProblemLibrary();
 
-  /// Метод, освобождающий загруженную библиотеку. Будет вызван в деструкторе
-  int FreeProblemLibrary();
-
-  ///Служебный метод, освобождающий #mLibHandle
-  void FreeLibHandler();
+    ///Служебный метод, освобождающий #mLibHandle
+    void FreeLibHandler();
 
 public:
+    /**
+    Код ошибки, возвращаемый методами #LoadProblemLibrary и #FreeProblemLibrary
+    при успешном выполнении операций
+    */
+    static const int OK_ = 0;
+    /**
+    Код ошибки, возвращаемый методами #LoadProblemLibrary и #FreeProblemLibrary
+    при ошибке во время выполнении операций
+    */
+    static const int ERROR_ = -2;
 
-  /**
-  Код ошибки, возвращаемый методами #LoadProblemLibrary и #FreeProblemLibrary
-  при успешном выполнении операций
-  */
-  static const int OK_ = 0;
-  /**
-  Код ошибки, возвращаемый методами #LoadProblemLibrary и #FreeProblemLibrary
-  при ошибке во время выполнении операций
-  */
-  static const int ERROR_ = -2;
+    ///Конструктор
+    TProblemManager();
+    ///Деструктор, в нём вызывается #FreeProblemLibrary
+    ~TProblemManager();
 
-  ///Конструктор
-  TProblemManager();
-  ///Деструктор, в нём вызывается #FreeProblemLibrary
-  ~TProblemManager();
+    /** Метод, загружающий библиотеку, находящуюся по указанному пути
 
-  /** Метод, загружающий библиотеку, находящуюся по указанному пути
+    Метод загружает библиотеку, пытается импортировать из неё функции,
+    создающие и уничтожающие задачу, а затем создаёт задачу
 
-  Метод загружает библиотеку, пытается импортировать из неё функции,
-  создающие и уничтожающие задачу, а затем создаёт задачу
+    \param[in] libPath Путь к загружаемой библиотеке
+    \return Код ошибки
+    */
+    int LoadProblemLibrary(const std::string& libPath);
 
-  \param[in] libPath Путь к загружаемой библиотеке
-  \return Код ошибки
-  */
-  int LoadProblemLibrary(const std::string& libPath);
-
-  /** Метод возвращает указатель #mProblem
-  */
-  IProblem* GetProblem() const;
+    /** Метод возвращает указатель #mProblem
+     */
+    IProblem* GetProblem() const;
 };
 
 #endif

@@ -1573,7 +1573,7 @@ private: System::Windows::Forms::Label^ label15;
     String^ outputString;
 
     int seqSize = currentSequence->GetSize();
-    int seqDim = currentSequence->GetDimention();
+    int seqDim = currentSequence->GetDimension();
     double *tmpPoint = new double[seqDim];
     for (int i = 0; i < seqSize; i++) {
         currentSequence->GetPoint(i, tmpPoint);

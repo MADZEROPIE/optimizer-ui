@@ -7,81 +7,80 @@
 #include "OptimizerSpaceTransformation.hpp"
 #include <set>
 
-namespace optimizercore	{
+namespace optimizercore {
 
-    class EXPORT_API ISearchSequence {
-    protected:
-        size_t mSize;
-      public:
-        virtual size_t GetSize() const;
-        virtual void GetPoint(int indx, double* x) = 0;
-        virtual double GetOneDimPoint(int indx) = 0;
-        virtual double GetValue(int indx) = 0;
+class EXPORT_API ISearchSequence {
+protected:
+    size_t mSize;
 
-        // TODO: Make them Non-virtual, because they are all the same...
-        virtual unsigned GetMapDensity() const = 0;
-        virtual unsigned GetDimention() const = 0;
-        virtual MapType GetMapType() const = 0;
-    };
+public:
+    virtual size_t GetSize() const;
+    virtual void GetPoint(int indx, double* x) = 0;
+    virtual double GetOneDimPoint(int indx) = 0;
+    virtual double GetValue(int indx) = 0;
 
-    class EXPORT_API OptimizerSearchSequence final : public ISearchSequence {
+    // TODO: Make them Non-virtual, because they are all the same...
+    virtual unsigned GetMapDensity() const = 0;
+    virtual unsigned GetDimension() const = 0;
+    virtual MapType GetMapType() const = 0;
+};
 
-    private:
-        unsigned mDimention;
-        MapType mMapType;
-        unsigned mMapDensity;
-        double* mPointsMemPtr;
-        double* mValuesMemPtr;
-        SharedVector mPoints;
-        SharedVector mValues;
-        OptimizerSpaceTransformation mSpaceTransform;
-        bool mIsInitialized;
+class EXPORT_API OptimizerSearchSequence final : public ISearchSequence {
 
-    public:
-        unsigned GetMapDensity() const;
-        unsigned GetDimention() const;
-        MapType GetMapType() const;
+private:
+    unsigned mDimension;
+    MapType mMapType;
+    unsigned mMapDensity;
+    double* mPointsMemPtr;
+    double* mValuesMemPtr;
+    SharedVector mPoints;
+    SharedVector mValues;
+    OptimizerSpaceTransformation mSpaceTransform;
+    bool mIsInitialized;
 
-        void GetPoint(int indx, double* x);
-        double GetOneDimPoint(int indx);
-        double GetValue(int indx);
+public:
+    unsigned GetMapDensity() const;
+    unsigned GetDimension() const;
+    MapType GetMapType() const;
 
-        OptimizerSearchSequence();
-        OptimizerSearchSequence(const std::set<OptimizerTrialPoint>& sequence,
-            unsigned dimention,	MapType mapType, unsigned mapDensity,
-            OptimizerSpaceTransformation transform);
-        ~OptimizerSearchSequence();
+    void GetPoint(int indx, double* x);
+    double GetOneDimPoint(int indx);
+    double GetValue(int indx);
 
-    private:
-        void CheckIsInitialized() const;
-    };
+    OptimizerSearchSequence();
+    OptimizerSearchSequence(const std::set<OptimizerTrialPoint>& sequence, unsigned dimention, MapType mapType,
+                            unsigned mapDensity, OptimizerSpaceTransformation transform);
+    ~OptimizerSearchSequence();
 
+private:
+    void CheckIsInitialized() const;
+};
 
-    class EXPORT_API OptimazerNestedSearchSequence final : public ISearchSequence {
-        private:
-            unsigned mDimention;
-            MapType mMapType;
-            unsigned mMapDensity;
-            double* mValuesMemPtr;
-            std::vector<std::vector<double>> mPoints; // TODO: change to shared_ptr<vector<double>>
-            SharedVector mValues;
-            OptimizerSpaceTransformation mSpaceTransform;
-            bool mIsInitialized;
-        public:
-            OptimazerNestedSearchSequence();
-            OptimazerNestedSearchSequence(const std::set<OptimizerNestedTrialPoint>& sequence,
-                                            unsigned dimention);
-            void GetPoint(int indx, double* x);
-            double GetOneDimPoint(int indx);
-            double GetValue(int indx);
+class EXPORT_API OptimazerNestedSearchSequence final : public ISearchSequence {
+private:
+    unsigned mDimension;
+    MapType mMapType;
+    unsigned mMapDensity;
+    double* mValuesMemPtr;
+    std::vector<std::vector<double>> mPoints;  // TODO: change to shared_ptr<vector<double>>
+    SharedVector mValues;
+    OptimizerSpaceTransformation mSpaceTransform;
+    bool mIsInitialized;
 
-            virtual unsigned GetMapDensity() const;
-            virtual unsigned GetDimention() const;
-            virtual MapType GetMapType() const;
+public:
+    OptimazerNestedSearchSequence();
+    OptimazerNestedSearchSequence(const std::set<OptimizerNestedTrialPoint>& sequence, unsigned dimention);
+    void GetPoint(int indx, double* x);
+    double GetOneDimPoint(int indx);
+    double GetValue(int indx);
 
-        private:
-            void CheckIsInitialized() const;
-    };
+    virtual unsigned GetMapDensity() const;
+    virtual unsigned GetDimension() const;
+    virtual MapType GetMapType() const;
 
- }
+private:
+    void CheckIsInitialized() const;
+};
+
+}  // namespace optimizercore
 #endif

@@ -3,59 +3,59 @@
 
 using namespace optimizercore;
 
-OptimizerTask::~OptimizerTask()
-{}
-OptimizerTask::OptimizerTask() : mIsInitialized(false)
-{}
-OptimizerTask::OptimizerTask(std::shared_ptr<OptimizerFunctionPtr> taskFunctions,
-	unsigned numberOfRestrictions, unsigned taskDimention,
-	SharedVector leftBound, SharedVector rightBound)
-{
-	assert(taskDimention > 0);
-	assert(numberOfRestrictions >= 0);
-	assert(taskFunctions);
-	assert(leftBound);
-	assert(rightBound);
+OptimizerTask::~OptimizerTask() {
+}
 
-	mTaskFunctions = taskFunctions;
-	mTaskDimention = taskDimention;
-	mNumberOfRestrictions = numberOfRestrictions;
+OptimizerTask::OptimizerTask() : mIsInitialized(false) {
+}
 
-	mSpaceTransform = OptimizerSpaceTransformation(leftBound, rightBound, mTaskDimention);
+OptimizerTask::OptimizerTask(std::shared_ptr<OptimizerFunctionPtr> taskFunctions, unsigned numberOfRestrictions,
+                             unsigned taskDimention, SharedVector leftBound, SharedVector rightBound) {
+    assert(taskDimention > 0);
+    assert(numberOfRestrictions >= 0);
+    assert(taskFunctions);
+    assert(leftBound);
+    assert(rightBound);
 
-	mOptimumPoint = nullptr;
-	mIsInitialized = true;
+    mTaskFunctions = taskFunctions;
+    mTaskDimention = taskDimention;
+    mNumberOfRestrictions = numberOfRestrictions;
+
+    mSpaceTransform = OptimizerSpaceTransformation(leftBound, rightBound, mTaskDimention);
+
+    mOptimumPoint = nullptr;
+    mIsInitialized = true;
 }
-unsigned OptimizerTask::GetNumberOfRestrictions() const
-{
-	CheckIsInitialized();
-	return mNumberOfRestrictions;
+
+unsigned OptimizerTask::GetNumberOfRestrictions() const {
+    CheckIsInitialized();
+    return mNumberOfRestrictions;
 }
-unsigned OptimizerTask::GetTaskDimention() const
-{
-	CheckIsInitialized();
-	return mTaskDimention;
+
+unsigned OptimizerTask::GetTaskDimention() const {
+    CheckIsInitialized();
+    return mTaskDimention;
 }
-SharedVector OptimizerTask::GetOptimumPoint() const
-{
-	CheckIsInitialized();
-	return mOptimumPoint;
+
+SharedVector OptimizerTask::GetOptimumPoint() const {
+    CheckIsInitialized();
+    return mOptimumPoint;
 }
-void OptimizerTask::SetOptimumPoint(SharedVector value)
-{
-	mOptimumPoint = value;
+
+void OptimizerTask::SetOptimumPoint(SharedVector value) {
+    mOptimumPoint = value;
 }
-std::shared_ptr<OptimizerFunctionPtr> OptimizerTask::GetTaskFunctions() const
-{
-	CheckIsInitialized();
-	return mTaskFunctions;
+
+std::shared_ptr<OptimizerFunctionPtr> OptimizerTask::GetTaskFunctions() const {
+    CheckIsInitialized();
+    return mTaskFunctions;
 }
-OptimizerSpaceTransformation OptimizerTask::GetSpaceTransformation() const
-{
-	return mSpaceTransform;
+
+OptimizerSpaceTransformation OptimizerTask::GetSpaceTransformation() const {
+    return mSpaceTransform;
 }
-void OptimizerTask::CheckIsInitialized() const
-{
-	if (mIsInitialized == false)
-		throw std::exception("Optimizer Task is not initialized.");
+
+void OptimizerTask::CheckIsInitialized() const {
+    if (mIsInitialized == false)
+        throw std::exception("Optimizer Task is not initialized.");
 }

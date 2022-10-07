@@ -34,7 +34,7 @@ public:
 class GKLSFunctionWrapper : public FunctionWrapperCommon
 {
 private:
-	unsigned mDimention;
+	unsigned mDimension;
 	double* mTmpArgument;
 	gklsfunction::GKLSFunction mFunction;
 public:

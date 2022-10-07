@@ -7,41 +7,38 @@
 
 using namespace optimizercore;
 
-namespace localoptimizer
-{
-	class EXPORT_API HookeJeevesLocalMethod final : public LocalMethodCommon
-	{
-	private:
+namespace localoptimizer {
+class EXPORT_API HookeJeevesLocalMethod final : public LocalMethodCommon {
+private:
+    int mDimension;
+    int mConstraintsNumber;
+    OptimizerFunction** mFunctions;
 
-		int mDimention;
-		int mConstraintsNumber;
-		OptimizerFunction** mFunctions;
+    double* mStartPoint;
+    double mEps;
+    double mStep;
+    double mStepMultiplier;
 
-		double *mStartPoint;
-		double mEps;
-		double mStep;
-		double mStepMultiplier;
+    double* mCurrentPoint;
+    double* mCurrentResearchDirection;
+    double* mPreviousResearchDirection;
 
-		double* mCurrentPoint;
-		double* mCurrentResearchDirection;
-		double* mPreviousResearchDirection;
+    double MakeResearch(double*);
+    void DoStep();
+    double EvaluateTargetFunctiuon(const double*) const;
 
-		double MakeResearch(double*);
-		void DoStep();
-		double EvaluateTargetFunctiuon(const double*) const;
+public:
+    HookeJeevesLocalMethod();
+    ~HookeJeevesLocalMethod();
 
-	public:
-		HookeJeevesLocalMethod();
-		~HookeJeevesLocalMethod();
+    void SetProblem(OptimizerTask);
+    void SetStartPoint(const double*, int);
+    void SetEps(double);
+    void SetInitialStep(double);
+    void SetStepMultiplier(double);
 
-		void SetProblem(OptimizerTask);
-		void SetStartPoint(const double*, int);
-		void SetEps(double);
-		void SetInitialStep(double);
-		void SetStepMultiplier(double);
-
-		virtual void StartOptimization(double*) override;
-	};
-}
+    virtual void StartOptimization(double*) override;
+};
+}  // namespace localoptimizer
 
 #endif

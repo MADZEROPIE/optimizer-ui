@@ -12,74 +12,66 @@
 
 #include <set>
 
-namespace optimizercore
-{
-	class IOptimazerAlgorithm {
-	public:
-		virtual void SetTask(OptimizerFunctionPtr function,
-			OptimizerSpaceTransformation spaceTransform) = 0;
-		virtual void SetThreadsNum(int num)=0;
-		virtual void SetParameters(OptimizerParameters params)=0;
+namespace optimizercore {
+class IOptimazerAlgorithm {
+public:
+    virtual void SetTask(OptimizerFunctionPtr function, OptimizerSpaceTransformation spaceTransform) = 0;
+    virtual void SetThreadsNum(int num) = 0;
+    virtual void SetParameters(OptimizerParameters params) = 0;
 
-		virtual OptimizerResult StartOptimization(const double* xOpt,
-			StopCriterionType stopType) = 0;
-	};
-	
-	class EXPORT_API OptimizerAlgorithmUnconstrained final: public IOptimazerAlgorithm
-	{
+    virtual OptimizerResult StartOptimization(const double *xOpt, StopCriterionType stopType) = 0;
+};
 
-	private:
+class EXPORT_API OptimizerAlgorithmUnconstrained final : public IOptimazerAlgorithm {
 
-		bool mLocalMixType;
-		bool mIsAlgorithmMemoryAllocated;
-		bool mIsParamsInitialized;
-		bool mIsTaskInitialized;
-		bool mNeedLocalVerification;
+private:
+    bool mLocalMixType;
+    bool mIsAlgorithmMemoryAllocated;
+    bool mIsParamsInitialized;
+    bool mIsTaskInitialized;
+    bool mNeedLocalVerification;
 
-		int mNumberOfThreads;
-		int mLocalStartIterationNumber;
-		int mMaxNumberOfIterations;
-		int mMapTightness;
-		int mMethodDimention;
-		int mAlpha;
-		int mLocalMixParameter;
-		int mMapType;
+    int mNumberOfThreads;
+    int mLocalStartIterationNumber;
+    int mMaxNumberOfIterations;
+    int mMapTightness;
+    int mMethodDimention;
+    int mAlpha;
+    int mLocalMixParameter;
+    int mMapType;
 
-		OptimizerSpaceTransformation mSpaceTransform;
-		OptimizerFunction *mTargetFunction;
-		OptimizerFunctionPtr mTargetFunctionSmartPtr;
+    OptimizerSpaceTransformation mSpaceTransform;
+    OptimizerFunction *mTargetFunction;
+    OptimizerFunctionPtr mTargetFunctionSmartPtr;
 
-		OptimaizerInterval *mIntervalsForTrials;
-		std::set<OptimizerTrialPoint> mSearchInformationStorage;
-		OptimizerTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
+    OptimaizerInterval *mIntervalsForTrials;
+    std::set<OptimizerTrialPoint> mSearchInformationStorage;
+    OptimizerTrialPoint mOptimumEvaluation, *mNextTrialsPoints;
 
-		LocalTuningMode mLocalTuningMode;
+    LocalTuningMode mLocalTuningMode;
 
-		double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
-		double **mNextPoints;
+    double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
+    double **mNextPoints;
 
-		void AllocMem();
-		void InitializeInformationStorage();
-		void UpdateGlobalM(std::set<OptimizerTrialPoint>::iterator&);
-		int UpdateRanks(bool isLocal);
-		bool InsertNewTrials(int trialsNumber);
-		OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
+    void AllocMem();
+    void InitializeInformationStorage();
+    void UpdateGlobalM(std::set<OptimizerTrialPoint>::iterator &);
+    int UpdateRanks(bool isLocal);
+    bool InsertNewTrials(int trialsNumber);
+    OptimizerSolution DoLocalVerification(OptimizerSolution startPoint);
 
-	public:
-		OptimizerAlgorithmUnconstrained();
-		~OptimizerAlgorithmUnconstrained();
+public:
+    OptimizerAlgorithmUnconstrained();
+    ~OptimizerAlgorithmUnconstrained();
 
-		void SetTask(OptimizerFunctionPtr function,
-			OptimizerSpaceTransformation spaceTransform);
-		void SetThreadsNum(int num);
-		void SetParameters(OptimizerParameters params);
+    void SetTask(OptimizerFunctionPtr function, OptimizerSpaceTransformation spaceTransform);
+    void SetThreadsNum(int num);
+    void SetParameters(OptimizerParameters params);
 
-		OptimizerResult StartOptimization(const double* xOpt,
-			StopCriterionType stopType);
+    OptimizerResult StartOptimization(const double *xOpt, StopCriterionType stopType);
 
-		double GetLipschitzConst() const;
-		OptimizerSearchSequence GetSearchSequence() const;
-
-	};
-}
-#endif 
+    double GetLipschitzConst() const;
+    OptimizerSearchSequence GetSearchSequence() const;
+};
+}  // namespace optimizercore
+#endif
