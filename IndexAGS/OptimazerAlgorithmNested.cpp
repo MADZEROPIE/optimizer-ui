@@ -73,7 +73,7 @@ void optimizercore::OptimizerAlgorithmNested::UpdateGlobalM(  // GlobalM is Lips
     while (nextPointIt != localStorage.cend()) {
         //	if (currentPointIt->x != newPointIt->x)
         //		max = fmax(fabs(newPointIt->val - currentPointIt->val) /
-        //			pow(fabs(newPointIt->x - currentPointIt->x), 1.0 / mMethodDimention),
+        //			pow(fabs(newPointIt->x - currentPointIt->x), 1.0 / mMethodDimension),
         //max);
 
         if (mLocalTuningMode != LocalTuningMode::None)
@@ -85,7 +85,7 @@ void optimizercore::OptimizerAlgorithmNested::UpdateGlobalM(  // GlobalM is Lips
     }
     // if (currentPointIt->x != newPointIt->x)
     //	max = fmax(fabs(newPointIt->val - currentPointIt->val) /
-    //	pow(fabs(newPointIt->x - currentPointIt->x), 1.0 / mMethodDimention), max);
+    //	pow(fabs(newPointIt->x - currentPointIt->x), 1.0 / mMethodDimension), max);
 
     // printf("%e |", mMaxIntervalNorm);
     if (max != 0)
@@ -198,7 +198,7 @@ OptimizerSolution optimizercore::OptimizerAlgorithmNested::DoLocalVerification(
 
     OptimizerTask localTask(std::shared_ptr<OptimizerFunctionPtr>(
                                 functions, utils::array_deleter<OptimizerFunctionPtr>()),
-                            0, mMethodDimention, mSpaceTransform.GetLeftDomainBound(),
+                            0, mMethodDimension, mSpaceTransform.GetLeftDomainBound(),
                             mSpaceTransform.GetRightDomainBound());
 
     localoptimizer::HookeJeevesLocalMethod localMethod;
@@ -206,15 +206,15 @@ OptimizerSolution optimizercore::OptimizerAlgorithmNested::DoLocalVerification(
     localMethod.SetInitialStep(2 * eps);
     localMethod.SetProblem(localTask);
     localMethod.SetStepMultiplier(2);
-    localMethod.SetStartPoint(startSolution.GetOptimumPoint().get(), localTask.GetTaskDimention());
+    localMethod.SetStartPoint(startSolution.GetOptimumPoint().get(), localTask.GetTaskDimension());
 
-    SharedVector localOptimum(new double[mMethodDimention], array_deleter<double>());
+    SharedVector localOptimum(new double[mMethodDimension], array_deleter<double>());
     localMethod.StartOptimization(localOptimum.get());
     double bestLocalValue = mTargetFunction->Calculate(localOptimum.get());
 
     if (startSolution.GetOptimumValue() > bestLocalValue)
         return OptimizerSolution(startSolution.GetIterationsCount(), bestLocalValue, 0.5,
-                                 mMethodDimention, localOptimum);
+                                 mMethodDimension, localOptimum);
 
     return startSolution;
 }
@@ -239,20 +239,20 @@ void optimizercore::OptimizerAlgorithmNested::SetThreadsNum(int num) {
             delete[] mNextTrialsPoints;
         mNextTrialsPoints = new OptimizerNestedTrialPoint[num];
         for (int j = 0; j < num; ++j) {
-            for (int i = 0; i < mMethodDimention; ++i) {
-                mNextTrialsPoints[j].x.resize(mMethodDimention);
+            for (int i = 0; i < mMethodDimension; ++i) {
+                mNextTrialsPoints[j].x.resize(mMethodDimension);
             }
         }
         if (mIntervalsForTrials)
             delete[] mIntervalsForTrials;
         mIntervalsForTrials = new OptimaizerNestedInterval[num];
         mGlobalIterationsNumber = 0;
-        mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimention);
+        mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimension);
     }
 }
 
 void optimizercore::OptimizerAlgorithmNested::SetParameters(OptimizerParameters params) {
-    assert(params.algDimention);
+    assert(params.algDimension);
     assert(params.eps > 0);
     assert(params.localAlgStartIterationNumber > 0);
     assert(params.mapTightness > 5 && params.mapTightness <= 20);
@@ -275,7 +275,7 @@ void optimizercore::OptimizerAlgorithmNested::SetParameters(OptimizerParameters 
     }
     mNeedLocalVerification = params.localVerification;
     mAlpha = params.localExponent;
-    mMethodDimention = params.algDimention;
+    mMethodDimension = params.algDimension;
     mMapTightness = params.mapTightness;
     mMapType = static_cast<int>(params.mapType);
     mMaxNumberOfIterations = params.maxIterationsNumber;
@@ -283,7 +283,7 @@ void optimizercore::OptimizerAlgorithmNested::SetParameters(OptimizerParameters 
     r = *params.r;
     if (mNextPoints)
         utils::DeleteMatrix(mNextPoints, mNumberOfThreads);
-    mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimention);
+    mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimension);
     this->SetThreadsNum(params.numberOfThreads);
 
     mIsParamsInitialized = true;
@@ -294,7 +294,7 @@ void optimizercore::OptimizerAlgorithmNested::SetParameters(OptimizerParameters 
 OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(
     const double* xOpt, StopCriterionType stopType) {
     assert(mIsParamsInitialized && mIsTaskInitialized);
-    assert(mSpaceTransform.GetDomainDimention() == mMethodDimention);
+    assert(mSpaceTransform.GetDomainDimension() == mMethodDimension);
     InitializeInformationStorage();
     size_t iterationsCount = 0;
     mGlobalIterationsNumber = 0;
@@ -304,12 +304,12 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(
 
     // Preparation
 
-    for (int i = 0; i < mMethodDimention; ++i)
+    for (int i = 0; i < mMethodDimension; ++i)
         mNextTrialsPoints[0].x[i] = mSpaceTransform.GetLeftDomainBound().get()[i];
     IndexOprimization(1, 0);
     localStorage.insert(mNextTrialsPoints[0]);
 
-    for (int i = 0; i < mMethodDimention; ++i)
+    for (int i = 0; i < mMethodDimension; ++i)
         mNextTrialsPoints[0].x[i] = mSpaceTransform.GetRightDomainBound().get()[i];
     IndexOprimization(1, 0);
     localStorage.insert(mNextTrialsPoints[0]);
@@ -331,7 +331,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(
             if (mNextTrialsPoints[i].val < mZ)
                 mZ = mNextTrialsPoints[i].val;
             if (stopType == StopCriterionType::OptimalPoint) {
-                if (NormNDimMax(mNextTrialsPoints[i].x.data(), xOpt, mMethodDimention) < eps) {
+                if (NormNDimMax(mNextTrialsPoints[i].x.data(), xOpt, mMethodDimension) < eps) {
                     stop = true;
                     mOptimumEvaluation = mNextTrialsPoints[i];
                 }
@@ -386,11 +386,11 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(
                               [](const OptimizerNestedTrialPoint& p1,
                                  const OptimizerNestedTrialPoint& p2) { return p1.val < p2.val; });
     }
-    SharedVector optPoint(new double[mMethodDimention], array_deleter<double>());
-    std::memcpy(optPoint.get(), mOptimumEvaluation.x.data(), mMethodDimention * sizeof(double));
+    SharedVector optPoint(new double[mMethodDimension], array_deleter<double>());
+    std::memcpy(optPoint.get(), mOptimumEvaluation.x.data(), mMethodDimension * sizeof(double));
 
     OptimizerSolution solution(mSearchInformationStorage.size(), mOptimumEvaluation.val, 0.5,
-                               mMethodDimention, optPoint);
+                               mMethodDimension, optPoint);
 
     if (mNeedLocalVerification)
         return OptimizerResult(DoLocalVerification(solution));
@@ -399,7 +399,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmNested::StartOptimization(
 }
 
 void optimizercore::OptimizerAlgorithmNested::IndexOprimization(int index, int thread_id) {
-    if (index >= mMethodDimention) {
+    if (index >= mMethodDimension) {
         //#pragma omp critical
         { ++mGlobalIterationsNumber; }
         mNextTrialsPoints[thread_id].val =
@@ -479,5 +479,5 @@ double optimizercore::OptimizerAlgorithmNested::GetLipschitzConst() const {
 }
 
 OptimazerNestedSearchSequence optimizercore::OptimizerAlgorithmNested::GetSearchSequence() const {
-    return OptimazerNestedSearchSequence(mSearchInformationStorage, mMethodDimention);
+    return OptimazerNestedSearchSequence(mSearchInformationStorage, mMethodDimension);
 }

@@ -44,7 +44,7 @@ public:
 
 	void SetClassType(gklsfunction::GKLSClass type, unsigned);
 	void SetFunctionNumber(int num) override;
-	void SetDimention(unsigned value);
+	void SetDimension(unsigned value);
 	double Calculate(const double *x) override;
 	double GetMinValue() const override;
 	void GetMinPoint(double *x) const override;
@@ -60,7 +60,7 @@ public:
 	virtual ~CustomProblemWrapper();
 
 	void SetFunctionNumber(int num) override;
-	void SetDimention(unsigned value);
+	void SetDimension(unsigned value);
 	double Calculate(const double* x) override;
 	double GetMinValue() const override;
 	void GetMinPoint(double* x) const override;

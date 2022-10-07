@@ -113,10 +113,10 @@ void HookeJeevesLocalMethod::SetProblem(OptimizerTask task) {
         mFunctions[i] = task.GetTaskFunctions().get()[i - 1].get();
 }
 
-void HookeJeevesLocalMethod::SetStartPoint(const double* point, int dimention) {
+void HookeJeevesLocalMethod::SetStartPoint(const double* point, int dimension) {
     assert(point);
-    assert(dimention > 1);
-    mDimension = dimention;
+    assert(dimension > 1);
+    mDimension = dimension;
     mStartPoint = new double[mDimension];
     std::memcpy(mStartPoint, point, mDimension * sizeof(double));
 }

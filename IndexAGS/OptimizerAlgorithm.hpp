@@ -30,7 +30,7 @@ private:
     int mMaxNumberOfIterations;
     int mRestrictionsNumber;
     int mMapTightness;
-    int mMethodDimention;
+    int mMethodDimension;
     int mAlpha;
     int mLocalMixParameter;
     int mMapType;

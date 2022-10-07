@@ -28,7 +28,7 @@ private:
     int mMaxNumberOfIterations;
     size_t mGlobalIterationsNumber = 0;
 
-    int mMethodDimention;
+    int mMethodDimension;
 
     int mAlpha;  //???
     int mLocalMixParameter;

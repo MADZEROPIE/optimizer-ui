@@ -50,7 +50,7 @@ struct OptimizerParameters {
     double eps;
     double* r;
     double* reserves;
-    unsigned algDimention;
+    unsigned algDimension;
 
     int localExponent;
     int localMixParameter;
@@ -67,7 +67,7 @@ struct OptimizerParameters {
         r = reserves = nullptr;
     }
     OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps, double* _r, double* _reserves,
-                        unsigned _algDimention, int _localExponent, int _localMixParameter,
+                        unsigned _algDimension, int _localExponent, int _localMixParameter,
                         int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness, bool _localVerification,
                         LipschitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ, NewPointOptions _newPNT) {
         maxIterationsNumber = _maxIterationsNumber;
@@ -75,7 +75,7 @@ struct OptimizerParameters {
         eps = _eps;
         r = _r;
         reserves = _reserves;
-        algDimention = _algDimention;
+        algDimension = _algDimension;
         localExponent = _localExponent;
         localMixParameter = _localMixParameter;
         localAlgStartIterationNumber = _localAlgStartIterationNumber;
@@ -87,7 +87,7 @@ struct OptimizerParameters {
         newPNT = _newPNT;
     }
     OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps, double* _r, double* _reserves,
-                        unsigned _algDimention, int _localExponent, int _localMixParameter,
+                        unsigned _algDimension, int _localExponent, int _localMixParameter,
                         int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness, bool _localVerification,
                         LocalTuningMode _localTuningMode, LipschitzConstantEvaluation _lipEval,
                         IndexMethodOptions _indexZ, NewPointOptions _newPNT) {
@@ -96,7 +96,7 @@ struct OptimizerParameters {
         eps = _eps;
         r = _r;
         reserves = _reserves;
-        algDimention = _algDimention;
+        algDimension = _algDimension;
         localExponent = _localExponent;
         localMixParameter = _localMixParameter;
         localAlgStartIterationNumber = _localAlgStartIterationNumber;
@@ -157,7 +157,7 @@ struct OptimizerNestedTrialPoint {  // Unconstrained
 inline bool operator<(const OptimizerNestedTrialPoint& t1, const OptimizerNestedTrialPoint& t2) {
     int size = t1.x.size();
     if (size != t2.x.size())
-        throw "Comprasion OptimizerNestedTrialPoint with different dimentions";
+        throw "Comprasion OptimizerNestedTrialPoint with different dimensions";
     for (int i = 0; i < size; ++i) {
         if (t1.x[i] != t2.x[i])
             return t1.x[i] < t2.x[i];

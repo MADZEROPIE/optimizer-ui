@@ -42,8 +42,8 @@ GKLSFunctionWrapper::GKLSFunctionWrapper(gklsfunction::GKLSClass type, unsigned 
     SetClassType(type, dim);
 }
 
-void GKLSFunctionWrapper::SetClassType(gklsfunction::GKLSClass type, unsigned dimention) {
-    mFunction.SetFunctionClass(type, dimention);
+void GKLSFunctionWrapper::SetClassType(gklsfunction::GKLSClass type, unsigned dimension) {
+    mFunction.SetFunctionClass(type, dimension);
     mDimension = mFunction.GetDimension();
 
     if (mTmpArgument != nullptr)
@@ -72,9 +72,9 @@ void GKLSFunctionWrapper::GetMinPoint(double *x) const {
     mFunction.GetGlobalMinimumPoint(mFunction.GetFunctionNumber(), x);
 }
 
-void GKLSFunctionWrapper::SetDimention(unsigned value) {
+void GKLSFunctionWrapper::SetDimension(unsigned value) {
     mDimension = value;
-    mFunction.SetDimention(mDimension);
+    mFunction.SetDimension(mDimension);
 }
 
 CustomProblemWrapper::CustomProblemWrapper() : mFunction(nullptr) {
@@ -89,7 +89,7 @@ CustomProblemWrapper::~CustomProblemWrapper() {
 void CustomProblemWrapper::SetFunctionNumber(int num) {
 }
 
-void CustomProblemWrapper::SetDimention(unsigned value) {
+void CustomProblemWrapper::SetDimension(unsigned value) {
 }
 
 double CustomProblemWrapper::Calculate(const double *x) {

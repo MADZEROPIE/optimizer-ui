@@ -12,11 +12,11 @@ OptimizerSpaceTransformation::OptimizerSpaceTransformation() : mIsInitialized(fa
 
 OptimizerSpaceTransformation::OptimizerSpaceTransformation(
 	SharedVector leftBound, SharedVector rightBound,
-	int domainDimention)
+	int domainDimension)
 {
 	mLeftDomainBound = leftBound;
 	mRightDomainBound = rightBound;
-	mDimension = domainDimention;
+	mDimension = domainDimension;
 	mLeftBoundPtr = mLeftDomainBound.get();
 	mRightBoundPtr = mRightDomainBound.get();
 
@@ -38,7 +38,7 @@ OptimizerSpaceTransformation::OptimizerSpaceTransformation(
 			break;
 		}
 
-	int dimention = mDimension;
+	int dimension = mDimension;
 	double* spaceShift = mSpaceShiftValuesPtr;
 	double* leftBnd = mLeftBoundPtr;
 	double* rightBnd = mRightBoundPtr;
@@ -46,11 +46,11 @@ OptimizerSpaceTransformation::OptimizerSpaceTransformation(
 
 	mZeroConstraint = OptimizerFunctionPtr(new OptimizerSTLFunctionWrapper(
 		std::function<double(const double *)>(
-		[dimention, spaceShift, rho, leftBnd, rightBnd](const double* x)->double
+		[dimension, spaceShift, rho, leftBnd, rightBnd](const double* x)->double
 	{
 		double value = -HUGE_VAL;
 
-		for (int i = 0; i < dimention; i++)
+		for (int i = 0; i < dimension; i++)
 			value = fmax(value, (fabs(x[i] - spaceShift[i])
 			- (rightBnd[i] - leftBnd[i])*0.5) / rho);
 
@@ -85,7 +85,7 @@ SharedVector OptimizerSpaceTransformation::GetRightDomainBound() const
 	return mRightDomainBound;
 }
 
-int OptimizerSpaceTransformation::GetDomainDimention() const
+int OptimizerSpaceTransformation::GetDomainDimension() const
 {
 	return mDimension;
 }

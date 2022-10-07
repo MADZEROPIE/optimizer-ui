@@ -17,7 +17,7 @@ private:
 public:
     OptimizerSolution();
     OptimizerSolution(int iterationsCount, double optimumValue, double oneDimOptimumPoint,
-                      unsigned dimention, SharedVector optimumPoint);
+                      unsigned dimension, SharedVector optimumPoint);
     OptimizerSolution(const OptimizerSolution& sol) = default;
     ~OptimizerSolution() {
     }

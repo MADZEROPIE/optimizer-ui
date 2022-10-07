@@ -102,9 +102,9 @@ optimizercore::OptimazerNestedSearchSequence::OptimazerNestedSearchSequence() {
 }
 
 optimizercore::OptimazerNestedSearchSequence::OptimazerNestedSearchSequence(
-    const std::set<OptimizerNestedTrialPoint>& searchSequence, unsigned dimention) {
+    const std::set<OptimizerNestedTrialPoint>& searchSequence, unsigned dimension) {
     mSize = searchSequence.size();
-    mDimension = dimention;
+    mDimension = dimension;
     mPoints.resize(mSize);
 
     mValuesMemPtr = new double[mSize];

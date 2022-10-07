@@ -25,7 +25,7 @@ private:
 public:
     OptimizerSpaceTransformation();
 
-    OptimizerSpaceTransformation(SharedVector leftBound, SharedVector rightBound, int domainDimention);
+    OptimizerSpaceTransformation(SharedVector leftBound, SharedVector rightBound, int domainDimension);
 
     void Transform(const double*, double*) const;
     void InvertTransform(const double*, double*) const;
@@ -33,7 +33,7 @@ public:
     bool IsZeroConstraintActive() const;
     SharedVector GetLeftDomainBound() const;
     SharedVector GetRightDomainBound() const;
-    int GetDomainDimention() const;
+    int GetDomainDimension() const;
 };
 
 }  // namespace optimizercore

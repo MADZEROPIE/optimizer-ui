@@ -13,7 +13,7 @@ private:
     std::shared_ptr<OptimizerFunctionPtr> mTaskFunctions;
 
     unsigned mNumberOfRestrictions;
-    unsigned mTaskDimention;
+    unsigned mTaskDimension;
     SharedVector mOptimumPoint;
     OptimizerSpaceTransformation mSpaceTransform;
 
@@ -21,13 +21,13 @@ private:
 
 public:
     OptimizerTask(std::shared_ptr<OptimizerFunctionPtr> taskFunctions, unsigned numberOfRestrictions,
-                  unsigned taskDimention, SharedVector leftBound, SharedVector rightBound);
+                  unsigned taskDimension, SharedVector leftBound, SharedVector rightBound);
     OptimizerTask();
     ~OptimizerTask();
 
     std::shared_ptr<OptimizerFunctionPtr> GetTaskFunctions() const;
     unsigned GetNumberOfRestrictions() const;
-    unsigned GetTaskDimention() const;
+    unsigned GetTaskDimension() const;
     PROPERTY(SharedVector, OptimumPoint);
     OptimizerSpaceTransformation GetSpaceTransformation() const;
 

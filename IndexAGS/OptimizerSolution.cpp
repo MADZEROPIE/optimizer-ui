@@ -8,15 +8,15 @@ OptimizerSolution::OptimizerSolution() {
 }
 
 OptimizerSolution::OptimizerSolution(int iterationsCount, double optimumValue, double oneDimOptimumPoint,
-                                        unsigned dimention, SharedVector optimumPoint) {
+                                        unsigned dimension, SharedVector optimumPoint) {
     assert(iterationsCount > 0);
-    assert(dimention > 0);
+    assert(dimension > 0);
 
     mIteratinsCount = iterationsCount;
     mOptimumValue = optimumValue;
     mOneDimOptimumPoint = oneDimOptimumPoint;
     mOptimumPoint = optimumPoint;
-    mDimension = dimention;
+    mDimension = dimension;
 
     mIsInitialized = true;
 }

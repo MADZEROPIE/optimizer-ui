@@ -71,7 +71,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id) {
             throw "smth bad";
         if (dx < all_tasks[task_id].minIntervalNorm)
             all_tasks[task_id].minIntervalNorm = dx;
-        if (level + 1 == mMethodDimention)
+        if (level + 1 == mMethodDimension)
             mtpm = abs((all_trials[it1->subtask_id].basepoint.val - all_trials[it2->subtask_id].basepoint.val) / dx);
         else
             mtpm = abs((all_tasks[it1->subtask_id].basepoint.val - all_tasks[it2->subtask_id].basepoint.val) / dx);
@@ -108,7 +108,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
     double rx = mSpaceTransform.GetRightDomainBound().get()[level];
     double zl;
     double zr;
-    if (level + 1 != mMethodDimention)
+    if (level + 1 != mMethodDimension)
         zr = all_tasks[it1->subtask_id].basepoint.val;
     else
         zr = all_trials[it1->subtask_id].basepoint.val;
@@ -122,7 +122,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
     while (it2 != task.trials.end()) {
         ++t;
 
-        if (level + 1 != mMethodDimention) {
+        if (level + 1 != mMethodDimension) {
             zl = all_tasks[it1->subtask_id].basepoint.val;
             zr = all_tasks[it2->subtask_id].basepoint.val;
         } else {
@@ -147,7 +147,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
     }
     double rtpm;
 
-    if (level + 1 != mMethodDimention)
+    if (level + 1 != mMethodDimension)
         zl = all_tasks[it1->subtask_id].basepoint.val;
     else
         zl = all_trials[it1->subtask_id].basepoint.val;
@@ -202,7 +202,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
 
     int level = all_tasks[parent_id].level + 1;
     bool setted = false;
-    while (level < mMethodDimention) {
+    while (level < mMethodDimension) {
         if (!setted || mNewPNT == NewPointOptions::Half) {
 
             if (mNewPNT == NewPointOptions::Half || all_tasks[parent_id].trials.size() < 2)
@@ -218,7 +218,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
                                     2;
                 else {
                     auto tmp2 = tmp--;
-                    for (int j = level; j < mMethodDimention; ++j) {
+                    for (int j = level; j < mMethodDimension; ++j) {
                         npnt.x[j] =
                             all_tasks[tmp->subtask_id].basepoint.x[j] +
                             (all_tasks[tmp2->subtask_id].basepoint.x[j] - all_tasks[tmp->subtask_id].basepoint.x[j]) *
@@ -235,7 +235,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
     }
 
     npnt.val = mTargetFunction->Calculate(npnt.x.data());
-    ITask newtrial(mMethodDimention, parent_id, npnt);
+    ITask newtrial(mMethodDimension, parent_id, npnt);
     all_trials.push_back(newtrial);
     all_tasks[parent_id].trials.insert(XSub(npnt.x[all_tasks[parent_id].level], all_trials.size() - 1));
     if (all_tasks[parent_id].basepoint.val >= npnt.val) {
@@ -247,9 +247,9 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
 
     // Recursive
     /*
-    if ((all_tasks[parent_id].level + 1) == mMethodDimention) {
+    if ((all_tasks[parent_id].level + 1) == mMethodDimension) {
         npnt.val = mTargetFunction->Calculate(npnt.x.data());
-        ITask newtrial(mMethodDimention, parent_id, npnt);
+        ITask newtrial(mMethodDimension, parent_id, npnt);
         all_trials.push_back(newtrial);
         all_tasks[parent_id].trials.insert(XSub(npnt.x[all_tasks[parent_id].level], all_trials.size() - 1));
         if (all_tasks[parent_id].basepoint.val >= npnt.val) {
@@ -357,21 +357,21 @@ OptimizerSolution optimizercore::OptimizerAlgorithmAdaptive::DoLocalVerification
 
     OptimizerTask localTask(
         std::shared_ptr<OptimizerFunctionPtr>(functions, utils::array_deleter<OptimizerFunctionPtr>()), 0,
-        mMethodDimention, mSpaceTransform.GetLeftDomainBound(), mSpaceTransform.GetRightDomainBound());
+        mMethodDimension, mSpaceTransform.GetLeftDomainBound(), mSpaceTransform.GetRightDomainBound());
 
     localoptimizer::HookeJeevesLocalMethod localMethod;
     localMethod.SetEps(eps / 100);
     localMethod.SetInitialStep(2 * eps);
     localMethod.SetProblem(localTask);
     localMethod.SetStepMultiplier(2);
-    localMethod.SetStartPoint(startSolution.GetOptimumPoint().get(), localTask.GetTaskDimention());
+    localMethod.SetStartPoint(startSolution.GetOptimumPoint().get(), localTask.GetTaskDimension());
 
-    SharedVector localOptimum(new double[mMethodDimention], array_deleter<double>());
+    SharedVector localOptimum(new double[mMethodDimension], array_deleter<double>());
     localMethod.StartOptimization(localOptimum.get());
     double bestLocalValue = mTargetFunction->Calculate(localOptimum.get());
 
     if (startSolution.GetOptimumValue() > bestLocalValue)
-        return OptimizerSolution(startSolution.GetIterationsCount(), bestLocalValue, 0.5, mMethodDimention,
+        return OptimizerSolution(startSolution.GetIterationsCount(), bestLocalValue, 0.5, mMethodDimension,
                                  localOptimum);
 
     return startSolution;
@@ -393,7 +393,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::SetThreadsNum(int num) {
 }
 
 void optimizercore::OptimizerAlgorithmAdaptive::SetParameters(OptimizerParameters params) {
-    assert(params.algDimention);
+    assert(params.algDimension);
     assert(params.eps > 0);
     assert(params.localAlgStartIterationNumber > 0);
     assert(params.mapTightness > 5 && params.mapTightness <= 20);
@@ -416,7 +416,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::SetParameters(OptimizerParameter
     }
     mNeedLocalVerification = params.localVerification;
     mAlpha = params.localExponent;
-    mMethodDimention = params.algDimention;
+    mMethodDimension = params.algDimension;
     mMapTightness = params.mapTightness;
     mMapType = static_cast<int>(params.mapType);
     mMaxNumberOfIterations = params.maxIterationsNumber;
@@ -427,25 +427,25 @@ void optimizercore::OptimizerAlgorithmAdaptive::SetParameters(OptimizerParameter
     r = *params.r;
     // if (mNextPoints)
     //    utils::DeleteMatrix(mNextPoints, mNumberOfThreads);
-    // mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimention);
+    // mNextPoints = utils::AllocateMatrix<double>(mNumberOfThreads, mMethodDimension);
     this->SetThreadsNum(params.numberOfThreads);
 
     mIsParamsInitialized = true;
 
     mGlobalIterationsNumber = 0;
 
-    mLevelM.resize(mMethodDimention);
+    mLevelM.resize(mMethodDimension);
 }
 
 OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(const double* xOpt,
                                                                              StopCriterionType stopType) {
     assert(mIsParamsInitialized && mIsTaskInitialized);
-    assert(mSpaceTransform.GetDomainDimention() == mMethodDimention);
+    assert(mSpaceTransform.GetDomainDimension() == mMethodDimension);
     InitializeInformationStorage();
     size_t iterationsCount = 0;
     mGlobalIterationsNumber = 0;
 
-    OptimizerNestedTrialPoint pnt1(mMethodDimention);
+    OptimizerNestedTrialPoint pnt1(mMethodDimension);
     pnt1.x[0] = (mSpaceTransform.GetRightDomainBound().get()[0] + mSpaceTransform.GetLeftDomainBound().get()[0]) / 2;
     pnt1.val = INFINITY;
     all_tasks.push_back(SubTask(0, -1, pnt1));
@@ -475,7 +475,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
                 ++i;
             }  // NONSENSE. CHANGE SET TO VECTOR AND USE SORT OR SMART INSERT
             auto itr = itl--;
-            if (level + 1 != mMethodDimention)
+            if (level + 1 != mMethodDimension)
                 newx = (itl->x + itr->x) / 2 -
                        (all_tasks[itr->subtask_id].basepoint.val - all_tasks[itl->subtask_id].basepoint.val) / (2 * m);
             else
@@ -493,7 +493,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
         ++iterationsCount;
 
         if (stopType == StopCriterionType::OptimalPoint) {
-            stop = NormNDimMax(all_tasks[0].basepoint.x.data(), xOpt, mMethodDimention) < eps;
+            stop = NormNDimMax(all_tasks[0].basepoint.x.data(), xOpt, mMethodDimension) < eps;
         } else {
             auto base_it2 = all_tasks[0].trials.cbegin();
             auto base_it = base_it2++;
@@ -502,15 +502,15 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
                 if (all_tasks[base_it->subtask_id].basepoint.val < all_tasks[0].basepoint.val)
                     throw "Update parents(?) not workin' properly";  // Debug check.
                 stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(),
-                                   all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimention) < eps;
+                                   all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimension) < eps;
                 ++base_it2;
                 ++base_it;
             }
         }
     }
-    SharedVector optPoint(new double[mMethodDimention], array_deleter<double>());
-    std::memcpy(optPoint.get(), all_tasks[0].basepoint.x.data(), mMethodDimention * sizeof(double));
-    OptimizerSolution solution(iterationsCount, all_tasks[0].basepoint.val, 0, mMethodDimention, optPoint);
+    SharedVector optPoint(new double[mMethodDimension], array_deleter<double>());
+    std::memcpy(optPoint.get(), all_tasks[0].basepoint.x.data(), mMethodDimension * sizeof(double));
+    OptimizerSolution solution(iterationsCount, all_tasks[0].basepoint.val, 0, mMethodDimension, optPoint);
     if (mNeedLocalVerification)
         return OptimizerResult(DoLocalVerification(solution));
     else
@@ -538,7 +538,7 @@ OptimazerNestedSearchSequence optimizercore::OptimizerAlgorithmAdaptive::GetSear
     // std::set<OptimizerNestedTrialPoint> trials;
     // TODO: Реализовать поиск в ширину для добавления испытаний. Или поступить умнее и записывать их сразу.
 
-    return OptimazerNestedSearchSequence(mSearchInformationStorage, mMethodDimention);
+    return OptimazerNestedSearchSequence(mSearchInformationStorage, mMethodDimension);
 }
 
 optimizercore::OptimizerAlgorithmAdaptive::XSub::XSub(double _x, int _subtask) {

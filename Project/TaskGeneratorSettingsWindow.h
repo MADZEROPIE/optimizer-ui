@@ -21,7 +21,7 @@ namespace optimizerui {
 		{
 			InitializeComponent();
 
-			gklsDimentionNumericUpDown->Value = settings.GKLSDimention;
+			gklsDimensionNumericUpDown->Value = settings.GKLSDimension;
 			dllPathTextBox->Text = settings.dllPath;
 
 			currentSettings = %settings;
@@ -29,7 +29,7 @@ namespace optimizerui {
 	private: System::Windows::Forms::GroupBox^  gklsGroupBox;
 	public:
 	private: System::Windows::Forms::Label^  label1;
-	private: System::Windows::Forms::NumericUpDown^  gklsDimentionNumericUpDown;
+	private: System::Windows::Forms::NumericUpDown^  gklsDimensionNumericUpDown;
 	private: System::Windows::Forms::GroupBox^ customGroupBox;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::TextBox^ dllPathTextBox;
@@ -62,19 +62,19 @@ namespace optimizerui {
 		{
 			this->gklsGroupBox = (gcnew System::Windows::Forms::GroupBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->gklsDimentionNumericUpDown = (gcnew System::Windows::Forms::NumericUpDown());
+			this->gklsDimensionNumericUpDown = (gcnew System::Windows::Forms::NumericUpDown());
 			this->customGroupBox = (gcnew System::Windows::Forms::GroupBox());
 			this->dllPathTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->gklsGroupBox->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->gklsDimentionNumericUpDown))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->gklsDimensionNumericUpDown))->BeginInit();
 			this->customGroupBox->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// gklsGroupBox
 			// 
 			this->gklsGroupBox->Controls->Add(this->label1);
-			this->gklsGroupBox->Controls->Add(this->gklsDimentionNumericUpDown);
+			this->gklsGroupBox->Controls->Add(this->gklsDimensionNumericUpDown);
 			this->gklsGroupBox->Location = System::Drawing::Point(12, 12);
 			this->gklsGroupBox->Name = L"gklsGroupBox";
 			this->gklsGroupBox->Size = System::Drawing::Size(332, 51);
@@ -91,16 +91,16 @@ namespace optimizerui {
 			this->label1->TabIndex = 1;
 			this->label1->Text = L"Dimension:";
 			// 
-			// gklsDimentionNumericUpDown
+			// gklsDimensionNumericUpDown
 			// 
-			this->gklsDimentionNumericUpDown->Location = System::Drawing::Point(109, 18);
-			this->gklsDimentionNumericUpDown->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 6, 0, 0, 0 });
-			this->gklsDimentionNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
-			this->gklsDimentionNumericUpDown->Name = L"gklsDimentionNumericUpDown";
-			this->gklsDimentionNumericUpDown->Size = System::Drawing::Size(43, 20);
-			this->gklsDimentionNumericUpDown->TabIndex = 0;
-			this->gklsDimentionNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
-			this->gklsDimentionNumericUpDown->ValueChanged += gcnew System::EventHandler(this, &TaskGeneratorSettingsWindow::gklsDimentionNumericUpDown_ValueChanged);
+			this->gklsDimensionNumericUpDown->Location = System::Drawing::Point(109, 18);
+			this->gklsDimensionNumericUpDown->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 6, 0, 0, 0 });
+			this->gklsDimensionNumericUpDown->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
+			this->gklsDimensionNumericUpDown->Name = L"gklsDimensionNumericUpDown";
+			this->gklsDimensionNumericUpDown->Size = System::Drawing::Size(43, 20);
+			this->gklsDimensionNumericUpDown->TabIndex = 0;
+			this->gklsDimensionNumericUpDown->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 0 });
+			this->gklsDimensionNumericUpDown->ValueChanged += gcnew System::EventHandler(this, &TaskGeneratorSettingsWindow::gklsDimensionNumericUpDown_ValueChanged);
 			// 
 			// customGroupBox
 			// 
@@ -147,17 +147,17 @@ namespace optimizerui {
 			this->Text = L"Settings of problem generator";
 			this->gklsGroupBox->ResumeLayout(false);
 			this->gklsGroupBox->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->gklsDimentionNumericUpDown))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->gklsDimensionNumericUpDown))->EndInit();
 			this->customGroupBox->ResumeLayout(false);
 			this->customGroupBox->PerformLayout();
 			this->ResumeLayout(false);
 
 		}
 #pragma endregion
-	private: System::Void gklsDimentionNumericUpDown_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void gklsDimensionNumericUpDown_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
 		if (currentSettings)
 		{
-			currentSettings->GKLSDimention = Convert::ToUInt32(gklsDimentionNumericUpDown->Value);
+			currentSettings->GKLSDimension = Convert::ToUInt32(gklsDimensionNumericUpDown->Value);
 		}
 	}
 	private: System::Void dllPathTextBox_TextChanged(System::Object^ sender, System::EventArgs^ e) {

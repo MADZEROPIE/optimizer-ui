@@ -59,7 +59,7 @@ namespace optimizerui
 	ref class TaskGeneratorSettings	{
 	public:
 
-		unsigned GKLSDimention = 2;
+		unsigned GKLSDimension = 2;
 		String ^dllPath = L"CustomProblem.dll";
 
 		TaskGeneratorSettings()

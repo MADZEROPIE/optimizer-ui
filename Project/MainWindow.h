@@ -1065,7 +1065,7 @@ private: System::Windows::Forms::Label^ label15;
   }
   private: System::Void solveTaskSerieBackgroundWorker_DoWork(System::Object^  sender, System::ComponentModel::DoWorkEventArgs^  e) {
     //readAlgorithmParameters();
-    int currentDimention = 2;
+    int currentDimension = 2;
     FunctionWrapperCommon *targetFunction;
     SharedVector leftBound, rightBound;
     String^ error_numbers = gcnew String("");
@@ -1076,22 +1076,22 @@ private: System::Windows::Forms::Label^ label15;
 
     if (gklsHardRadioButton->Checked || gklsRadioButton2->Checked) {
 
-      currentDimention = mTaskGeneratorSettings.GKLSDimention;
-      leftBound = SharedVector(new double[currentDimention],
+      currentDimension = mTaskGeneratorSettings.GKLSDimension;
+      leftBound = SharedVector(new double[currentDimension],
         utils::array_deleter<double>());
-      rightBound = SharedVector(new double[currentDimention],
+      rightBound = SharedVector(new double[currentDimension],
         utils::array_deleter<double>());
 
-      for (int i = 0; i < currentDimention; i++) {
+      for (int i = 0; i < currentDimension; i++) {
         leftBound.get()[i] = -1;
         rightBound.get()[i] = 1;
       }
 
       GKLSFunctionWrapper* g = new GKLSFunctionWrapper();
       if (gklsRadioButton2->Checked)
-        g->SetClassType(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+        g->SetClassType(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimension);
       else if (gklsHardRadioButton->Checked)
-        g->SetClassType(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
+        g->SetClassType(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimension);
 
       targetFunction = g;
     }
@@ -1109,7 +1109,7 @@ private: System::Windows::Forms::Label^ label15;
     OptimizerFunctionPtr* taskFunctions = new OptimizerFunctionPtr[1];
     taskFunctions[0] = OptimizerFunctionPtr(targetFunction);
     optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
-      utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
+      utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimension, leftBound, rightBound);
 
 
 
@@ -1117,7 +1117,7 @@ private: System::Windows::Forms::Label^ label15;
 
     //agp.SetTask(task);
 
-    double *x, *y = new double[mTaskGeneratorSettings.GKLSDimention];
+    double *x, *y = new double[mTaskGeneratorSettings.GKLSDimension];
     double meanIterationsCount = 0;
     int err_count = 0, max_count = 0;
     Stopwatch s_watch;
@@ -1132,7 +1132,7 @@ private: System::Windows::Forms::Label^ label15;
         ags = new OptimizerAlgorithmUnconstrained();
     }
     ags->SetParameters(*mCurrentAlgParams);
-    ags->SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+    ags->SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimension));
 
 
     s_watch.Start();
@@ -1145,7 +1145,7 @@ private: System::Windows::Forms::Label^ label15;
         auto taskSolution = expResult.GetSolution();
         x = taskSolution.GetOptimumPoint().get();
 
-        if (utils::NormNDimMax(x, y, currentDimention) < optimumCheckEps) {
+        if (utils::NormNDimMax(x, y, currentDimension) < optimumCheckEps) {
             meanIterationsCount += taskSolution.GetIterationsCount();
             mOperationCharacteristicData[i - 1] = taskSolution.GetIterationsCount();
         }
@@ -1292,10 +1292,10 @@ private: System::Windows::Forms::Label^ label15;
         return;
       }
 
-      problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
+      problem->SetDimension(mTaskGeneratorSettings.GKLSDimension);
 
-      auto leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
-      auto rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
+      auto leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimension], utils::array_deleter<double>());
+      auto rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimension], utils::array_deleter<double>());
       problem->GetBounds(leftBound.get(), rightBound.get());
       x_left = static_cast<float>(leftBound.get()[0]);
       y_min = static_cast<float>(leftBound.get()[1]);
@@ -1309,11 +1309,11 @@ private: System::Windows::Forms::Label^ label15;
     }
     else {
       if (gklsRadioButton2->Checked) {
-        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimension);
         taskName += "GKLS Simple function #" + task_num.ToString();
       }
       else if (gklsHardRadioButton->Checked) {
-        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
+        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimension);
         taskName += "GKLS Hard function #" + task_num.ToString();
       }
       x_left = y_min = -1;
@@ -1415,13 +1415,13 @@ private: System::Windows::Forms::Label^ label15;
 
   private: System::Void DrawOneDimGraph(int task_num, ISearchSequence* points) {
     int n = 2000;
-    double fpi = 1, step, *y = new double[mTaskGeneratorSettings.GKLSDimention];
+    double fpi = 1, step, *y = new double[mTaskGeneratorSettings.GKLSDimension];
     array<float, 1>^ xray = gcnew array<float, 1>(n + 1);
     array<float, 1>^ yray = gcnew array<float, 1>(n + 1);
     array<float, 2>^ searchSequence;
     String ^taskName;
     int map_t = Convert::ToInt32(map_tightness->Value);
-    int currentDimention = 2;
+    int currentDimension = 2;
     map_type = MapTypeComboBox->SelectedIndex + 1;
     TProblemManager manager;
     SharedVector leftBound, rightBound;
@@ -1452,9 +1452,9 @@ private: System::Windows::Forms::Label^ label15;
         return;
       }
 
-      problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
-      leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
-      rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
+      problem->SetDimension(mTaskGeneratorSettings.GKLSDimension);
+      leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimension], utils::array_deleter<double>());
+      rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimension], utils::array_deleter<double>());
       problem->GetBounds(leftBound.get(), rightBound.get());
 
       taskName = "Custom function";
@@ -1464,18 +1464,18 @@ private: System::Windows::Forms::Label^ label15;
     {
       if (gklsRadioButton2->Checked)
       {
-        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimension);
         taskName = "GKLS Simple function # " + task_num.ToString();
       }
       else if (gklsHardRadioButton->Checked)
       {
-        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
+        f = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimension);
         taskName = "GKLS Hard function # " + task_num.ToString();
       }
-      currentDimention = mTaskGeneratorSettings.GKLSDimention;
-      leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
-      rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimention], utils::array_deleter<double>());
-      for (int i = 0; i < currentDimention; i++)
+      currentDimension = mTaskGeneratorSettings.GKLSDimension;
+      leftBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimension], utils::array_deleter<double>());
+      rightBound = SharedVector(new double[mTaskGeneratorSettings.GKLSDimension], utils::array_deleter<double>());
+      for (int i = 0; i < currentDimension; i++)
       {
         leftBound.get()[i] = -1;
         rightBound.get()[i] = 1;
@@ -1484,12 +1484,12 @@ private: System::Windows::Forms::Label^ label15;
     f->SetFunctionNumber(task_num);
 
     step = 1.0 / n;
-    auto transform = OptimizerSpaceTransformation(leftBound, rightBound, currentDimention);
+    auto transform = OptimizerSpaceTransformation(leftBound, rightBound, currentDimension);
 
     for (int i = 0; i <= n; i++)
     {
       xray[i] = (float)(i * step);
-      mapd(xray[i], map_t, y, currentDimention, map_type);
+      mapd(xray[i], map_t, y, currentDimension, map_type);
       transform.Transform(y, y);
       yray[i] = static_cast<float>(f->Calculate(y));
     }
@@ -1593,7 +1593,7 @@ private: System::Windows::Forms::Label^ label15;
 
   private: System::Void solveSingleTaskBackgroundWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e) {
       //readAlgorithmParameters();
-      int currentDimention = 2;
+      int currentDimension = 2;
       FunctionWrapperCommon* targetFunction;
       SharedVector leftBound, rightBound;
       TProblemManager manager;
@@ -1623,11 +1623,11 @@ private: System::Windows::Forms::Label^ label15;
               return;
           }
 
-          problem->SetDimension(mTaskGeneratorSettings.GKLSDimention);
-          currentDimention = problem->GetDimension();
+          problem->SetDimension(mTaskGeneratorSettings.GKLSDimension);
+          currentDimension = problem->GetDimension();
 
-          leftBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
-          rightBound = SharedVector(new double[currentDimention], utils::array_deleter<double>());
+          leftBound = SharedVector(new double[currentDimension], utils::array_deleter<double>());
+          rightBound = SharedVector(new double[currentDimension], utils::array_deleter<double>());
 
           problem->GetBounds(leftBound.get(), rightBound.get());
 
@@ -1635,24 +1635,24 @@ private: System::Windows::Forms::Label^ label15;
       }
       else
       {
-          currentDimention = mTaskGeneratorSettings.GKLSDimention;
-          leftBound = SharedVector(new double[currentDimention],
+          currentDimension = mTaskGeneratorSettings.GKLSDimension;
+          leftBound = SharedVector(new double[currentDimension],
               utils::array_deleter<double>());
-          rightBound = SharedVector(new double[currentDimention],
+          rightBound = SharedVector(new double[currentDimension],
               utils::array_deleter<double>());
 
-          for (int i = 0; i < currentDimention; i++) {
+          for (int i = 0; i < currentDimension; i++) {
               leftBound.get()[i] = -1;
               rightBound.get()[i] = 1;
           }
 
           if (gklsRadioButton2->Checked == true)
-              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimention);
+              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Simple, mTaskGeneratorSettings.GKLSDimension);
           else if (gklsHardRadioButton->Checked == true)
-              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimention);
+              targetFunction = new GKLSFunctionWrapper(gklsfunction::GKLSClass::Hard, mTaskGeneratorSettings.GKLSDimension);
       }
 
-      double* x, err_val, err_xy, * y = new double[currentDimention];
+      double* x, err_val, err_xy, * y = new double[currentDimension];
 
       targetFunction->SetFunctionNumber(mCurrentTaskNumber);
       targetFunction->GetMinPoint(y);
@@ -1661,12 +1661,12 @@ private: System::Windows::Forms::Label^ label15;
       OptimizerFunctionPtr* taskFunctions = new OptimizerFunctionPtr[1];
       taskFunctions[0] = OptimizerFunctionPtr(targetFunction);
       optimizercore::OptimizerTask task(std::shared_ptr<OptimizerFunctionPtr>(taskFunctions,
-          utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimention, leftBound, rightBound);
+          utils::array_deleter<OptimizerFunctionPtr>()), 0, currentDimension, leftBound, rightBound);
       OptimizerResult expResult;
       if (!checkBox1->Checked) {
           OptimizerAlgorithmUnconstrained ags;
           ags.SetParameters(*mCurrentAlgParams);
-          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimension));
 
           expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
           if (currentSequence != nullptr)
@@ -1675,7 +1675,7 @@ private: System::Windows::Forms::Label^ label15;
           x = expResult.GetSolution().GetOptimumPoint().get();
 
           err_val = expResult.GetSolution().GetOptimumValue() - err_val;
-          err_xy = utils::NormNDimMax(x, y, currentDimention);
+          err_xy = utils::NormNDimMax(x, y, currentDimension);
 
 
           //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
@@ -1711,7 +1711,7 @@ private: System::Windows::Forms::Label^ label15;
       else if (!checkBox2->Checked){
           OptimizerAlgorithmNested ags;
           ags.SetParameters(*mCurrentAlgParams);
-          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimension));
 
           expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
           if (currentSequence != nullptr)
@@ -1720,7 +1720,7 @@ private: System::Windows::Forms::Label^ label15;
           x = expResult.GetSolution().GetOptimumPoint().get();
 
           err_val = expResult.GetSolution().GetOptimumValue() - err_val;
-          err_xy = utils::NormNDimMax(x, y, currentDimention);
+          err_xy = utils::NormNDimMax(x, y, currentDimension);
 
 
           //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
@@ -1756,7 +1756,7 @@ private: System::Windows::Forms::Label^ label15;
       else {
           OptimizerAlgorithmAdaptive ags;
           ags.SetParameters(*mCurrentAlgParams);
-          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimention));
+          ags.SetTask(taskFunctions[0], OptimizerSpaceTransformation(leftBound, rightBound, currentDimension));
 
           expResult = ags.StartOptimization(y, static_cast<StopCriterionType>(stopCheckBox->Checked));
           if (currentSequence != nullptr)
@@ -1765,7 +1765,7 @@ private: System::Windows::Forms::Label^ label15;
           x = expResult.GetSolution().GetOptimumPoint().get();
 
           err_val = expResult.GetSolution().GetOptimumValue() - err_val;
-          err_xy = utils::NormNDimMax(x, y, currentDimention);
+          err_xy = utils::NormNDimMax(x, y, currentDimension);
 
 
           //this->it_count_lbl->Text = expResult.GetSolution().GetIterationsCount().ToString(); // Exception HERE
@@ -1819,13 +1819,13 @@ private: System::Windows::Forms::Label^ label15;
 
   private: System::Void solveSingleTaskBackgroundWorker_RunWorkerCompleted(System::Object^  sender, System::ComponentModel::RunWorkerCompletedEventArgs^  e) {
     solveSingleTaskButton->Enabled = true;
-    int currentDimention = mCurrentAlgParams->algDimention;
+    int currentDimension = mCurrentAlgParams->algDimension;
 
     if (graph_checkBox->Checked && currentSequence)
     {
       if (mGraphSettings.showOneDimSolutionGraph)
         DrawOneDimGraph(mCurrentTaskNumber, currentSequence);
-      if (currentDimention == 2)
+      if (currentDimension == 2)
         DrawIsolines(mCurrentTaskNumber, currentSequence);
     }
     solveSeriesButton->Enabled = true;
@@ -1846,9 +1846,9 @@ private: System::Windows::Forms::Label^ label15;
     else
       mCurrentAlgParams->localMixParameter = 0;
     if (grishaginRadioButton->Checked)
-      mCurrentAlgParams->algDimention = 2;
+      mCurrentAlgParams->algDimension = 2;
     else
-      mCurrentAlgParams->algDimention = mTaskGeneratorSettings.GKLSDimention;
+      mCurrentAlgParams->algDimension = mTaskGeneratorSettings.GKLSDimension;
     mCurrentTaskNumber = Convert::ToInt32(task_number->Value);
     mCurrentAlgParams->localVerification = mAlgorithmSettings.localVerification;
     // Hmm... But if I'm about to add nested scheme as a part of this menu...

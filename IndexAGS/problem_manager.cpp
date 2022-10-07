@@ -18,7 +18,7 @@
 #include <iostream>
 
 // ------------------------------------------------------------------------------------------------
-TProblemManager::TProblemManager() : mLibHandle(NULL), mProblem(NULL), mCreate(NULL), mDestroy(NULL) {
+TProblemManager::TProblemManager() : mLibHandle(nullptr), mProblem(nullptr), mCreate(nullptr), mDestroy(nullptr) {
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -47,8 +47,8 @@ int TProblemManager::LoadProblemLibrary(const std::string& libPath) {
     mProblem = mCreate();
     if (!mProblem) {
         FreeLibHandler();
-        mCreate = NULL;
-        mDestroy = NULL;
+        mCreate = nullptr;
+        mDestroy = nullptr;
         std::cerr << "Cannot create problem instance" << std::endl;
     }
 
@@ -58,7 +58,7 @@ int TProblemManager::LoadProblemLibrary(const std::string& libPath) {
 // ------------------------------------------------------------------------------------------------
 void TProblemManager::FreeLibHandler() {
     FreeLibrary(mLibHandle);
-    mLibHandle = NULL;
+    mLibHandle = nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -67,10 +67,10 @@ int TProblemManager::FreeProblemLibrary() {
         mDestroy(mProblem);
     if (mLibHandle)
         FreeLibHandler();
-    mLibHandle = NULL;
-    mProblem = NULL;
-    mCreate = NULL;
-    mDestroy = NULL;
+    mLibHandle = nullptr;
+    mProblem = nullptr;
+    mCreate = nullptr;
+    mDestroy = nullptr;
     return TProblemManager::OK_;
 }
 
@@ -80,7 +80,7 @@ IProblem* TProblemManager::GetProblem() const {
     // if (mProblem)
     //    return mProblem;
     // else
-    //    return NULL;
+    //    return nullptr;
     return mProblem;
 }
 // - end of file ----------------------------------------------------------------------------------

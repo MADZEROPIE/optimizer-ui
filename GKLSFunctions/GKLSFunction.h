@@ -129,7 +129,7 @@ public:
     ~GKLSFunction();
 
     PROPERTY(int, FunctionNumber);
-    PROPERTY(unsigned, Dimention);
+    PROPERTY(unsigned, Dimension);
     PROPERTY(double, GlobalMinimumValue);
     PROPERTY(unsigned, NumberOfLocalMinima);
     PROPERTY(double, GlobalDistance);
@@ -137,7 +137,7 @@ public:
 
     void SetDefaultParameters();
     int CheckParameters() const;
-    void SetFunctionClass(GKLSClass type, unsigned dimention);
+    void SetFunctionClass(GKLSClass type, unsigned dimension);
 
     double EvaluateNDFunction(const double* x) const;
     double EvaluateDFunction(const double* x) const;

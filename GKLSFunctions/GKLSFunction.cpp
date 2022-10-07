@@ -36,7 +36,7 @@ int GKLSFunction::GetFunctionNumber() const {
     return mFunctionNumber;
 }
 
-void GKLSFunction::SetDimention(unsigned value) {
+void GKLSFunction::SetDimension(unsigned value) {
     assert(value < 2 || value >= NUM_RND);
     mDimension = value;
     GKLS_dim = value;
@@ -96,7 +96,7 @@ void GKLSFunction::SetDefaultParameters() {
     else if ((error = GKLS_domain_alloc()) != GKLS_OK)
         assert(error != GKLS_OK);
 
-    // if ((GKLS_domain_left == NULL) || (GKLS_domain_right == NULL)) {
+    // if ((GKLS_domain_left == nullptr) || (GKLS_domain_right == nullptr)) {
     /* define the boundaries  */
     //	if ((error = GKLS_domain_alloc()) != GKLS_OK) assert(error != GKLS_OK);
     //}
@@ -113,10 +113,10 @@ void GKLSFunction::SetDefaultParameters() {
     GKLS_global_value = GKLS_GLOBAL_MIN_VALUE;
 }
 
-void GKLSFunction::SetFunctionClass(GKLSClass type, unsigned classDimention) {
-    assert(classDimention > 1);
+void GKLSFunction::SetFunctionClass(GKLSClass type, unsigned classDimension) {
+    assert(classDimension > 1);
     int error;
-    GKLS_dim = classDimention;
+    GKLS_dim = classDimension;
     mDimension = GKLS_dim;
     GKLS_num_minima = 10;
     if (mIsDomainMemeoryAllocated)
@@ -180,9 +180,9 @@ int GKLSFunction::GKLS_domain_alloc() {
 
     if ((GKLS_dim <= 1) || (GKLS_dim >= NUM_RND))
         return GKLS_DIM_ERROR; /* problem dimension error */
-    if ((GKLS_domain_left = (double*)(malloc((size_t)GKLS_dim * sizeof(double)))) == NULL)
+    if ((GKLS_domain_left = (double*)(malloc((size_t)GKLS_dim * sizeof(double)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
-    if ((GKLS_domain_right = (double*)(malloc((size_t)GKLS_dim * sizeof(double)))) == NULL)
+    if ((GKLS_domain_right = (double*)(malloc((size_t)GKLS_dim * sizeof(double)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
     /* Set the admissible region as [-1,1]^GKLS_dim */
     for (i = 0; i < GKLS_dim; i++) {
@@ -223,20 +223,20 @@ int GKLSFunction::GKLS_alloc() {
         return GKLS_DIM_ERROR; /* problem dimension error */
     if (GKLS_num_minima <= 1)
         return GKLS_NUM_MINIMA_ERROR; /* erroneous number of local minima */
-    if ((GKLS_minima.local_min = (double**)(malloc((size_t)GKLS_num_minima * sizeof(double*)))) == NULL)
+    if ((GKLS_minima.local_min = (double**)(malloc((size_t)GKLS_num_minima * sizeof(double*)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
     for (i = 0; i < GKLS_num_minima; i++)
-        if ((GKLS_minima.local_min[i] = (double*)(malloc((size_t)GKLS_dim * sizeof(double)))) == NULL)
+        if ((GKLS_minima.local_min[i] = (double*)(malloc((size_t)GKLS_dim * sizeof(double)))) == nullptr)
             return GKLS_MEMORY_ERROR; /* memory allocation error */
-    if ((GKLS_minima.w_rho = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == NULL)
+    if ((GKLS_minima.w_rho = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
-    if ((GKLS_minima.peak = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == NULL)
+    if ((GKLS_minima.peak = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
-    if ((GKLS_minima.rho = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == NULL)
+    if ((GKLS_minima.rho = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
-    if ((GKLS_minima.f = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == NULL)
+    if ((GKLS_minima.f = (double*)(malloc((size_t)GKLS_num_minima * sizeof(double)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
-    if ((GKLS_glob.gm_index = (unsigned int*)(malloc((size_t)GKLS_num_minima * sizeof(unsigned int)))) == NULL)
+    if ((GKLS_glob.gm_index = (unsigned int*)(malloc((size_t)GKLS_num_minima * sizeof(unsigned int)))) == nullptr)
         return GKLS_MEMORY_ERROR; /* memory allocation error */
     else
         GKLS_glob.num_global_minima = 0;
@@ -252,7 +252,7 @@ int GKLSFunction::GKLS_parameters_check() const {
         return GKLS_DIM_ERROR; /* problem dimension errors */
     if (GKLS_num_minima <= 1)  /* number of local minima error */
         return GKLS_NUM_MINIMA_ERROR;
-    if ((GKLS_domain_left == NULL) || (GKLS_domain_right == NULL))
+    if ((GKLS_domain_left == nullptr) || (GKLS_domain_right == nullptr))
         return GKLS_BOUNDARY_ERROR; /* the boundaries are not defined */
     for (i = 0; i < GKLS_dim; i++)
         if (GKLS_domain_left[i] >= GKLS_domain_right[i] - GKLS_PRECISION)
@@ -883,7 +883,7 @@ int GKLSFunction::EvaluateDFunctionGradient(const double* x, double* g) const {
 
     if (!isArgSet)
         return GKLS_DERIV_EVAL_ERROR;
-    if (g == NULL)
+    if (g == nullptr)
         return GKLS_DERIV_EVAL_ERROR;
 
     for (i = 1; i <= GKLS_dim; i++) {
@@ -900,7 +900,7 @@ int GKLSFunction::EvaluateD2FunctionGradient(const double* x, double* g) const {
 
     if (!isArgSet)
         return GKLS_DERIV_EVAL_ERROR;
-    if (g == NULL)
+    if (g == nullptr)
         return GKLS_DERIV_EVAL_ERROR;
 
     for (i = 1; i <= GKLS_dim; i++) {
@@ -917,10 +917,10 @@ int GKLSFunction::EvaluateD2FunctionHessian(const double* x, double** h) const {
 
     if (!isArgSet)
         return GKLS_DERIV_EVAL_ERROR;
-    if (h == NULL)
+    if (h == nullptr)
         return GKLS_DERIV_EVAL_ERROR;
     for (i = 1; i <= GKLS_dim; i++)
-        if (h[i - 1] == NULL)
+        if (h[i - 1] == nullptr)
             return GKLS_DERIV_EVAL_ERROR;
 
     for (i = 1; i <= GKLS_dim; i++)

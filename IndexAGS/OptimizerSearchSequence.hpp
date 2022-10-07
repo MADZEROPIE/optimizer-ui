@@ -48,7 +48,7 @@ public:
     double GetValue(int indx);
 
     OptimizerSearchSequence();
-    OptimizerSearchSequence(const std::set<OptimizerTrialPoint>& sequence, unsigned dimention, MapType mapType,
+    OptimizerSearchSequence(const std::set<OptimizerTrialPoint>& sequence, unsigned dimension, MapType mapType,
                             unsigned mapDensity, OptimizerSpaceTransformation transform);
     ~OptimizerSearchSequence();
 
@@ -69,7 +69,7 @@ private:
 
 public:
     OptimazerNestedSearchSequence();
-    OptimazerNestedSearchSequence(const std::set<OptimizerNestedTrialPoint>& sequence, unsigned dimention);
+    OptimazerNestedSearchSequence(const std::set<OptimizerNestedTrialPoint>& sequence, unsigned dimension);
     void GetPoint(int indx, double* x);
     double GetOneDimPoint(int indx);
     double GetValue(int indx);
