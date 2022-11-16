@@ -21,8 +21,10 @@ private:
         int level = 0;
         int parent_id = -1;
         OptimizerNestedTrialPoint basepoint;
+        OptimizerNestedTrialPoint maxpoint;
         ITask(int _level = 0, int _parent_id = -1, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
     };
+
     class SubTask : public ITask {
     public:
         double R = -INFINITY;
@@ -42,6 +44,7 @@ private:
         }
         void clear();
     };
+
     class XSub {
     public:
         double x;
@@ -88,6 +91,7 @@ private:
     LipschitzConstantEvaluation mLipMode;
     IndexMethodOptions mIndexZ;
     NewPointOptions mNewPNT;
+    MonotonousOptions mMonotonous;
 
     double *leftDomainBound, *rightDomainBound;
 
@@ -110,6 +114,7 @@ private:
     int ChooseSubtask();
     void GenerateSubTasks(int parent, OptimizerNestedTrialPoint npnt);
     double Choosem(int task_id, LipschitzConstantEvaluation mtype);
+    void MonotonousTransform(double& z, int task_id);
 
 public:
     OptimizerAlgorithmAdaptive();

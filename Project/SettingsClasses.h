@@ -94,6 +94,11 @@ namespace optimizerui
 		// New point
 		bool halfPnt = true;
 		bool medianPnt = false;
+
+		// Monotonous
+        bool notMonotonous = true;
+        bool Monotonous = false;
+
 		AdaptiveNestedSettings()
 		{
 		}

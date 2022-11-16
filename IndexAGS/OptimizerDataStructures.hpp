@@ -6,11 +6,12 @@
 
 namespace optimizercore {
 
-enum class StopCriterionType : int { OptimalPoint = 0, Precision = 1 };
-enum class LocalTuningMode : int { None = 0, Maximum = 1, Adaptive = 2 };
-enum class LipschitzConstantEvaluation : int { Global = 0, Single_task = 1, Level = 2, Adaptive = 3 };
-enum class IndexMethodOptions : int { None = 0, Single_task = 1, Global = 2 };
-enum class NewPointOptions : int { Half = 0, Median = 1 };
+enum class StopCriterionType : int16_t { OptimalPoint = 0, Precision = 1 };
+enum class LocalTuningMode : int16_t { None = 0, Maximum = 1, Adaptive = 2 };
+enum class LipschitzConstantEvaluation : int16_t { Global = 0, Single_task = 1, Level = 2, Adaptive = 3 };
+enum class IndexMethodOptions : int16_t { None = 0, Single_task = 1, Global = 2 };
+enum class NewPointOptions : int16_t { Half = 0, Median = 1 };
+enum class MonotonousOptions : int16_t { None = 0, Monotonous = 1 };
 
 struct OptimizerTrialPoint {
     double x, val;
@@ -62,6 +63,7 @@ struct OptimizerParameters {
     LipschitzConstantEvaluation lipEval;
     IndexMethodOptions indexZ;
     NewPointOptions newPNT;
+    MonotonousOptions monotonous;
     int mapTightness;
     OptimizerParameters() {
         r = reserves = nullptr;
@@ -69,7 +71,8 @@ struct OptimizerParameters {
     OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps, double* _r, double* _reserves,
                         unsigned _algDimension, int _localExponent, int _localMixParameter,
                         int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness, bool _localVerification,
-                        LipschitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ, NewPointOptions _newPNT) {
+                        LipschitzConstantEvaluation _lipEval, IndexMethodOptions _indexZ, NewPointOptions _newPNT,
+                        MonotonousOptions _monotonous) {
         maxIterationsNumber = _maxIterationsNumber;
         numberOfThreads = _numberOfThreads;
         eps = _eps;
@@ -85,12 +88,13 @@ struct OptimizerParameters {
         lipEval = _lipEval;
         indexZ = _indexZ;
         newPNT = _newPNT;
+        monotonous = _monotonous;
     }
     OptimizerParameters(int _maxIterationsNumber, int _numberOfThreads, double _eps, double* _r, double* _reserves,
                         unsigned _algDimension, int _localExponent, int _localMixParameter,
                         int _localAlgStartIterationNumber, MapType _mapType, int _mapTightness, bool _localVerification,
                         LocalTuningMode _localTuningMode, LipschitzConstantEvaluation _lipEval,
-                        IndexMethodOptions _indexZ, NewPointOptions _newPNT) {
+                        IndexMethodOptions _indexZ, NewPointOptions _newPNT, MonotonousOptions _monotonous) {
         maxIterationsNumber = _maxIterationsNumber;
         numberOfThreads = _numberOfThreads;
         eps = _eps;
@@ -107,7 +111,9 @@ struct OptimizerParameters {
         lipEval = _lipEval;
         indexZ = _indexZ;
         newPNT = _newPNT;
+        monotonous = _monotonous;
     }
+    
 };
 
 class IndxSet {

@@ -1875,6 +1875,12 @@ private: System::Windows::Forms::Label^ label15;
      if (mAdaptiveSettings.medianPnt)
          mCurrentAlgParams->newPNT = NewPointOptions::Median;
 
+     mCurrentAlgParams->monotonous = MonotonousOptions::None;
+     if (mAdaptiveSettings.Monotonous) {
+         mCurrentAlgParams->monotonous = MonotonousOptions::Monotonous;
+     }
+
+
   }
 
   private: System::Void saveOPChartToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
