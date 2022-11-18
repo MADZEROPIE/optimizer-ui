@@ -21,7 +21,8 @@ private:
         int level = 0;
         int parent_id = -1;
         OptimizerNestedTrialPoint basepoint;
-        OptimizerNestedTrialPoint maxpoint;
+        double maxpoint;
+        double transval;
         ITask(int _level = 0, int _parent_id = -1, OptimizerNestedTrialPoint _basepoint = OptimizerNestedTrialPoint());
     };
 
@@ -114,7 +115,8 @@ private:
     int ChooseSubtask();
     void GenerateSubTasks(int parent, OptimizerNestedTrialPoint npnt);
     double Choosem(int task_id, LipschitzConstantEvaluation mtype);
-    void MonotonousTransform(double& z, int task_id);
+    void MonotonousTransformAll(int task_id);
+    inline void MonotonousTransform(double& z, int task_id);
 
 public:
     OptimizerAlgorithmAdaptive();

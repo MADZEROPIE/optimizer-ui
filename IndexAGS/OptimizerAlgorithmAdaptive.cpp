@@ -15,7 +15,7 @@ optimizercore::OptimizerAlgorithmAdaptive::SubTask::SubTask(int _level, int _par
     level = _level;
     parent_id = _parent_id;
     basepoint = _basepoint;
-    maxpoint = _basepoint;
+    maxpoint = _basepoint.val;
     R = -INFINITY;
     m = 1;
     M = 0;
@@ -33,7 +33,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::SubTask::clear() {
     m = 1;
     M = 0;
     basepoint.val = INFINITY;
-    maxpoint.val = -INFINITY;
+    maxpoint = -INFINITY;
 }
 
 // ------- OptimizerAlgorithmAdaptive -------
@@ -48,7 +48,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::UpdateParents(int trial_id) {
             // CalculateM(static_cast<SubTask*>(task->parent));
             // CalculateRanks(static_cast<SubTask*>(task->parent));
         } 
-        if (task->maxpoint.val > all_tasks[task->parent_id].maxpoint.val) {
+        if (task->maxpoint > all_tasks[task->parent_id].maxpoint) {
             all_tasks[task->parent_id].maxpoint = task->maxpoint;
         }
 
@@ -78,16 +78,16 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateM(int task_id) {
             all_tasks[task_id].minIntervalNorm = dx;
         double zl, zr;
         if (level + 1 == mMethodDimension) {
-            zl = all_trials[it1->subtask_id].basepoint.val;
-            zr = all_trials[it2->subtask_id].basepoint.val;
+            zl = all_trials[it1->subtask_id].transval;  //.basepoint.val;
+            zr = all_trials[it2->subtask_id].transval;  //.basepoint.val;
         } else {
-            zl = all_tasks[it1->subtask_id].basepoint.val;
-            zr = all_tasks[it2->subtask_id].basepoint.val;
+            zl = all_tasks[it1->subtask_id].transval;  //.basepoint.val;
+            zr = all_tasks[it2->subtask_id].transval;  //.basepoint.val;
         }
-        if (mMonotonous == MonotonousOptions::Monotonous) {
-            MonotonousTransform(zl, task_id);
-            MonotonousTransform(zr, task_id);
-        }
+        // if (mMonotonous == MonotonousOptions::Monotonous) {
+        //    MonotonousTransform(zl, task_id);
+        //    MonotonousTransform(zr, task_id);
+        //}
         mtpm = abs((zr - zl) / dx);
         if (mtpm > max)
             max = mtpm;
@@ -124,13 +124,13 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
     double zr;
 
     if (level + 1 != mMethodDimension) {
-        zr = all_tasks[it1->subtask_id].basepoint.val;
+        zr = all_tasks[it1->subtask_id].transval;  //.basepoint.val;
     } else {
-        zr = all_trials[it1->subtask_id].basepoint.val;
+        zr = all_trials[it1->subtask_id].transval;  //.basepoint.val;
     }
-    if (mMonotonous == MonotonousOptions::Monotonous) {
-        MonotonousTransform(zr, task_id);
-    }
+    //if (mMonotonous == MonotonousOptions::Monotonous) {
+    //    MonotonousTransform(zr, task_id);
+    //}
 
     if (mIndexZ == IndexMethodOptions::None) {
         task.R = 2 * m * (it1->x - lx) - 4 * zr;
@@ -145,16 +145,16 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
         ++t;
 
         if (level + 1 != mMethodDimension) {
-            zl = all_tasks[it1->subtask_id].basepoint.val;
-            zr = all_tasks[it2->subtask_id].basepoint.val;
+            zl = all_tasks[it1->subtask_id].transval;  //.basepoint.val;
+            zr = all_tasks[it2->subtask_id].transval;  //.basepoint.val;
         } else {
-            zl = all_trials[it1->subtask_id].basepoint.val;
-            zr = all_trials[it2->subtask_id].basepoint.val;
+            zl = all_trials[it1->subtask_id].transval;  //.basepoint.val;
+            zr = all_trials[it2->subtask_id].transval;  //.basepoint.val;
         }
-        if (mMonotonous == MonotonousOptions::Monotonous) {
-            MonotonousTransform(zl, task_id);
-            MonotonousTransform(zr, task_id);
-        }
+        //if (mMonotonous == MonotonousOptions::Monotonous) {
+        //    MonotonousTransform(zl, task_id);
+        //    MonotonousTransform(zr, task_id);
+        //}
         double rtpm;
         double del = (it2->x - it1->x);
         if (mIndexZ == IndexMethodOptions::None)
@@ -176,20 +176,21 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
 
 
     if (level + 1 != mMethodDimension) {
-        zl = all_tasks[it1->subtask_id].basepoint.val;
+        zl = all_tasks[it1->subtask_id].transval;  // basepoint.val;
     } else {
-        zl = all_trials[it1->subtask_id].basepoint.val;
+        zl = all_trials[it1->subtask_id].transval;  // basepoint.val;
     }
-    if (mMonotonous == MonotonousOptions::Monotonous) {
-        MonotonousTransform(zl, task_id);
-    }
+    //if (mMonotonous == MonotonousOptions::Monotonous) {
+    //    MonotonousTransform(zl, task_id);
+    //}
 
-    if (mIndexZ == IndexMethodOptions::None)
+    if (mIndexZ == IndexMethodOptions::None) {
         rtpm = 2 * m * (rx - it1->x) - 4 * zl;
-    else if (mIndexZ == IndexMethodOptions::Global)
+    } else if (mIndexZ == IndexMethodOptions::Global) {
         rtpm = 2 * (rx - it1->x) - 4 * (zl - all_tasks[0].basepoint.val) / m;
-    else
+    } else {
         rtpm = 2 * (rx - it1->x) - 4 * (zl - all_tasks[task_id].basepoint.val) / m;
+    }
     if (rtpm > task.R) {
         task.R = rtpm;
         task.Rind = t + 1;
@@ -197,6 +198,11 @@ void optimizercore::OptimizerAlgorithmAdaptive::CalculateRanks(int task_id) {
 }
 
 int optimizercore::OptimizerAlgorithmAdaptive::ChooseSubtask() {
+    // Transform values
+    for (int i = 0; i < all_tasks.size(); ++i) {
+        MonotonousTransformAll(i);
+    }
+
     // Reset M
     mGlobalM = 0;
     for (int i = 0; i < mLevelM.size(); ++i) {
@@ -262,7 +268,7 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
             }
         }
         all_tasks.push_back(SubTask(level, parent_id, npnt));
-        all_tasks.back().maxpoint.val = -INFINITY;
+        all_tasks.back().maxpoint = -INFINITY;
         all_tasks[parent_id].trials.emplace(XSub(npnt.x[level - 1], all_tasks.size() - 1));
         parent_id = all_tasks.size() - 1;
         ++level;
@@ -275,8 +281,8 @@ void optimizercore::OptimizerAlgorithmAdaptive::GenerateSubTasks(int parent_id, 
     if (all_tasks[parent_id].basepoint.val >= npnt.val) {
         all_tasks[parent_id].basepoint = npnt;
     }
-    if (all_tasks[parent_id].maxpoint.val <= npnt.val) {
-        all_tasks[parent_id].maxpoint = npnt;
+    if (all_tasks[parent_id].maxpoint < npnt.val) {
+        all_tasks[parent_id].maxpoint = npnt.val;
     }
     UpdateParents(all_trials.size() - 1);
 
@@ -349,12 +355,29 @@ double optimizercore::OptimizerAlgorithmAdaptive::Choosem(int task_id, Lipschitz
     return m;
 }
 
+void optimizercore::OptimizerAlgorithmAdaptive::MonotonousTransformAll(int task_id) {
+    SubTask& task = all_tasks[task_id];
+    int level = task.level;
+    for (auto& trial : task.trials) {
+        double* z;
+        if (level + 1 != mMethodDimension) {
+            all_tasks[trial.subtask_id].transval = all_tasks[trial.subtask_id].basepoint.val;
+            z = &all_tasks[trial.subtask_id].transval;
+        } else {
+            all_trials[trial.subtask_id].transval = all_trials[trial.subtask_id].basepoint.val;
+            z = &all_trials[trial.subtask_id].transval;
+        }
+        MonotonousTransform(*z, task_id);
+    }
+    
+}
+
 void optimizercore::OptimizerAlgorithmAdaptive::MonotonousTransform(double& z, int task_id) {
     if (this->mIndexZ != IndexMethodOptions::None || all_tasks[task_id].trials.size()<2 || mMonotonous==MonotonousOptions::None) {
         return;
     }
     double minz = all_tasks[task_id].basepoint.val;
-    double maxz = all_tasks[task_id].maxpoint.val;
+    double maxz = all_tasks[task_id].maxpoint;
     if ((maxz - minz) < 1e-6) {
         return;
     }
@@ -510,7 +533,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
     pnt1.x[0] = (mSpaceTransform.GetRightDomainBound().get()[0] + mSpaceTransform.GetLeftDomainBound().get()[0]) / 2;
     pnt1.val = INFINITY;
     all_tasks.push_back(SubTask(0, -1, pnt1));
-    all_tasks[0].maxpoint.val = -INFINITY;
+    all_tasks[0].maxpoint = -INFINITY;
 
     GenerateSubTasks(0, all_tasks[0].basepoint);
     bool stop = false;
@@ -539,16 +562,20 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             auto itr = itl--;
             double zr, zl;
             if (level + 1 != mMethodDimension) {
-                zr = all_tasks[itr->subtask_id].basepoint.val;
-                zl = all_tasks[itl->subtask_id].basepoint.val;
+                //zr = all_tasks[itr->subtask_id].basepoint.val;
+               // zl = all_tasks[itl->subtask_id].basepoint.val;
+                zr = all_tasks[itr->subtask_id].transval;
+                zl = all_tasks[itl->subtask_id].transval;
             } else {
-                zr = all_trials[itr->subtask_id].basepoint.val;
-                zl = all_trials[itl->subtask_id].basepoint.val;
+               // zr = all_trials[itr->subtask_id].basepoint.val;
+               // zl = all_trials[itl->subtask_id].basepoint.val;
+               zr = all_trials[itr->subtask_id].transval;
+               zl = all_trials[itl->subtask_id].transval;
             }
-            if (mMonotonous == MonotonousOptions::Monotonous) {
-                MonotonousTransform(zl, task_id);
-                MonotonousTransform(zr, task_id);
-            }
+            //if (mMonotonous == MonotonousOptions::Monotonous) {
+            //    MonotonousTransform(zl, task_id);
+            //    MonotonousTransform(zr, task_id);
+            //}
             newx = (itl->x + itr->x) / 2 - (zr - zl) / (2 * m);
 
         }
@@ -589,6 +616,10 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
 double optimizercore::OptimizerAlgorithmAdaptive::GetLipschitzConst() {
     // TODO: DELETE THIS. CALCULATE M AFTER LAST TRIAL IS DONE.
     for (int i = 0; i < all_tasks.size(); ++i) {
+        MonotonousTransformAll(i);
+    }
+    
+    for (int i = 0; i < all_tasks.size(); ++i) {
         this->CalculateM(i);
     }
 
@@ -620,5 +651,6 @@ optimizercore::OptimizerAlgorithmAdaptive::ITask::ITask(int _level, int _parent_
     level = _level;
     parent_id = _parent_id;
     basepoint = _basepoint;
-    maxpoint = _basepoint;
+    maxpoint = _basepoint.val;
+    transval = _basepoint.val;
 }
