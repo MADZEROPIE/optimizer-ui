@@ -29,10 +29,11 @@ private:
     class SubTask : public ITask {
     public:
         double R = -INFINITY;
+        double R_trans = -INFINITY;
         double m = 1;
-        double M = 0;
+        double m_trans = 1;
         double minIntervalNorm = INFINITY;
-        int Rind = 0;
+        int Rind = 0, Rtrind = 0;
         // std::vector<SubTask*> subtasks;  // subtasks+basepoint and trials have same usability, so why store both?
 
         // also best point ?
@@ -97,6 +98,7 @@ private:
     double *leftDomainBound, *rightDomainBound;
 
     double mGlobalM, mZ, eps, r, mMaxIntervalNorm;
+    double mGlobalMTrans;
     double** mNextPoints;
     // double* mLevelM;
 
@@ -109,14 +111,18 @@ private:
     // Also. all_tasks Doesn't store points, so...
     std::vector<ITask> all_trials;
     std::vector<double> mLevelM;
+    std::vector<double> mLevelMTrans;
     void UpdateParents(int trial_id);
-    void CalculateM(int task_id);
-    void CalculateRanks(int task_id);
+    void CalculateM(int task_id, bool mon);
+    void CalculateRanks(int task_id, bool mon);
     int ChooseSubtask();
     void GenerateSubTasks(int parent, OptimizerNestedTrialPoint npnt);
-    double Choosem(int task_id, LipschitzConstantEvaluation mtype);
+    double Choosem(int task_id, LipschitzConstantEvaluation mtype, bool mon = false);
     void MonotonousTransformAll(int task_id);
-    inline void MonotonousTransform(double& z, int task_id);
+    void MonotonousTransform(double& z, int task_id);
+    double GetValue(int subtask_id, bool from_trial, bool mon);
+    void UpdateM(int task_id, double m, bool mon);
+    void RecalcAll();
 
 public:
     OptimizerAlgorithmAdaptive();

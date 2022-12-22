@@ -163,8 +163,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\dislin;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath);$(SolutionDir)\libs;$(LibraryPath);$(SolutionDir)\Release</LibraryPath>
+    <IncludePath>C:\dislin;$(IncludePath);$(SolutionDir)\GKLSFunctions;$(SolutionDir)\VAGRISFunctions;$(SolutionDir)\IndexAGS;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug2|x64'">
     <LinkIncremental>false</LinkIncremental>
