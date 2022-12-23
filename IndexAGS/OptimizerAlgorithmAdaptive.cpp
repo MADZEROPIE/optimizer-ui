@@ -433,12 +433,12 @@ void optimizercore::OptimizerAlgorithmAdaptive::UpdateM(int task_id, double m, b
 
 void optimizercore::OptimizerAlgorithmAdaptive::RecalcAll() {
     // Transform values
-    //if (mMonotonous == MonotonousOptions::Monotonous) {
+    if (mMonotonous == MonotonousOptions::Monotonous) {
         // #pragma omp parallel for num_threads(mNumberOfThreads)
         for (int i = 0; i < all_tasks.size(); ++i) {
             MonotonousTransformAll(i);
         }
-    //}
+    }
     // Reset M
     mGlobalM = mGlobalMTrans = 0;
     for (int i = 0; i < mLevelM.size(); ++i) {
@@ -472,9 +472,9 @@ void optimizercore::OptimizerAlgorithmAdaptive::RecalcAll() {
     // Calculate Ranks
     for (int i = 0; i < all_tasks.size(); ++i) {
         CalculateRanks(i, false);
-        if (mMonotonous == MonotonousOptions::Monotonous) {
-            CalculateRanks(i, true);
-        }
+        //if (mMonotonous == MonotonousOptions::Monotonous) {
+        //    CalculateRanks(i, true);
+        //}
     }
 }
 
@@ -623,15 +623,20 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
     all_tasks.push_back(SubTask(0, -1, pnt1));
     all_tasks[0].maxpoint = -INFINITY;
 
+    bool is_mon = mMonotonous == MonotonousOptions::Monotonous;
+
     GenerateSubTasks(0, all_tasks[0].basepoint);
     bool stop = false;
     while (!stop && iterationsCount < mMaxNumberOfIterations) {
         RecalcAll();
         int task_id = ChooseSubtask();
+        if (is_mon) {
+            CalculateRanks(task_id, true);
+        }
         SubTask& task = all_tasks[task_id];
         int level = task.level;
-        double m = Choosem(task_id, mLipMode, mMonotonous == MonotonousOptions::Monotonous);
-        bool is_mon = mMonotonous == MonotonousOptions::Monotonous;
+        double m = Choosem(task_id, mLipMode, is_mon);
+        
         // CHOOSE NEW POINT
         double newx;
         if ((!is_mon && task.Rind == 0) || (is_mon && task.Rtrind == 0)) {
@@ -641,7 +646,7 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             --itmp;
             newx = (mSpaceTransform.GetRightDomainBound().get()[level] + itmp->x) / 2;
         } else {
-            int t = mMonotonous == MonotonousOptions::Monotonous ? task.Rtrind: task.Rind;
+            int t = is_mon ? task.Rtrind: task.Rind;
             int i = 0;
             auto itl = task.trials.begin();
             // std::advance(itl, t);
@@ -662,8 +667,8 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             //   zr = all_trials[itr->subtask_id].transval;
             //   zl = all_trials[itl->subtask_id].transval;
             //}
-            zr = GetValue(itr->subtask_id, level + 1 == mMethodDimension, mMonotonous == MonotonousOptions::Monotonous);
-            zl = GetValue(itl->subtask_id, level + 1 == mMethodDimension, mMonotonous == MonotonousOptions::Monotonous);
+            zr = GetValue(itr->subtask_id, level + 1 == mMethodDimension, is_mon);
+            zl = GetValue(itl->subtask_id, level + 1 == mMethodDimension, is_mon);
             newx = (itl->x + itr->x) / 2 - (zr - zl) / (2 * m);
 
         }
@@ -683,8 +688,8 @@ OptimizerResult optimizercore::OptimizerAlgorithmAdaptive::StartOptimization(con
             auto base_it = base_it2++;
             while (base_it2 != all_tasks[0].trials.cend() && !stop) {
                 // stop = (base_it2->x - base_it->x < eps);
-                if (all_tasks[base_it->subtask_id].basepoint.val < all_tasks[0].basepoint.val)
-                    throw "Update parents(?) not workin' properly";  // Debug check.
+                // if (all_tasks[base_it->subtask_id].basepoint.val < all_tasks[0].basepoint.val)
+                //    throw "Update parents(?) not workin' properly";  // Debug check.
                 stop = NormNDimMax(all_tasks[base_it2->subtask_id].basepoint.x.data(),
                                    all_tasks[base_it->subtask_id].basepoint.x.data(), mMethodDimension) < eps;
                 ++base_it2;
